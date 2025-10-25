@@ -83,5 +83,50 @@ topHintMenu: TopHintMenu;
     openWhenRevealed = 'snake-block'
     closeWhenMoved = snake
 ;
-    
+
++ Goal 'How do I get past the dragon?'
+    [
+        'It\'s easier than you think. ',
+        'Be bold! '
+    ]
+    openWhenSeen = dragon
+    closeWhen = dragon.isIn(nil)
+;
+
+
++ Goal 'What can I do about the bear?'
+    [
+        'Maybe he\'s hungry '
+    ]
+    openWhenRevealed = 'ferocious bear'
+    closeWhen = isTame
+;
+
++ Goal 'How do I get past the troll?'
+    [
+        'Better do eggsactly as he wants. '
+    ]
+    openWhenSeen = troll
+    closeWhenRevealed = 'troll-departs'
+;
+
++ Goal 'How do I get past the troll a second time?'
+    [
+        'You need to enlist help. ',
+        'From a creature stronger than you are. ',      
+        'You\'ll have to persuade him to follow you back to the troll. '
+    ]
+    openWhenSeen = onNESideOfChasm 
+    closeWhenRevealed = 'bear-attack'
+;
+
++ Goal 'What am I meant to be doing now?'
+    [
+        'Finding a way out -- but you won\'t find any ready-made exits. ',
+        'You\'ll need to file a pile of objects that aren\'t what they might first appear to be. ',
+        'Think of it as an explosive discovery -- it\'ll be a blast! ',
+        'Don\'t stand too close! '       
+    ]
+    openWhenSeen = atNEEnd
+;
     

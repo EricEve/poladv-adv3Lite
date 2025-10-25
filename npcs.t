@@ -175,7 +175,7 @@ bear: Feedable, Actor 'large bear; (cave) tame ferocious gentle; animal' @inBarr
             }
             else 
                 "There is a ferocious cave bear eyeing you from the far end of the
-                room! ";
+                room! <.reveal ferocious-bear>";
         }
         
     }
@@ -404,9 +404,14 @@ bear: Feedable, Actor 'large bear; (cave) tame ferocious gentle; animal' @inBarr
     {
         if(action == Follow && gDobj == gPlayerChar)
             doInstead(Take, self);
+        else if(action == Attack && gDobj == troll && canReach(troll))
+        {
+            stopFollowing();
+            replaceActorAction(self, Attack, troll);  
+        }
         
         else
-             "The bear isn't quite sure what you want it to do. ";
+            "The bear isn't quite sure what you want it to do. ";
         
     }
     
@@ -494,7 +499,7 @@ troll: Actor 'burly troll;;;him' @onSWSideOfChasm
             {
                 "The bear lumbers toward the troll, who lets
                 out a startled shriek and scurries away.  The
-                bear soon gives up the pursuit and wanders back. ";
+                bear soon gives up the pursuit and wanders back. <.reveal bear-attack>";
                 moveInto(nil);
                 bear.stayloc = bear.location;
                 bear.prevloc = bear.getPreviousLocation();
@@ -583,7 +588,7 @@ troll: Actor 'burly troll;;;him' @onSWSideOfChasm
                 }
                 else 
                     "The troll <<vb1>> {my} treasure and
-                    scurries away out of sight.";
+                    scurries away out of sight. <.reveal troll-departs>";
                 
                 if(letfall)
                     cont.moveInto(nil);
