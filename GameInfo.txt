@@ -1,0 +1,12 @@
+IFID: ae41d2ae-c33a-4dec-afbe-f47547f82488
+Name: Polyadv
+Byline: by Eric Eve
+HtmlByline: by <a href="mailto:eric.eve@outlook.com">Eric Eve</a>
+AuthorEmail: Eric Eve <eric.eve@outlook.com>
+Desc: A TADS3/adv3Lite port of the TADS 2 port of polyadv, itself a multi-version port based on the Colossal Adventure game by Crowther and Woods.
+HtmlDesc: A TADS3/adv3Lite port of the TADS 2 port of polyadv, itself a multi-version port based on the Colossal Adventure game by Crowther and Woods.
+Version: 1
+ReleaseDate: 2025-10-25
+LicenseType: Freeware
+CopyingRules: Nominal cost only; compilations allowed
+PresentationProfile: Default

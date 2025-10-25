@@ -1,0 +1,6 @@
+This source code is copylefted under the terms of the GNU Public
+ License.  Essentially, this means that you are free to do whatever
+ you wish with this source code, provided you do not charge any
+ money for it or for any derivative works.
+
+[This is copied directly from the TADS 2 polyadv license.]
