@@ -307,6 +307,38 @@ modify Thing
         report() {  reportDobjTakeFrom(); }
     }
     
+    dobjFor(Use)
+    {
+        preCond = [objVisible]
+        verify() { illogical('You\'ll have to be a bit more explicit than that. ');  }      
+    }
+        
+    dobjFor(Dust) asDobjFor(Clean)
+    dobjFor(DustWith) asDobjFor(CleanWith)
+    
+    iobjFor(DustWith)
+    {
+        preCond = [objHeld]
+        verify() { illogical('{The iobj} will hardly serve as a broom' ); }
+    }
+    
+    cannotCleanWithMsg = '{The iobj} {is}n\'t much use for cleaning. '
+    
+    dobjFor(Blow)
+    {
+        preCond = [objHeld]
+        verify() { illogical('{I} {can\'t} blow {that dobj}. '); }
+       
+    }
+    
+    dobjFor(Play)
+    {
+        preCond = [touchObj]
+        verify() { illogical('{I} {can\'t} play {that dobj}. '); }
+       
+    }
+    
+    
     /* Other mods roughly corresponding to mods to thing and item classes in TADS 2 advmods.t */
     
     actionMoveInto(loc)
@@ -439,5 +471,53 @@ modify Thing
 //        isEquivalent = true;
 //        
 //    }
+    
+    // SECTION 5: Generic version-control rules
+
+// All objects specific to the 350-point game are included in the 550-point
+// version.  All objects in the 550-point and 551-point games are included 
+// in the 701-point game.  If locations differ, the 701-point game uses the
+// 551-point location.
+
+   game550 = (game350)
+
+   game701 { return (game550 || game551);}
+    
+   location701 
+   {
+        if (propDefined(&location551)) return location551;
+        else if (propDefined(&location550)) return location550;
+        else return location;
+   }
+    loclist701  
+    {
+        if (loclist551 != nil) return loclist551;
+        else if (loclist550 !=  nil) return loclist550;
+        else return nil;
+    }
+/* BJS: Everything in the 550-point version is also in the 580-point
+ * version. */
+   game580 = game550
+   
+   location580 
+   {
+        if (propDefined(&location550)) return location550;
+        else return location;
+   }
+   loclist580 
+   {
+        if (loclist550 != nil) return loclist550;
+        else return nil;
+   }
+
+/* 
+   We define default game701p and location701p methods for the extended
+   version. 
+ */
+
+   game701p = game701
+   location701p = location701
+   loclist701p = loclist701
+
 ;
 

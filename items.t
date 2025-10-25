@@ -1008,6 +1008,7 @@ spelunkerToday: Thing 'recent issues of Spelunker Today;dwarvish; magazines issu
     contloc = nil
     oldKeep = true
     depositpointsawarded = nil
+   
 ;
 
 /* 19 */

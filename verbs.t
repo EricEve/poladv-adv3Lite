@@ -3,6 +3,22 @@
 #include <tads.h>
 #include "advlite.h"
 
+#define DefineMagicWord(name) \
+    DefineAction(name, MagicWord)
+
+/* 
+ *   Note that magic words which don't exist in a given version are currently programmed to say
+ *   "Nothing happens," as opposed to, say, "I don't know that word."
+ */
+class MagicWord: IAction
+    endsaid = nil  // These properties are used in the cylindrical room.
+    tused = -2
+    omegapsical_order = nil    // To future extenders: leave these nil if
+    omegaps701_order = nil     // you aren't altering the version in question.
+    omegaps580_order = nil     // The unlabeled omegapsical_order
+                               // refers to the 550-point version.
+;
+
 
 DefineSystemAction(NoDwarves)
     execAction(c)
@@ -133,7 +149,12 @@ VerbRule(SwimIn)
     action = Swim
     verbPhrase = 'swim/swimming (in what)'
 ;
-DefineIAction(Fee)
+DefineMagicWord(Fee)
+    omegapsical_order = 15
+    omegaps580_order = 17
+    omegaps701_order = 18
+    omegaps701p_order = 20
+    
     execAction(c)
     {
         if(said)
@@ -179,24 +200,33 @@ DefineIAction(Fee)
     
 ;
 
-DefineIAction(Fie)
+DefineMagicWord(Fie)
+    omegapsical_order = 14
+    omegaps580_order = 16
+    omegaps701_order = 17
+    omegaps701p_order = 19
     execAction(c)
-    {        
-        if (tcount == gTurns) 
-        {
-            said = true;
-            "Ok!";
-        }
-        else
-            Fee.fail();       
+{        
+    if (tcount == gTurns) 
+    {
+        said = true;
+        "Ok!";
     }
-    
-    said = nil
+    else
+        Fee.fail();       
+}
+
+said = nil
     tcount = -1
 ;
 
 
-DefineIAction(Foe)
+DefineMagicWord(Foe)
+    omegapsical_order = 13
+    omegaps580_order = 15
+    omegaps701_order = 16
+    omegaps701p_order = 18
+    
     execAction(c)
     {
         if (!Fie.said)
@@ -214,7 +244,12 @@ DefineIAction(Foe)
     tcount = -1
 ;
 
-DefineIAction(Foo)
+DefineMagicWord(Foo)
+    omegapsical_order = 12
+    omegaps580_order = 14
+    omegaps701_order = 15
+    omegaps701p_order = 17
+    
     execAction(c)
     {
         if (!Foe.said)
@@ -458,9 +493,9 @@ VerbRule(Release)
     missingQ = 'what do you want to release'
 ;
 
-DefineTVerb(BlastWith, 'blast' (|'with') singleDobj, 'blast', 'blasting');
+DefineTVerb(BlastWith, ('blast' | 'detonate') (|'with') singleDobj, 'blast', 'blasting');
 
-DefineIVerb(Blast, 'blast', 'blast', 'blasting')
+DefineIVerb(Blast, 'blast'|'detonate'|'explode', 'blast', 'blasting')
     execAction(c) 
     {
         if(gActor.isIn(atNEEnd) || gActor.isIn(atSWEnd))
@@ -476,6 +511,20 @@ RemapCmd 'fee fie foe (foo|fum)'
 
 DefineTIVerb(YankFrom, 'yank' multiDobj ('from' | 'out' 'of') singleIobj, 'yank', 'yanking', from);
 DefineTVerb(Yank, 'yank' multiDobj, 'yank', 'yanking');    
+
+DefineTVerb(Use, ('use'|'utilize'|'employ') multiDobj, 'use', 'using');
+DefineTVerb(Dust, ('brush' | 'sweep' | 'dust') multiDobj, 'dust', 'dusting');
+DefineTIVerb(DustWith, ('brush' | 'sweep' | 'dust') multiDobj 'with' singleIobj, 'dust',
+             'dusting',with );
+
+/* blow, play (for lyre, horn) */
+DefineTVerbS(Blow, 'blow' singleDobj, 'blow', 'blowing');
+DefineTVerbS(Play, 'play' singleDobj, 'play', 'playing');
+
+
+
+
+
 
 
 
