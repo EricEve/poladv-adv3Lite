@@ -23,6 +23,7 @@
 -source cc-hints
 -source Polyadv
 -source rooms
+-source rooms1
 -source map2
 -source items
 -source endgame

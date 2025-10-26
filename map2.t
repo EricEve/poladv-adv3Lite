@@ -45,8 +45,7 @@ northOfReservoir: DarkRoom
 ;
 
 
-topOfSlide: DarkRoom
-;
+
 
 
 debrisWest: Room 'Debris West'
@@ -76,8 +75,7 @@ blueBirdChamber: Room 'Blue Bird Chamber'
 morion: Room 'Morion'
 ;
 
-throneRoom: Room 'Throne Room'
-;
+
 
 corrDivis: Room 'Corr Divis'
 ;

@@ -144,3 +144,4 @@ modify scoreNotifySettingsItem
     isOn = (gTurns > 1)
     
 ;
+

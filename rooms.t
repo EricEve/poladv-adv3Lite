@@ -67,10 +67,76 @@ class NotFarIn: NoNPC, Room
     notfarin = true
 ;
 
+/* 
+ *   We define a more elaborate DarkRoom class here than the TADS 2 version does since we want to
+ *   suppress exit listing in the dark and also handle the risk of falling into a pit here.
+ */
 class DarkRoom: Room
     isLit = nil
+    
+    /* Travel in the dark is allowed, but perilous */
+    allowDarkTravel = true
+    
+        
+    /* 
+     *   Since we can travel in the dark we need to select which version of our can't travel that
+     *   way to message according to the available light level.
+     */
+    cannotGoThatWay(dir)
+    {
+        if(isIlluminated)
+            inherited(dir);
+        else
+            cannotGoThatWayInDark(dir);
+    }
+    
+    /* Travelling in the dark carries the risk of falling into a pit, with fatal consequences. */
+    cannotGoThatWayInDark(dir)
+    {
+        "{I} {am} blundering around blindly in the dark. You might easily fall into a pit. ";
+        pitfall();
+    }
+    
+    travelDesc() 
+    { 
+        if(!isIlluminated)
+            pitfall(); 
+    }    
+    
+    pitfall()
+    {
+        /* 
+         *   This should give a 1 in 4 chance of falling into a pit, since rand(4) should generate a
+         *   random number between 0 and 3
+         */
+        if(rand(4) > 2)
+        {
+            "Oh dear! You have fallen into a pit!";
+            die();
+        }
+    }
+    
+    /* Suppress exit listing in the dark. */
+    listStatusExits(lst, cnt)
+    {
+        if(isIlluminated)
+            return true;
+        else
+            "too dark to discern";
+        return nil;
+    }
+    
+    listExits(lst, cnt)
+    {
+        return listStatusExits(lst, cnt);
+    }
+    
 ;
 
+/* Also necessary to allow travel in the dark. */
+modify TravelConnector
+    visibleInDark = true
+;
 
 class RoomLiquid: Fixture
     contlist = [bottle, flask, cask]
@@ -3537,7 +3603,7 @@ reservoir: MultiLoc, StreamItem 'reservoir;;lake water stream'
             "There is no way across the reservoir. ";
     }
     
-    locationList = [atReservoir, swordPointNOfReservoir]
+    locationList = [atReservoir, swordPoint]
     
     dobjFor(Cross)
     {
@@ -4546,9 +4612,6 @@ westSideChamber: Room 'West Side Chamber'
 ;
 
 glassyRoom: DarkRoom
-;
-
-swordPoint: DarkRoom
 ;
 
 didnt_make_it: object
