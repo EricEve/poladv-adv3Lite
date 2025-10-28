@@ -775,7 +775,10 @@ wumpus:NPC 'wumpus'
     isChasing = nil
 ;
 
-dog: NPC
+dog: NPC 'dog'
+    isAsleep = nil
+    
+    blockMessage = "The dog won't let you pass! " // temporary
 ;
 
 /* Dwarves with a captital D because dwarves is already in use as an object property. */

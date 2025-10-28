@@ -17,7 +17,7 @@ modify Thing
      *   Flag, should this thing be regarded as 'deleted' because it's not relevant to the current
      *   version of the game.
      */
-    deleted =  true
+    deleted =  nil
     
     /* Handling of additional verbs - mainly correspondinng to ccc-thx.t */
     cannotEatMsg = 'I think I just lost my appetite. '
@@ -483,12 +483,12 @@ modify Thing
 
    game701 { return (game550 || game551);}
     
-   location701 
-   {
+    location701 
+    {
         if (propDefined(&location551)) return location551;
         else if (propDefined(&location550)) return location550;
         else return location;
-   }
+    }
     loclist701  
     {
         if (loclist551 != nil) return loclist551;
@@ -519,5 +519,13 @@ modify Thing
    location701p = location701
    loclist701p = loclist701
 
+//    /* location to restore this object to if it's location specific to the current version. */    
+//    initLoc = nil
+//    
+//    preinitThing
+//    {
+//        initLoc = location;
+//        inherited();
+//    }
 ;
 

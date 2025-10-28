@@ -371,7 +371,12 @@ class Treasure: Thing ';;treasures goodies'
         }
     }
        
-    
+    listWith = [treasureGroup]
+    listOrder = 100
+;
+
+treasureGroup: ListGroupSorted
+    listOrder = 200
 ;
 
 class Coin: Thing
@@ -469,7 +474,7 @@ brassLantern: FueledLightSource, EndgameClone, Flashlight
         {
             if(replaceBatteries)
                 ; //do nothing
-            else if(toploc.isOutside && !toploc.nolampwarn && !wandernote)
+            else if(toploc.isoutside && !toploc.nolampwarn && !wandernote)
             {
                 wandernote = true;
                 "<.p>Your lamp emits its final flicker\b
@@ -1870,4 +1875,10 @@ leadBox: Container 'lead box'
 ;
 
 slippers: Thing 'slippers;;;them'
+;
+
+throneSign: Thing 'throne sign'
+;
+
+brokenPendant: Thing
 ;

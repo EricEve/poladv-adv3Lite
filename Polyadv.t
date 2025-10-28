@@ -92,20 +92,6 @@ me: Player 'you' @atEndOfRoad
     itemcount = contents.countWhich({x:!x.isFixed})
     
     kickNoEffectMsg = '{I} {give} {myself} a good kicking, which {i} no doubt richly deserve{s/ed}. '
-    
-    awardedpointsforgettingfarin = nil
-    
-    actionMoveInto(loc)
-    {
-        inherited(loc);
-        if(!getOutermostRoom.notfarin && !awardedpointsforgettingfarin)
-        {
-            addToScore(global.farinpoints, 'getting well into the cave');
-            awardedpointsforgettingfarin = true;
-        }
-    }
-    
-    health = 100
 ;
 
 + myHands: BodyPart '() your hands; bare my ;hand; them it'

@@ -56,6 +56,96 @@ VerbRule(Deterministic)
     action = Deterministic
 ;
 
+class VersionRestartAction: SystemAction
+    points = 350
+    vNumber = 0
+    execAction(c)
+    {
+        restartGameVersion();
+    }
+    
+    restartGameVersion()
+    {
+        local yesno;
+//        local silent = nil;
+        if(gTurns > 5)
+        {
+            if(vNumber == 11)
+            {
+                "Are you sure you want to restart the game (in the
+                701+ points mode)? (YES or NO) > ";
+            }
+            else
+                "Are you sure you want to restart the game (in the
+                <<points>>-point mode)? (YES or NO) > ";
+            
+            yesno = yesOrNo();
+        }
+        
+        
+        
+        else 
+        {
+            if(vnumber == 11) 
+                "Restarting the game in the 701+ points mode (with bonus
+                points for finding extensions).\n ";
+            
+            else 
+                "Restarting the game in the <<points>>-point mode.\b\b ";
+            
+            yesno = true;
+//            silent = true;
+        }
+        if (yesno) 
+        {
+            "\n";
+//            scoreStatus(0, 0);
+            // DJP - pass game version information.
+//            global.initRestartParam = [vnumber, global.randomized, silent];
+            
+//            restart(initRestart, global.initRestartParam);
+            global.vNumber = vnumber;
+            
+            /* Note our new version number */
+            versionNum.vNumber = vnumber;
+            
+            /* restart the game. */
+            Restart.doRestartGame();            
+        }
+        else if ( !yesno) 
+        {
+            "\nOkay.\n";           
+        }         
+    }  
+    
+;
+
+/* Store the version number we want to use on restarting. */
+transient versionNum: object
+    vNumber = 0
+;
+
+#define DefVersionRestart(name, gram, pts, vnum)\
+    VerbRule(name)\
+    gram\
+    : VerbProduction\
+    action = name\
+    verbPhrase = 'restart/restarting in version' + #@vnum\
+    ;\
+    name: VersionRestartAction \
+    baseActionClass = name\
+    points = pts\
+    vnumber = vnum
+
+
+DefVersionRestart(Restart350, 'oldgame' | 'game350', 350,  0);
+DefVersionRestart(Restart551, 'game551', 551, 1);
+DefVersionRestart(Restart550, 'game550', 550, 2);
+DefVersionRestart(Restart701, 'game701', 701, 15);
+DefVersionRestart(Restart701p, 'game701p', 701, 11);
+DefVersionRestart(Restart580, 'game580', 580, 7);
+
+
 
 DefineTAction(Cross)
 ;
@@ -529,19 +619,6 @@ DefineTVerbS(Play, 'play' singleDobj, 'play', 'playing');
 
 
 
-//modify Jump
-//    execAction(c)
-//    {
-//        local loc = gRoom;
-//        if(loc.propDefined(&jump))
-//            loc.jump();
-//        else
-//            inherited(c);
-//    }
-//    
-//    
-//;
-
 /* Define all the special travel actions */
 DefSpecialTravel(Xyzzy, &xyzzy, 'xyzzy') darkTravelAllowed = true;
 DefSpecialTravel(Plugh, &plugh, 'plugh') darkTravelAllowed  = true;
@@ -586,6 +663,13 @@ DefSpecialTravel(Fork, &fork, 'fork');
 DefSpecialTravel(Crack, &crack, 'crack');
 DefSpecialTravel(Secret, &secret, 'secret');
 DefSpecialTravel(Dark, &dark, 'dark');
+DefSpecialTravel(Slide, &slide, 'slide');
+DefSpecialTravel(Chimney, &chimney, 'chimney');
+DefSpecialTravel(Phuce, &phuce, 'phuce') darkTravelAllowed = true;
+DefSpecialTravel(Thunder, &thunder, 'thunder');
+DefSpecialTravel(Smichel, &smichel, 'smichel');
+DefSpecialTravel(GateAction, &gate, 'gate');
+DefSpecialTravel(Phleece, &phleece, 'phleece');
 
 
 

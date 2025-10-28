@@ -17,11 +17,6 @@ pantry: IndoorRoom 'Pantry'
 valleyFaces: DarkRoom
 ;
 
-inForest3: Room
-;
-
-
-
 
 swordPointNOfReservoir: DarkRoom
 ;
@@ -72,8 +67,6 @@ atSwEnd: Room 'At SW End'
 blueBirdChamber: Room 'Blue Bird Chamber'
 ;    
 
-morion: Room 'Morion'
-;
 
 
 

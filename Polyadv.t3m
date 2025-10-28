@@ -20,6 +20,7 @@
 -source thingext
 -source adv3Lite/extensions/fueled
 -source adv3Lite/extensions/collective
+-source adv3Lite/extensions/weight
 -source cc-hints
 -source Polyadv
 -source rooms

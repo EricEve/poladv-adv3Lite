@@ -63,6 +63,8 @@ global: object
     
     debug = nil
     
+    travelActor = nil
+    
     extendMoveInto = true
     nodwarves = nil
     
@@ -131,6 +133,7 @@ global: object
     moveloclist = []    // floatingdecoration objects to be given
                         // a different loclist
     changeloclist = []  // list of modified loclists
+    restoreList = [] // list of items to be restores to their initial location
 
 //    noall = [Hands Heels Air Footsteps Walls Ceiling theFloor TheRoom
 //         LeftCrack RightCrack MiddleCrack Chapter1 Chapter2 Chapter3 Chapter4
@@ -145,8 +148,8 @@ global: object
     
     allpointslist = []
 
-    travelActor = gPlayerChar    // actor doing the travelling, for use by travel
-                        // methods.
+//    travelActor = gPlayerChar    // actor doing the travelling, for use by travel
+//                        // methods.
 
     verbActor = nil     // actor executing the current verb.  This is set
                         // early in the parsing process, but is unset once
@@ -303,18 +306,23 @@ gamePreinit: PreinitObject
             
         
         
-        /* list objects to be removed from each game version. */
-        i.removelist = [];
-        o = firstObj(Thing);
-        while (o != nil) {
-            condit = (o.allversions || o.(gameprop));
-            if(!condit) 
+            /* list objects to be removed from each game version. */
+            i.removelist = [];
+            
+            o = firstObj(Thing);
+            while (o != nil) 
             {
-                i.removelist += o;
-            }
-            o = nextObj(o, Thing);
-        }
-        
+                condit = (o.allversions || o.(gameprop));
+                if(!condit) 
+                {
+                    i.removelist += o;                      
+                }
+//                else if(o.(gameprop))
+//                    i.restoreList += o;
+                
+                o = nextObj(o, Thing);
+            };
+            
         /* list objects with different locations in each version. */
         i.movelist = [];
         o = firstObj(Thing);
@@ -372,6 +380,8 @@ versionSetup: InitObject
         local o, copied, l, i, p;
         // adjust global variables for the game version (and do any
         // extra setup needed.)
+        global.vNumber = versionNum.vNumber;
+        
         for (o = firstObj(VerGlob); o; o = nextObj(o, VerGlob)) 
         {
             if(global.vNumber == o.vnumber) 
@@ -451,6 +461,7 @@ versionSetup: InitObject
             //"\nflagging room as deleted: ";o.sdesc;"\n";
             o.deleted = true;
         }
+       
         
         // Objects in the movelist are assumed to have simple locations.
         l = global.movelist.length;
@@ -715,7 +726,7 @@ turnProcessing: InitObject
                             cl.awardedpointsfortaking = true;
                             if(t.ofKind(Treasure)) 
                             {
-                                treasures = treasures - 1;
+                                global.treasures -= 1;
                                 global.treasuresToFind -= t;
                             }
                         }
@@ -829,6 +840,8 @@ class VerGlob: object
 
     // game version selection
     removelist = []         // list of objects to be removed
+    restoreList = []        // list of objects to be restored
+             
     movelist = []           // list of objects to be moved to different
                             // locations
     changeloc = []          // list of modified locations
@@ -888,6 +901,7 @@ class VerGlob: object
         global.bonusorig     = global.bonustime;
         global.closingorig   = global.closingtime;
         gameMain.scoreRanks  = self.scoreRanks;
+        global.restoreList = self.restoreList;
     }
 ;
 
@@ -939,10 +953,132 @@ glob0: VerGlob
     
 ;
 
+glob1: VerGlob
+ /*
+ * The following comments are adapted from the source of the scoring
+ * routine in the 551-point game.   In the original Fortran version,
+ * the non-treasure-related part of the score was not given in full until
+ * 300 turns had been played.  This has not been implemented in the TADS
+ * port.
+ *
+ * The scoring totals are as follows:
+ *
+ *    Objective:          Points:           Total possible:
+ * Getting well into cave   25                    25
+ * Total possible for treasures (+objects)       428
+ * Surviving             (max-num)*10             30
+ * Not quitting              4                     4
+ * Reaching "closing"       20                    20
+ * "closed": quit/killed    10
+ *           klutzed        20
+ *           wrong way      25
+ *           success        30                    30
+ * Round out the total      14                    14
+ *                                      total:   551
+ * (points can also be deducted for using hints.)
+ * For full credit treasures must be in building, not broken, and in
+ * the correct containers.  Scores depend on the basis property (default 1).
+ * Optionally we can test that the container is in the
+ * right place (contloc) and also the container-of-the-container
+ * (outercontloc).
+ *
+ * Non-treasure objects: (points given for correct depositing)
+ * Object       Score
+ * magazine     1
+ * marked rod   2
+ * total        3
+ *
+ * Treasure scores are multiplied by 2 (range 4-10) when
+ * discovered or 5 (range 5-25) when deposited correctly:
+ * i.e. takepoints = 2 x basis
+ *   depositpoints = 3 x basis
+ *           total = 5 x basis
+ * Treasure     Basis
+ * book         2
+ * wine         3 (in cask only - must enter via Styx to fill cask)
+ * chain        4 (must enter via Styx to obtain this)
+ * chest        5
+ * cloak        3
+ * clover       1
+ * coins        5
+ * crown        2
+ * crystal-ball 2
+ * diamonds     2
+ * eggs         3
+ * emerald      3
+ * chalice      2
+ * horn         2
+ * jewels       1
+ * lyre         1
+ * nugget       2
+ * pearl        4
+ * pyramid      4
+ * radium       4
+ * ring         4
+ * rug          3
+ * sapphire     1
+ * shoes        3
+ * spices       1
+ * sword        4
+ * trident      2
+ * vase         2
+ * droplet      5
+ * tree         5
+ *      TOTAL: 85 * 5 = 425 + 3 ==> 428
+ */
+    vnumber = 1
+
+    maxresurrect = 2        // number of resurrections allowed
+
+    //
+    // Scoring values
+    // Points for treasures are kept in the treasures themselves (as
+    // oldtakepoints, olddepositpoints, defaults 2 and 12)
+   
+    score = 48              // start out with 48 points:
+                            // (14 + (-1 * quitpoints) +
+                            // (-1 * deathpoints) * 3)
+    maxscore = 551          // maximum possible score
+    novicepoints = -5       // points for playing in easy mode (neg.)
+    quitpoints = -4         // points for quitting (neg.)
+    deathpoints = -10       // points gained each time player dies (neg.)
+    farinpoints = 25        // points for getting well into the cave
+    extenpoints = 0         // points for getting well into the cave
+
+    closure = nil           // Has the endgame timer started yet?
+    closurepoints = 0       // point award when it does.
+    closingpoints = 20      // points for surviving until cave closing time
+    endpoints = 0           // points for getting to final puzzle
+    endkillpoints = 10      // points for getting killed in endgame
+    klutzpoints = 20        // points for getting klutzed (blown up)
+    almostpoints = 25       // points for *almost* getting final puzzle
+                            // (wrong part of room blown up)
+    winpoints = 30          // points for winning the final puzzle
+    escapepoints = 0        // These two properties are not applicable
+    finalepoints = 0        // in this version.score = 48              // start out with 48 points:
+                            // (14 + (-1 * quitpoints) +
+                            // (-1 * deathpoints) * 3)
+    
+    
+
+    security_alert = nil
+    //
+    // NPC stuff
+    //
+    dwarves = 5             // number of dwarves wandering about the cave
+                            // (Was 5 in original.)
+
+    sacklist = []           // containers for automatic inventory
+                                // management
+    
+    scoreRanks = [0, 72, 130, 200, 250, 350, 450, 500, 550, 551]       
+    
+;
 
  die()
 {
-    finishGameMsg(ftDeath, [finishOptionUndo, finishOptionFullScore]);
+    addToScore(global.deathpoints, 'for getting killed');
+    finishGameMsg(ftDeath, [finishOptionUndo, finishOptionResurrect, finishOptionFullScore]);
 }
 
 modify Door
@@ -966,3 +1102,394 @@ silentIncscore(num, txt = 'sundry adjustments')
     scoreNotifySettingsItem.isOn = wasNotifying;
 }
     
+/* Function to move portable objects from one room to another */
+roomMove(oldroom,newroom) 
+{
+    local l, cur, i, tot;
+    l = oldroom.contents;
+    tot = l.length;
+    for (i = 1; i <= tot; i++) 
+    {
+        cur = l[i];
+        /* Move all the non-fixed objects from oldroom to newroom */
+        if (cur.isFixed)
+            cur.moveInto(newroom);
+    }
+}
+
+modify Room
+    hasPassage = nil
+    hasCanyon = nil
+    isolated = nil
+    Zarkalonroom = nil
+    analevel = 0
+    brassKey = nil
+;
+    
+modify Actor
+    roomMoveTravel(moveprop,dest,...)
+    {
+        // Similar to vehicleTravel, but all portable objects are moved
+        // to the new room.  (The contents of non-portable containers are
+        // not moved.)
+        local prop;
+        //        local travelsave = global.travelActor;
+        local currentsave = gActor;
+        try
+        {
+            if(argcount > 3) 
+                prop = getArg(3);
+            //        global.travelActor = self;
+            gActor = self;
+            if (prop != nil) 
+                dest = dest.(prop);
+            
+            roomMove(getOutermostRoom, dest.getOutermostRoom);
+            //        travelVia(dest);
+            travelTo(location.(moveprop)(dest));
+            //        global.travelActor = travelsave;
+        }
+        finally
+        {
+            gActor = currentsave;
+        }       
+    }
+    
+    kaleid = nil;
+    
+;
+
+/* 
+ *   Although the player can always UNDO, this may not help if they've died in a hopeless situation,
+ *   in which case the resurrection option may be more use to them.
+ */
+
+finishOptionResurrect: FinishOption
+    desc = '''<<aHrefAlt('resurrect', 'RESURRECT', '>R<b>E</b>SURRECT',
+            'Resurrect the player')>> the player'''
+    responseKeyword = 'resurrect'
+    responseChar = 'e'
+    
+    listOrder = 50
+    
+    doOption()
+    {
+        local resurrect = nil;
+        if(global.deaths == 0)
+        { 
+            "Oh dear, you seem to have gotten yourself killed.  I
+            might be able to help you out, but I've never really
+            done this before.  Do you want me to try to
+            reincarnate you?\b>";
+            
+            if (yesOrNo()) 
+            {
+                "\bAll right.  But don't blame me if something
+                goes wr...... \b \ \ \ \ \ \ \ \ \ \ \ \ \ \
+                \ \ \ \ \ \ --- <b>POOF!!</b> --- \bYou are engulfed
+                in a cloud of orange smoke.  Coughing and
+                gasping, you emerge from the smoke and
+                find that you're....";
+                
+                resurrect = true;
+            }
+            else
+                "\bVery well. ";
+            
+        }   
+        // extra message issued in 550-point game ...
+        else if (global.deaths == 1 && global.maxresurrect >= 3)
+        {
+            "Tsk, tsk -- you did it again!  Remember -- you're only human,
+            and you don't have as many lives as a cat!  (at least, I don't
+            think so...) That's twice you've ended up dead -- want to try
+            for three?\b>";
+            
+            if (yesOrNo()) 
+            {
+                "\bOkay, now where did I put my orange
+                smoke?....  <b>POOF!</b>\bEverything disappears in
+                a dense cloud of orange smoke. ";
+                
+                resurrect = true;
+            }
+            else
+                "\bProbably a wise choice.";
+        }
+        else if (global.deaths < global.maxresurrect) 
+        {
+            "You clumsy oaf, you've done it again!  I don't know
+            how long I can keep this up.  Do you want me to try
+            reincarnating you again?\b>";
+            
+            if (yesOrNo()) {
+                "\bOkay, now where did I put my orange
+                smoke?....  <b>POOF!</b>\bEverything disappears in
+                a dense cloud of orange smoke.";
+                
+                resurrect = true;
+            }
+            else
+                "\bProbably a wise choice.";
+        }
+        // resurrections used up,
+        else 
+        {
+            "Now you've really done it!  I'm out of orange smoke!
+            You don't expect me to do a decent reincarnation
+            without any orange smoke, do you?\b>";
+            
+            if (yesOrNo())                 
+                "\bOkay, if you're so smart, do it yourself!
+                I'm leaving!";            
+            else
+                "\bI thought not!";
+        }
+        
+        global.deaths += 1;
+        
+        
+        if(resurrect)
+        {
+            local i,o,l,pcount = 0,savecont = gPlayerChar.contents;
+//            local doorlist = [grate];
+            
+            //        local doorlist = [Grate, Small_door_1, Small_door_2, Iron_door_1, 
+            //        Iron_door_2]; 
+            //            
+            l = savecont.length;
+            for (i = 1; i <= l; i++) {
+                o = savecont[i];
+                if (!o.wornBy == gPlayerChar || !o.ofKind(PendantItem) || (o == brokenPendant))
+                    o.moveInto(gRoom);
+                else
+                    pcount++;
+            }
+            //        room_move(Ledge_By_Door,Top_Of_Steps);
+            //        room_move(Underground_Sea,Grotto_West);
+            roomMove(denseJungle, knoll);
+            roomMove(vastChamber, throneRoomEast);
+            if(!brassLantern.destroyed) 
+            {
+                brassLantern.makeLit(nil);
+                brassLantern.moveInto(atEndOfRoad);
+            }
+            
+            // There's a whole more here that can't be included
+            // until the relevant items have been implemented.
+            
+            gPlayerChar.moveInto(insideBuilding);
+            gRoom.lookAroundWithin();              
+            
+            if(pcount >= 1) 
+            {
+                
+                "<.p>For a moment, you feel as if something is missing.  Then the
+                air starts to shimmer, and you feel a strange sensation on the
+                back of your neck.  You glance down, and notice that ";
+                if (pcount == 1)
+                    "the pendant has reappeared! ";
+                else  
+                    "the pendants have reappeared! ";
+            }
+            
+            abort;
+            
+            /* tell finishGame not to ask for another option */
+//            return nil;
+        }
+              
+        
+        /* tell finishGame() to ask for another option */
+        return true;
+    }
+;
+
+modify Player
+    panicked = nil  // has the player panicked after closing time?
+    
+    // The original 350-point code only allowed the player to carry
+    // seven objects at a time.  Weight wasn't taken into
+    // consideration.   This has now been changed.  In the 551-point
+    // version, weight as well as bulk are taken into consideration.
+    // (In the Fortran version only weight was considered).  You can
+    // still carry only 7 objects in your hands (unless you have very
+    // bulky items like the clam) , but the sack allows
+    // you to carry more, up to your weight limit.  Items which are
+    // worn don't count towards the total weight.
+    
+    bulkCapacity = 7
+    weightCapacity = 20
+    
+    
+    health = 100
+    
+//    ldesc = {
+//        if(mushroom.is_eaten) {
+//            I(); "Your muscles are bulging unbelievably.";
+//        }
+//        if(global.newgame and self.health < 95) {
+//            healthVerb.action(self);
+//        }
+//        else if (not mushroom.is_eaten) {
+//            I(); "You look much the same as always.";
+//        }
+//    }
+    
+    // This counts how many portions of blueberries have been eaten
+    blueberriesEaten = 0
+
+    //
+    // Give the player points for getting a fair ways into
+    // the cave.
+    //
+    awardedpointsforgettingfarin = nil
+    
+    /* Here we do much of the stuff that the TADS 2 version does in BasicMe.travelTo */
+    actionMoveInto(loc)
+    {
+        local toproom;
+        if(loc.deleted)
+        {
+            "{I} {can't} go that way in this version of the game. ";
+            return;
+        }
+        
+        if (global.closed && loc.isoutside && !gRoom.isoutside) 
+        {   
+            global.closingmess;
+            
+            if (!panicked) 
+            {
+                panicked = true;
+                
+                //
+                // We have reverted to the original behavior of the
+                // Fortran code which set the endgame timer to 15
+                // (rather than incrementing it by 15 which seems
+                // unkind to the player).  However a check has now
+                // been added to stop global.bonustime from being changed
+                // after full closure.
+                
+                if (!global.fully_closed) 
+                { 
+                    global.bonustime = global.panictime;  // DJP
+                }
+            }
+            
+            return;     // no travel 
+        }
+        
+        inherited(loc);
+        
+        toproom = getOutermostRoom;
+        
+        if(!toproom.notfarin && !awardedpointsforgettingfarin)
+        {
+            addToScore(global.farinpoints, 'getting well into the cave');
+            awardedpointsforgettingfarin = true;
+        }
+        
+        // DJP - Warn if the lamp is left on when wandering outside
+        // in lit rooms, except in certain rooms near entrances, or
+        // when the message has already been issued.
+        if (!lamplitwarn && gRoom.isoutside &&!toproom.nolampwarn && !toproom.isLit) 
+        {
+            if (brassLantern.isIn(self) && brassLantern.isLit) 
+            {                
+                "<.p>You know, you are wasting your batteries by
+                wandering around out here with your light on.";
+                lamplitwarn = true;
+            }
+        }
+        // Allow the warning message to appear again once the
+        // player enters a dark room.
+        if (!toproom.isLit)
+            lamplitwarn = nil;
+        
+    }
+
+    lamplitwarn = nil
+    closerestrict = true // check travel destination at closing time.
+    
+    // Enhanced travelTo method:
+    // The argument list is:
+    // room, propptr, refloc, nocheck   
+    // All arguments after the first are optional and default to nil.
+    // propptr  - pointer to a travel property e.g. &north.  If this is non-nil
+    //            the destination will be room.(propptr) instead of 
+    //            room. 
+    // refloc   - if non-nil, put a dummy reference actor in this room for
+    //            the purpose of evaluating location methods.
+    // nocheck  - if true, allow the actor to go anywhere at closing time.
+    //            This is forced to true unless the actor has the 
+    //            closerestrict method set to true.
+ 
+    // The advantage of the propptr argument is that it allows travelTo to
+    // set global variables before the travel property is evaluated.  If the
+    // property is a method, it may then use the global variables e.g. to
+    // issue different messages, depending on which actor is being moved.
+
+    // The following properties are set in the global object:
+
+    // currentActor - the actor for the purpose of evaluating location methods.
+    // travelActor - the actor doing the travelling.
+ 
+    
+    // I'm not sure about this since adv3Lite travel actions don't call travelTo
+    // maybe this needs to be implemented as actionMoveInto()?
+    // or at least some of it does?
+    travelTo(obj, ...)
+    {
+        local room;
+        local propptr = nil, refloc = nil; 
+//        local nocheck = nil;
+//        local travelsave, currentsave, dummylocsave;
+        
+        if (argcount > 1) propptr = getArg(2);
+        if (argcount > 2) refloc = getArg(3);
+//        if (argcount > 3) nocheck = getArg(4);
+//        if (!closerestrict) nocheck = true;  
+        
+//        travelsave = global.travelActor;
+//        currentsave = gActor;
+//        dummylocsave = dummyActor.location;
+        
+        global.travelActor = self;
+
+        if (refloc)        
+        {            
+             gActor = dummyActor;
+             dummyActor.location = refloc;
+        }
+        else 
+             gActor = self;
+        
+        if (propptr) 
+        {
+            if(dataType(propptr) != TypeProp) 
+            {
+                "Error: second argument to travelTo is not a property 
+                pointer. ";
+                abort;
+            }
+            room = obj.(propptr);
+        }
+        else
+            room = obj;
+        
+        /* do nothing if going nowhere */
+        if (room == nil)
+            return;
+        
+//        toproom = room.getDestination(gRoom);
+        
+         
+        
+        /* Carry out the travel */
+        travelVia(room);
+    }
+;
+
+dummyActor: Actor 'dummy actor'
+;

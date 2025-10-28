@@ -3,13 +3,7 @@
 #include <tads.h>
 #include "advlite.h"
 
-modify Room
-    hasPassage = nil
-    hasCanyon = nil
-    isolated = nil
-    Zarkalonroom = nil
-    analevel = 0
-;
+
 
 
 class AlikeMazeRoom: Room 'Maze of Twisty Little Passages, All Alike'
@@ -283,7 +277,7 @@ MultiLoc, Decoration 'forest; surrounding open hardwood oak maple pine
     
     decorationActions = [Examine, Climb]
     
-    locationList = [atEndOfRoad, atHillInRoad, inForest1]
+    locationList = [atEndOfRoad, atHillInRoad, inForest1, inForest2, inForest3]
     
     cannotClimbMsg = 'None of the trees appear to be easily climbable. '
 ;
@@ -331,6 +325,10 @@ atHillInRoad: OutsideRoom 'At Hill in Road'
         calcDest = (global.newGame && rand(100) < 30) ? inForest3 : inForest1
     }
     
+    west: TravelConnector -> inForest3
+    {
+        isConnectorApparent = global.newGame
+    }
 ;
 
 + Distant 'other side of[prep] the hill' 
@@ -1664,7 +1662,7 @@ atY2: DarkRoom 'At "Y2"' 'at Y2'
         }
     }
       
-   
+    roomDaemon() { hollowVoice(); }
     hollowVoice 
     {
         if (!gPlayerChar.isIn(self))
