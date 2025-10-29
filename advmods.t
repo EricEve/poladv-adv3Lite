@@ -1155,8 +1155,9 @@ modify Actor
         }       
     }
     
-    kaleid = nil;
-    
+    kaleid = nil
+
+    blueberriesEaten = 0
 ;
 
 /* 

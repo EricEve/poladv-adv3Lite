@@ -448,6 +448,9 @@ modify Thing
      */
     weight = ((global.oldGame || wornBy != nil ) ? 0 : mass)
     
+    isLong = nil
+    isLarge = nil
+    isHuge = nil
     
     meprevloc = nil
     metoploc = nil
@@ -519,13 +522,13 @@ modify Thing
    location701p = location701
    loclist701p = loclist701
 
-//    /* location to restore this object to if it's location specific to the current version. */    
-//    initLoc = nil
-//    
-//    preinitThing
-//    {
-//        initLoc = location;
-//        inherited();
-//    }
+   hasOpened = nil
+   makeOpen(stat)
+   {
+        inherited(stat);
+        if(stat)
+            hasOpened = true;
+   }
+    
 ;
 

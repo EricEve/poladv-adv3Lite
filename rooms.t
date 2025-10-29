@@ -6,7 +6,7 @@
 
 
 
-class AlikeMazeRoom: Room 'Maze of Twisty Little Passages, All Alike'
+class AlikeMazeRoom: DarkRoom 'Maze of Twisty Little Passages, All Alike'
     "{I} {am} in a maze of twisty little passages, all alike. "
 ;
 
@@ -242,7 +242,7 @@ atEndOfRoad: OutsideRoom 'At End of Road'
     forest = inForest1
     depression = outsideGrate    
     
-    
+    nolampwarn = true
 ;
 
 + Decoration 'walls;;wall;them'
@@ -277,17 +277,17 @@ MultiLoc, Decoration 'forest; surrounding open hardwood oak maple pine
     
     decorationActions = [Examine, Climb]
     
-    locationList = [atEndOfRoad, atHillInRoad, inForest1, inForest2, inForest3]
+    locationList = [atEndOfRoad, atHillInRoad, inForest1, inForest2, inForest3,inAValley]
     
     cannotClimbMsg = 'None of the trees appear to be easily climbable. '
 ;
 
 MultiLoc, Decoration 'road;;street path'    
-    locationList = [atEndOfRoad, atHillInRoad]    
+    locationList = [atEndOfRoad, atHillInRoad,inForest2]    
 ;
 
 MultiLoc, Decoration 'gully'
-    locationList = [atEndOfRoad]
+    locationList = [atEndOfRoad, atSlitInStreambed, outsideGrate]
 ;
 
 
@@ -305,6 +305,9 @@ MultiLoc, StreamItem 'stream; small tumbling splashing babbling rushing
 //    ]
     
     locationList = [atEndOfRoad, inAValley, insideBuilding]
+    
+    listenDesc = "You hear the sound of running water, splashing along the
+                 bed of the stream. "
 ;
 
 /* 2 */
@@ -329,6 +332,8 @@ atHillInRoad: OutsideRoom 'At Hill in Road'
     {
         isConnectorApparent = global.newGame
     }
+    
+    
 ;
 
 + Distant 'other side of[prep] the hill' 
@@ -347,14 +352,59 @@ insideBuilding: IndoorRoom 'Inside the Building'
     
     xyzzy ulMsgExit(inDebrisRoom, "{I am} translated in the twinkling of an eye. ")
     plugh = atY2    
-        
+    
+    /* We musn't use a room name as a property */
+    to_pantry asExit(north)
+    in asExit(north)    
+    
+    north: TravelConnector -> pantry
+    {
+        isConnectorApparent = global.newGame
+    } 
+    
+    stream = "The stream flows out through a pair of 1 foot
+        diameter sewer pipes. It would be advisable to use
+        the exit. "
+    downstream = stream
+    passage asExit(in)
+    
+//    click = rainbowRoom // if slippers worn 551 point game
+      
+    
+    floorObj = concreteFloor
 ;
 
 + Decoration 'pair of 1 foot diameter sewer pipes[n]; ;pipe; it them'
     
 ;
 
-safe: Fixture, OpenableContainer 'steel safe; steel (wall) combination ;door'
+
+
++ ProxyDest, Enterable 'pantry;open;doorway'
+    "The pantry is a small room through an open doorway on the north side of the building. "
+    connector = pantry
+    game551 = true
+    
+    dobjFor(LookIn) asDobjFor(Enter)
+    dobjFor(Search) asDobjFor(Enter)
+    dobjFor(GoThrough) asDobjFor(Enter)
+    cannotPutInMsg = 'That would be easier if you first took {the dobj} into the pantry. '
+    
+//    iobjFor(PutIn)
+//    {
+//        preCond = [actorInPantry]
+//        verify() {}
+//        check() { safe.checkIobPutIn(); }
+//        action()
+//        {
+//            gDobj.actionMoveInto(pantry);
+//        }
+//    }
+                   
+;
+
+
++ safe: Fixture, OpenableContainer 'steel safe; steel (wall) combination ;door'
     desc
     {
         "It's a very solid-looking combination safe, embedded in
@@ -371,16 +421,213 @@ safe: Fixture, OpenableContainer 'steel safe; steel (wall) combination ;door'
         
     }
     
+    specialDesc = "A steel safe is embedded in the wall. "    
     
+    game551 = true    
+    isHidden = true
+    bulkCapacity = 1000
+    noBird = true
+    
+    lockability = indirectLockable
+    indirectLockableMsg = 'You\'ll have to tell me how to do that. '
+    
+    dobjFor(UnlockWith)
+    {
+        verify()
+        {            
+            if(!isLocked)
+                illogicalAlready('The safe is already unlocked! ');
+            else if(gVerifyIobj.ofKind(Key))
+                illogical('This is a combination safe. {The subj iobj} won\'t help. ');
+            else if(gVerifyIobj != safeDial)
+                illogical('{I} {can\'t} unlock a combination safe with {a iobj}. ');
+               
+        }
+        
+        check()
+        {
+            if(gIobj == safeDial)
+                "It's obvious that the dial has something to do with opening
+                the safe, but you'll have to be more specific than that! ";
+        }
+    }
+    
+    dobjFor(OpenWith) asDobjFor(UnlockWith)
+    
+    dobjFor(Close)
+    {
+        action()
+        {
+            inherited();
+            "The safe's door clicks shut. ";
+            makeLocked(true); // not in TADS 2 code but seemingly implied.
+            
+        }
+    
+    }
+    
+    iobjFor(PutIn)
+    {
+        check()
+        {
+            if(gDobj.isLong)
+                "{The subj dobj) {is} too long to go into {the iobj}. ";
+            else if(gDobj.isLarge)
+                "{The subj dobj) {is} too large to go into {the iobj}. ";
+            else if(gDobj.isHuge)
+                "{The subj dobj) {is} far too large to go into {the iobj}. ";
+            else if(gDobj == mingVase)
+                "{The subj dobj} won't quite fit {in iobj). ";
+            else if(gDobj == wickerCage && littleBird.isIn(wickerCage))
+                "Are you kidding?  Do you want to suffocate the poor bird? ";
+            else if(gDobj.ofKind(PendantItem) && gDobj != brokenPendant)
+                "A strange feeling of insecurity comes over you as you place
+                {the dobj} in the safe.  Somehow you <i>know</i> that
+                it belongs with you, not in there! ";      
+            else
+                inherited();
+        }
+    }
+    
+    hidden = true
+    
+    checkReach(actor)
+    {
+        if(hidden)
+            "You'd better remove the poster first. ";
+    }
+;
+// In this implementation, the combination is a random set of
+// three different numbers from 1 to 50.  Turning the dial to
+// the zero position resets the dial.  A reset is needed whenever
+// the dial has been turned to an incorrect number.
+
++ safeDial: Fixture, NumberedDial 'dial'
+    "It's just to the right of the safe's door. You notice that the 0 setting is marked
+    <q>Reset</q>. "
+    
+    isHidden = safe.isHidden
     game551 = true
-    isHidden = !global.game551
+    maxSetting = 50
+    minSetting = 0
+    
+    combo = [11, 22, 33] // initial value for testing
+    currentCombo = []
+    comblen = combo.length
+    comboSet = nil
+    
+    abscounter = 0 // absolute counter of settings
+    
+    
+    makeSetting(val)
+    {
+        if(safe.isOpen)
+        {
+            "The dial won't turn while the safe's open. ";
+            return;
+        }
+        
+        if(!comboSet)
+            setComb();
+        
+         /* 
+          *   Limit the scope for trial and error.  Before the player learns the combination, the
+          *   dial can be set to a nonzero value up to 15 times, allowing (at most) five
+          *   combinations to be tried.
+          */
+        
+        if(abscounter > (comblen * 5) && val != '0' && !safeCombination.seen && !safe.hasOpened)
+        {
+            "This is getting ridiculous!  It's highly unlikely that
+            you could open the safe by trial and error, so I suggest
+            that you wait until you've found the combination. ";
+            return;
+        }
+        
+        local num = toInteger(val);
+        inherited(val);
+        
+        /* reset */
+        if(val == '0')  
+        {
+            currentCombo = [];
+            "You hear a <i>clunk</i> as the mechanism resets itself. ";
+        }
+        else
+        {            
+            currentCombo += toInteger(num);
+            local len = currentCombo.length;
+            local ok = true, i;
+            abscounter++;
+            
+            
+            if(len > comblen)
+                ok = nil;
+            else
+            {
+                for(i = 1; i <= len; i++)
+                {
+                    if(currentCombo[i] != combo[i])
+                    {
+                        ok = nil;
+                        break;
+                    }
+                }
+            }
+              
+            if(ok)
+            {
+                if(safeCombination.seen || safe.hasOpened || len == comblen)
+                    "You hear a satisfying <i>click</i>";
+                else
+                    "You hear a <i>click</i>, but you have no way
+                        of knowing whether the setting is correct";
+                
+                if(len == comblen)
+                {                    
+                    safe.makeLocked(nil);                    
+                    safe.makeOpen(true);
+                    if(rareBook.undiscovered)
+                    {
+                        global.checklist += rareBook;
+                        rareBook.undiscovered = nil;
+                    }
+                     ", and the safe's door smoothly swings open";
+                    if(safe.contents.length > 0)
+                        ", revealing <<list of safe.contents>>";                    
+                    "!";
+                }                
+            }
+            else
+            {
+                if(safeCombination.seen || safe.hasOpened)                     
+                    "You hear an unsatisfying <i>click</i>.
+                    Maybe if {i} rubbed {my} fingers with sandpaper ...";                
+                else                    
+                    "You hear a <i>click</i>, but you have no way
+                    of knowing whether the setting is correct. ";       
+                
+            }               
+        }      
+    }
+    
+    /* Set a random comination */
+    setComb()
+    {
+        combo = [0, 0, 0];
+        for(local i in 1..3)
+        {
+            combo[i] = rand(maxSetting) + 1;
+        }
+        comboSet = true;
+    }
     
 ;
 
-safeDial: Fixture, Dial 'dial'
-    
-    isHidden = safe.isHidden
+concreteFloor: Floor 'floor; concrete; ground'
+    "It's just an ordinary concrete floor. "
 ;
+
 
 /* 4 */
 inAValley: OutsideRoom 'In a Valley'
@@ -417,9 +664,96 @@ inForest1: OutsideRoom 'In Forest'
     forest: VarDest, TravelConnector
     {
         calcDest = rand(100) < 50 ? inForest1 : inForest2
+    }    
+;
+
++ billboard: Fixture 'billboard; large'
+    desc()
+    {
+        
+        "The billboard reads:\n
+        <q>Visit Beautiful Colossal Cave.  Open Year Around.  Fun for
+        the entire family, or at least for those who survive.</q>\b
+        Below the headline is an impossibly complicated map showing how
+        to find Colossal Cave.  Not that it matters, because all the
+        directions are written in Elvish.  However, one illustration
+        catches your attention.  It seems to show a group of elves
+        involved in a strong-man competition.  For some reason, they
+        appear to be gorging themselves on blueberries!<.p>";
+        
+        if(blue1.isIn(nil))
+        {
+            // blueberries added by DJP
+            "You notice a blueberry bush nearby. ";
+            
+            blue1.moveInto(location);
+        }
     }
     
+    game551 = true
+    
 ;
+
+class Blueberries: CanPick, Fixture 'blueberries;blue delicious ;berries berry bush bushes;them'    
+    "The berries look delicious!  You're tempted to sample them."
+    noun = 'berries' 'blueberries' 'bush' 'bushes'
+    adjective = 'blue'
+       
+    
+    count = 0
+
+    dobjFor(Eat) asDobjFor(Take)
+    
+    dobjFor(Take)
+    {
+        verify() {}
+        check()
+        {
+            if(gActor.blueberriesEaten >= 2)             
+                "You reach for the blueberries, but then have second
+                thoughts.  For some reason you seem to have lost your
+                appetite! ";
+        }
+        
+        action()
+        {
+            "You take a few of the blueberries, and can't resist eating
+            them ... \n
+            MMMM! They're delicious, and now you somehow feel a little
+            stronger than you did before.";
+            
+            // Note that the player is allowed to carry more weight, but
+            // not more bulk.  The sack must be carried.
+            gActor.weightCapacity += 2;
+            
+            gActor.blueberriesEaten++ ;
+            
+            count++;
+        }
+    }    
+;
+
+blue1: Blueberries 
+    desc
+    {        
+        if (count >= 2)
+            "The bush has been picked clean now - there aren't any berries
+            left. ";
+        else
+            "Someone else has almost picked the bush clean, but there are
+            still a few left.  You're tempted to sample them. ";
+    }
+    
+    altVocab = 'blueberry bush; blue berry; blueberies berries; it them'
+    useAltVocabWhen = (count >= 2)
+    
+    game551 = true
+    
+    specialDesc = "There is blueberry bush here. "
+;
+    
+    
+
 
 /* 6 */
 inForest2: OutsideRoom 'In Forest'
@@ -1850,6 +2184,23 @@ inDustyRockRoom: DarkRoom 'In Dusty Rock Room'
 
 + Fixture 'dusty rocks;dirty;stones boulderns stone boulder rock;them'
     "They're just rocks.  (Dusty ones, that is.) "
+;
+
+safeCombination: Fixture 'carved inscription; writing; combination letters characters; it them'
+    "They are just 2-inch high characters, carved into the rock. "
+    
+    readDesc
+    {
+        local i;
+        "They read: ";
+        for (i = 1; i <= safeDial.comblen; i++) 
+        {
+            say(safeDial.combo[i]); 
+            if (i < safeDial.comblen) "-";
+        }
+        ". ";        
+    }
+   
 ;
 
 /* 40 is a message */

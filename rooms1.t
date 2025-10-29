@@ -738,6 +738,20 @@ beachShelf: OutsideRoom
 beach: OutsideRoom
 ;
 
+/* 238 */
+pantry: IndoorRoom 'In the Caretaker\'s Pantry'
+    "{I}{\'m} in the Caretaker's Pantry. "   
+    
+    game551 = true
+    
+    south = insideBuilding
+    out asExit(south)
+    nolampwarn = true
+    entrance = insideBuilding
+;
+
+
+
 
 /* 239 */
 riseOverBay: OutsideRoom 'On a Small Rise Over the Bay'

@@ -9,8 +9,6 @@
  *   other versions of the game.
  */
 
-pantry: IndoorRoom 'Pantry'
-;
 
 
 

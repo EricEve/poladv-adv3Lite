@@ -623,6 +623,7 @@ DefineTVerbS(Play, 'play' singleDobj, 'play', 'playing');
 DefSpecialTravel(Xyzzy, &xyzzy, 'xyzzy') darkTravelAllowed = true;
 DefSpecialTravel(Plugh, &plugh, 'plugh') darkTravelAllowed  = true;
 DefSpecialTravel(Road, &road, 'road');    
+DefSpecialTravel(PantryVerb, &to_pantry, 'pantry');  
 DefSpecialTravel(Building, &building, 'building' | 'house');    
 DefSpecialTravel(Valley, &valley, 'valley');  
 //DefSpecialTravel(ClimbVague, &climb, 'climb');   - now defined in library
@@ -667,7 +668,7 @@ DefSpecialTravel(Slide, &slide, 'slide');
 DefSpecialTravel(Chimney, &chimney, 'chimney');
 DefSpecialTravel(Phuce, &phuce, 'phuce') darkTravelAllowed = true;
 DefSpecialTravel(Thunder, &thunder, 'thunder');
-DefSpecialTravel(Smichel, &smichel, 'smichel');
+DefSpecialTravel(Smichel, &smichel, 'smichel'|'saint-michel');
 DefSpecialTravel(GateAction, &gate, 'gate');
 DefSpecialTravel(Phleece, &phleece, 'phleece');
 

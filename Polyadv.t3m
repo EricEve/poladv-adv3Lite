@@ -27,6 +27,7 @@
 -source rooms1
 -source map2
 -source items
+-source ccr-itm1
 -source endgame
 -source npcs
 -source verbs
