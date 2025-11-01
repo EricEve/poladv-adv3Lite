@@ -6,7 +6,7 @@ AuthorEmail: Eric Eve <eric.eve@outlook.com>
 Desc: A TADS3/adv3Lite port of the TADS 2 port of polyadv, itself a multi-version port based on the Colossal Adventure game by Crowther and Woods.
 HtmlDesc: A TADS3/adv3Lite port of the TADS 2 port of polyadv, itself a multi-version port based on the Colossal Adventure game by Crowther and Woods.
 Version: 1
-ReleaseDate: 2025-10-29
+ReleaseDate: 2025-11-01
 LicenseType: Freeware
 CopyingRules: Nominal cost only; compilations allowed
 PresentationProfile: Default

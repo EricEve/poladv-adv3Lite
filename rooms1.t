@@ -5,6 +5,24 @@
 
 /* Additional rooms for 551-point version */
 
+/* Mix-in class for rooms with a brassKey property */
+class KeyCheck: object    
+    brasskey = smallKey
+    roomDaemon
+    {
+        local obj;
+        for(obj in [tinyKey, smallKey, largeKey])
+        {
+           if(obj.isIn(self) && obj != brassKey)
+            {
+                brassKey.moveInto(obj.location);
+                obj.moveInto(nil);
+            }
+        }
+        inherited();
+    }
+;
+
 /* Note the following change from the Fortran version.  For consistency,
 'building' from a surface location takes us back to At_End_Of_Road, rather
 than Inside_Building. */
@@ -142,12 +160,15 @@ throneRoom: DarkRoom 'At Entrance to Throne Room'
 
 
 
-+ Distant 'throne; elfish elfin intricate'
++ distantThrone: Distant 'throne; elfish elfin intricate'
     "It's at the far end of the room.  I suggest that {i} {get}
         closer if {i} want{s/ed} to examine it! "
     
     game551 = true
     vcoabLikelihood = 10
+    
+    /* The disant throne represents the same object as the actual throne */
+    getFacets = [throne]
 ;
 
 /* 
@@ -194,7 +215,117 @@ throneRoomEast: DarkRoom 'At East Side ot Throne Room'
     
 ;
 
-+ throne: Fixture, Chair 'throne; elfin elvish intricate'
++ throne: Fixture, Chair 'throne; elfin elvish intricate small'
+    desc()
+    {
+        "It's rather small, but just large enough for you to sit
+        on it.  It is covered in intricately-carved elvish designs. ";
+//        if(spelunker_today.read) {
+//            "You recognize it as the throne pictured in the magazines,
+//            but it's much smaller than you expected it to be! ";
+     }
+    
+    game551 = true
+    
+    specialDesc = "A small throne sits near the east end of the hall. "
+    
+    /* The disant throne represents the same object as the actual throne */
+    getFacets = [distantThrone]
+    
+    dobjFor(Board)
+    {
+        // If we sit on the throne, the result depends on whether we have
+        // proof of royal blood.  If not, the game is restarted and the
+        // player moved to the Hall of Mists and various objects to the
+        // Rainbow Room.  The slippers are moved, and this provides another
+        // route to the Gothic Cathedral.  If the crown is worn, the rod is
+        // upgraded if carried.  A picture in the magazines gives a clue
+        // to this.
+        action()
+        {
+            inherited();
+            // Temporary stuff for testing framework
+            if(crown.wornBy == gActor)
+            {
+                "{My} crown glows, and {i} really
+                {feel} as if {i} <i>{am}</i> the mountain king! ";      
+                
+                if (!blackRod.isupgraded) 
+                {
+                    if (blackRod.isDirectlyIn(gActor))
+                        "Your black rod also glows and issues a strange
+                        humming noise.
+                        You notice that the star at the end is now shiny,
+                        as if it's brand new! ";
+                    else if(blackRod.isIn(gActor))
+                        "You hear a strange humming hoise, but you're not
+                        quite sure where it's coming from. ";
+                    if (blackRod.isIn(gActor))
+                        blackRod.upgrade(true);
+                }
+                
+                // CODE FOR GREY ROD TO FOLLOW
+            }
+            else
+            {
+                local newscore, diffscore;
+                
+                "A strange cloud of green smoke then
+                envelops you, and a strange tune seems to go through your head;
+                you then recognize it as 'Somewhere, Over the Rainbow.'
+                Coughing and spluttering, you open your eyes and find {i} {am} now ...\b\b";
+                
+                specialRestart.isActive = true;
+                specialRestart.restartProp = &throneRestart;
+                specialRestart.turncount = gTurns;
+                // score adjustment
+                newscore = global.startscore + global.farinpoints;
+                if(global.novicemode)
+                    newscore += global.novicepoints;
+                if(global.nodwarves)
+                    newscore -= 5;
+                diffscore = newscore - libScore.totalScore;
+                addToScore(diffscore, 'squatting on the throne');
+                /* 
+                 *   Presumably the point of the foregoing is to notify the plaeyer of the score
+                 *   change; so we need to do that manually here as it won't be handled by the end
+                 *   of turn score notification after the restart.
+                 */
+                scoreNotifier.checkNotification();
+                specialRestart.notifyScore = scoreNotifySettingsItem.isOn;
+                
+                                
+                specialRestart.vNumber = global.vNumber;
+                specialRestart.novicemode = global.novicemode;
+                specialRestart.randomized = global.randomized;
+                specialRestart.nodwarves = global.nodwarves;
+                specialRestart.verbose = gameMain.verbose;
+                specialRestart.safeloc = safe.location;
+                specialRestart.safecombseen = safeCombination.seen;                
+                specialRestart.comboSet = safeDial.comboSet;
+                specialRestart.safeopened = safe.hasOpened;
+                specialRestart.safehidden = safe.hidden;
+                specialRestart.safeisHidden = safe.isHidden;
+                
+                specialRestart.throneRoomSeen = throneRoom.seen;
+                specialRestart.riverStyxESeen = riverStyxE.seen;
+                specialRestart.pantrySeen = pantry.seen;
+                
+                specialRestart.knollSeenit = knoll.seenit;
+                specialRestart.ROBseenit = riseOverBay.seenit;
+                specialRestart.OCseenit = outerCourtyard.seenit;
+                specialRestart.blue1loc = blue1.location;
+                
+                if(global.game701p)
+                {
+                    // TO FOLLOW
+                }
+                
+                Restart.doRestartGame();
+              }
+                
+        }
+    }
     
 ;
 
@@ -296,26 +427,23 @@ knoll: OutsideRoom 'On Grassy Knoll'
     }
     
     seenit = nil
-//    phuce = {
-//        local actor := getActor(&travelActor);
-//        phuce_messages.smaller; 
-//        // If the clover hasn't been picked, leave it alone
-//        if (not clover.moved) clover.isfixed := true;
-//        actor.roomMoveTravel(&transmove, denseJungle);
-//        if (not clover.moved) clover.isfixed := nil;
-//        return nil;
-//    }
     
     phuce()
     {
         phuce_messages.smaller; 
+        
+        // If the clover hasn't been picked, leave it alone
+        if(!clover.moved)
+            clover.isFixed = true;
         roomMove(getOutermostRoom, denseJungle);
+        if(!clover.moved)
+            clover.isFixed = nil;
         return denseJungle;        
     }
 ;
 
 
-denseJungle: OutsideRoom 'In a Dense Jungle'    
+denseJungle: KeyCheck, OutsideRoom 'In a Dense Jungle'    
         "You're in a dense jungle, surrounded by large leaves which tower above
         your head.  Progress may be possible to the north, east or 
         southwest. "
@@ -335,7 +463,7 @@ denseJungle: OutsideRoom 'In a Dense Jungle'
     sober = true
     
 /* size of brass key as seen in this room */
-//    brasskey = large_key
+    brasskey = largeKey
 //    phuce = {
 //        local actor := getActor(&travelActor);
 //        phuce_messages.larger; 
@@ -380,7 +508,7 @@ saltMarshEdge: OutsideRoom 'At Edge of Salt Marsh'
     building = atEndOfRoad    
 ;
 
-MultiLoc, Decoration 'mud; salty'
+saltmud: MultiLoc, Decoration 'mud; salty'
     "It's just salty mud.  No use for anything. "
     notImportantMsg = 'It\'s no good for anything. '
     
@@ -467,7 +595,7 @@ brokenRocks: OutsideRoom 'At Broken Rocks'
     }
     
     down = thunderHole
-   up = oceanVista
+    up = oceanVista
     south = sandyBeach
     building = atEndOfRoad
     
@@ -564,13 +692,11 @@ seaWater: MultiLoc, RoomLiquid 'sea water'
 
 
 /* 158 */
-topOfSteps: OutsideRoom 'At Top of steps (behind Thunder Hole)'
+topOfSteps: KeyCheck, IndoorRoom 'At Top of steps (behind Thunder Hole)'
     "{I} {am} at the top of some arched steps.  On the east side there
     is a blank wall with a tiny door at the base and a shelf overhead.  On
     the other side a westward passage leads to the sea. "
-    
-    isIndoors = true
-    regions = [outdoors, indoors]
+       
     
     game551 = true
     
@@ -581,25 +707,278 @@ topOfSteps: OutsideRoom 'At Top of steps (behind Thunder Hole)'
     down asExit(west)
     
     out = thunderHole
-//    phuce = {
-//        local actor := getActor(&travelActor);
-//        phuce_messages.smaller; 
-//        actor.roomMoveTravel(&transmove,Ledge_By_Door);
-//        // also move the objects on the other side of the door
-//        roomMove(Grotto_West,Underground_Sea);
-//        return ledgeByDoor;
-//    }
+    
+    phuce: TravelConnector  ->ledgeByDoor
+    { 
+        noteTraversal(actor)
+        {
+            phuce_messages.smaller;
+            roomMove(topOfSteps, ledgeByDoor);
+            roomMove(grottoWest, undergroundSea);
+        }
+    }
+
     climb = "The wall is too smooth to climb. "
     up = climb
     ledge =  "The shelf is beyond {my} reach. "
     in asExit(east)
-    east = "{I} can't fit through a six-inch door! "
+    east = smallDoor
     entrance asExit(east)
         
+        
 //    myhints = [Elfindoorhint]
-    listendesc = "You hear a booming sound, caused by the surf pounding
+    listenDesc = "You hear a booming sound, caused by the surf pounding
     against the outer rocks of the cave. "
     // This property suppresses warnings about leaving the lamp on.
+    nolampwarn = true
+;
+
+
++ archedSteps: StairwayDown, Surface 'steps; arched of[prep];flight;them'
+    "It's just a normal flight of steps. "
+    count = 0
+    fullcount = 0    
+    
+    cakefind = nil
+     
+    
+    dobjFor(LookIn)
+    {
+        action()
+        {
+            // Check to see if the player has tried to eat the mushroom when 
+            // no cakes are available. 
+            if(cakefind) 
+            {
+                count++;      // cakes found by actually searching the steps
+                fullcount++;  // includes all hidden cakes found on the steps
+                "There's nothing on the steps.  ";
+                switch(count) {
+                case 1:
+                    "And yet, you have a hunch that you will find a cake if you
+                    look carefully enough.  So you search each step with great
+                    care - and find a cake, hidden in a crevice between a step and
+                    the cave wall!  You take the cake. ";
+                    break;
+                case 2:
+                    "And yet, you found a cake the last time, so you search the
+                    steps again.  Once again, your patience is rewarded when you
+                    notice another cake, hidden in the gap behind a slightly
+                    loose step!  You take the cake. ";
+                    break;
+                default:
+                    "And yet, you've spotted a total of <<fullcount>> cakes, 
+                    all hidden on the steps, so maybe there are more!
+                    You peer into every nook and cranny, and
+                    your patience is rewarded again.  Yet another cake, 
+                    hidden in a gap like the others!  You take the cake. ";
+                }
+                if (!cakes.knowdrop) 
+                {
+                    cakes.knowdrop = true;
+                    "Maybe you dropped it when you took the tiny cakes off
+                    the shelf. ";
+                }
+                cakes.moveInto(gActor);
+                self.cakefind = nil;
+                "<.p>";
+                if(listableContents.length > 0)
+                    inherited();             
+                
+            }
+            else inherited();
+        }
+    }
+;
+   
+   
+    
+    
+;
+
+/* the shelf (when your size is normal */
++ highShelf: Distant 'high shelf'
+    "I can't tell {me} much about it, because it's so high up. "
+    
+    iobjFor(ThrowAt)
+    {
+        check()
+        {
+            if((gDobj.isLarge || gDobj.isHuge) && !mushrooms.isEaten)
+                "{The subj dobj} [is} too large. ";
+        }
+        
+        action()
+        {
+            "{The subj dobj} land{s/ed} on the shelf, out of reach. ";
+            gDobj.actionMoveInto(shelf);
+        }
+    }
+;
+
+class ElfinDoor: DSDoor    
+    stateDesc()
+    {
+        "The door is ";
+        if (isOpen) "open";
+        else {
+            "closed"; 
+            if (isLocked) " and locked";
+            else " but unlocked";
+        }
+        ". ";
+    }
+       
+    nothingThruMsg = '{I} {see} nothing of note through <<theName>>. '
+    thruDesc1 = "<<nothingThruMsg>>"
+    thruDesc2 = "<<nothingThruMsg>>"
+    
+    dobjFor(LookThrough)
+    {
+        verify()
+        {
+            if(!isOpen)
+                illogicalNow('{I} {can\'t} see anything through {the dobj}, since {he dobj}{\'s}
+                    closed. ');                    
+        }
+        
+        action()
+        {
+            if(inRoom1)
+                thruDesc1;
+            else
+                thruDesc2;   
+        }         
+    }
+    
+    doorList = [smallDoor, ironDoor]
+    
+    /* 
+     *   Presuambly the two ElfinDoors are meant to be the same physical door, so although the TADS
+     *   2 code doesn't seem to anything about it, their locked and opened status shoulf be kept in
+     *   sync.
+     */
+    
+    makeOpen(stat)
+    {
+        inherited(stat);
+        if(propType(&getFacets) == TypeList && getFacets.length > 0)
+            getFacets[1].makeOpen(stat);
+            
+    }
+    
+    makeLocked(stat)
+    {
+        inherited(stat);
+        if(propType(&getFacets) == TypeList && getFacets.length > 0)
+            getFacets[1].makeLocked(stat);
+            
+    }
+    
+    
+    
+;
+
+smallDoor: ElfinDoor 'tiny door' @topOfSteps @grottoWest
+    "It's a tiny door, about six inches high.  A cat might be able
+    to get through, but {i} {can't}. "
+    
+    keyList = [smallKey]
+    
+    canTravelerPass(actor) { return nil; }
+    explainTravelBarrier(traveler, connector)
+    {
+        "{I} {can't} fit through a six-inch door! ";
+    }
+    
+    thru1Desc1()
+    {
+        "{I} peer{s/ed} through the tiny doorway.  {I} {see} a
+        large flooded cavern, lit by a strange bluish glow. ";
+        if (boat.isIn(grottoWest))
+            "There is a small boat on the western shore,
+            near the door.  ";
+    }    
+    
+    getFacets = [ironDoor]
+;
+
+ironDoor: ElfinDoor 'wrought-iron door' @ledgeByDoor @undergroundSea
+    "It's a large and very substantial door, about eight feet high. "
+    
+    keyList = [largeKey]
+    
+    thruDesc1()
+    {
+        "{I} look{s/ed} through the open doorway.  {I} {can} see the
+        shore of a vast underground sea, lit by a blue glow. ";
+        if (boat.isIn(grottoWest))
+            "A high wooden structure - possibly a ship - extends out
+            of the water.  ";
+    }   
+    
+    getFacets = [smallDoor]
+    travelBarriers = [noBoatBarrier]    
+;
+
+/* 159 */
+crampedChamber: KeyCheck, IndoorRoom 'Cramped Chamber'
+    "{I} {am} in a low cramped chamber at the back of a small cave.
+    There is a shelf in the rock wall at about the height of 
+    {my} shoulder."
+
+    
+    game551 = true
+    sober = true // no getting out by drinking wine
+    
+    brassKey = tinyKey
+    
+    out = "{I} {am} now too big to leave the way {i} came in. "
+    west asExit(out)
+    
+    
+    phuce =  "The shelf appears to rise above your
+        head for a few seconds, before returning to the level of your
+        shoulder.  It looks as if you'll need to find another way to
+        return to your normal size. "
+        
+    
+    // This property suppresses warnings about leaving the lamp on.
+    nolampwarn = true
+;
+
++ shelf: Fixture, Surface 'shelf; rock'
+    game551 = true
+    iobjFor(ThrowAt) asIobjFor(PutOn)
+
+;
+
+/* 160 */
+ledgeByDoor: KeyCheck, IndoorRoom 'On Ledge by Wrought Iron Door'
+    "{I} {am} on a wide ledge, bounded on one side by a rock wall,
+    and on the other by a sheer cliff.  The only way past is through
+    a large wrought-iron door. "
+    
+    game551 = true
+    
+    east = ironDoor
+    in asExit(east)
+    brasskey = largeKey
+    
+    phuce: TravelConnector -> topOfSteps
+    {
+        noteTraversal(actor)
+        {
+            phuce_messages.larger; 
+            roomMove(ledgeByDoor, topOfSteps);
+            roomMove(undergroundSea, grottoWest);
+        }
+    }
+    
+    west = 'The cliff is unscalable. '
+    climb = west
+    down = west
+    jump = cliffDemise2
     nolampwarn = true
 ;
 
@@ -624,6 +1003,525 @@ phuce_messages: object
     larger = "{I} {am} again overcome by a sickening vertigo, but
         this time everything around {me} is shrinking...Shrinking...\b";
 
+
+
+
+eat_messages: object // issued when size-changing foods are eaten
+/* 163 */
+    smaller =  "{I} {am} closing up like an
+        accordian....shrinking..shrinking. {I} {am} now {my}
+            normal size.<.p>"
+    
+
+/* 164 */
+    larger = "{I} {am} growing taller, expanding like a telescope!
+        Just before {my} head strikes the top of the chamber, the mysterious
+    process stops as suddenly as it began. <.p>"
+;
+    
+/* 165 */
+cliffDemise2: Room 'Bottom of Cliff'
+    "{I}{'m} at the bottom of the cliff with a broken neck.<.p><<die()>> "
+;    
+
+/* 
+ *   The TADS 2 code uses separate direction and boat_direction properties to enforce travel by
+ *   both. In TADS 3 it makes more sense to enforce this with a TravelBarrier.
+ */
+
+boatBarrier: TravelBarrier
+    /* Only allow travel if the traveler is or is the boat */
+    canTravelerPass(traveler, connector)
+    {
+        return traveler.isOrIsIn(boat);
+    }
+    
+    explainTravelBarrier(traveler, connector)
+    {
+        "{I} {can't} swim.  {I}'d best go by boat. ";
+    }    
+;
+
+poleCheck: TravelBarrier
+    canTravelerPass(traveler, connector)
+    {
+        return pole.isIn(boat);
+    }
+    
+    explainTravelBarrier(traveler, connector)
+    {
+        "Casting yourself adrift without a paddle is a bad idea.
+        The boat's oars were stolen by the dwarves to play
+        bing-bong. (That's dwarvish ping-pong -- with rocks!). 
+        {I}'d better bring something else to propel the boat.";
+    }
+;
+
+/* 
+ *   Presumably there'll be some directions the actor can't go in without first getting out of the
+ *   boat.
+ */
+noBoatBarrier: TravelBarrier
+    canTravelerPass(traveler, connector)
+    {
+        return !traveler.isOrIsIn(boat);
+    }
+    
+    explainTravelBarrier(traveler, connector)
+    {
+        "{I} {can\'t} go thay way by boat. ";
+    }  
+;
+
+
+/* the lake */
+
+grottoLake: MultiLoc, Decoration 'lake;large clear deep;water'  
+       "It's a large lake, almost covering the floor of the
+        chamber.  The reflection of the light from the lake fills the
+        room with a bluish glow.  The water is very clear and very deep --
+        you won't be able to cross it except by boat."
+    
+    locationList = [grottoWest, blueGrottoEast, gravelBeach, bubbleChamber, darkCove]
+    
+    decorationActions = [Examine, Swim]
+    dobjFor(Swim)
+    {
+        verify() { illogical('{I} {can\'t} swim. '); }
+    }
+;
+
+
+/* 166 */
+grottoWest: NoNPC, Room 'At West Wall of Blue Grotto'
+    "{I} {am} at the western tip of the Blue Grotto.  A large lake
+    almost covers the cavern floor, except for where {i} {am} standing.
+    Small holes high in the rock wall to the east admit a dim light.  The
+    reflection of the light from the water suffuses the cavern with
+    a hazy bluish glow. "
+        
+    game551 = true
+    // no getting out by drinking wine
+    
+    in asExit(west)
+    out asExit(west)
+    west =  "{I} {can't} fit through a six-inch door! " 
+
+    
+/* Directions for use when in the boat */
+    east: TravelConnector ->blueGrottoEast
+    {
+        travelBarriers = [boatBarrier, poleCheck]
+        noteTraversal(actor)
+        {
+            if(pole.isIn(boat))
+                poling_messages.calm;
+        }
+    }
+    
+    cross asExit(east)
+    across asExit(east)
+    northeast: TravelConnector -> bubbleChamber
+    {
+        travelBarriers = [boatBarrier, poleCheck]
+    }
+    
+    south: TravelConnector -> gravelBeach
+    {
+        travelBarriers = [boatBarrier, poleCheck]
+        noteTraversal(actor)
+        {
+            if(pole.isIn(boat))
+                poling_messages.dark;
+        }
+    }
+    
+    north: TravelConnector -> darkCove
+    {
+        travelBarriers = [boatBarrier, poleCheck]
+        noteTraversal(actor)
+        {
+            if(pole.isIn(boat))
+                poling_messages.blue;
+        }
+    }
+    
+    phuce  
+    {    
+        phuce_messages.smaller; 
+        gActor.roomMoveTravel(&transmove,undergroundSea);
+        // also move the objects on the other side of the door
+        roomMove(topOfSteps, ledgeByDoor);        
+    }    
+;
+
+/* dummy object */
+oars: Thing 'oars;;oar;them it'
+;
+
+
+/* 167 */
+
+/* The original spoke of a 'wooden structure', but it seems more likely that
+the adventurer would recognize it as a large ship. */
+
+undergroundSea: NoNPC, Room 'At Underground Sea'
+    "{I} {am} on the shore of an underground sea.  The way west is
+     through a wrought-iron door."
+    
+    game551 = true
+    sober = true // no getting out by drinking wine
+    
+    phuce
+    {       
+        phuce_messages.larger; 
+        actor.roomMoveTravel(&transmove,grottoWest);
+        
+        // also move the objects on the other side of the door
+        roomMove(ledgeByDoor, topOfSteps);        
+    }
+       
+    west = ironDoor
+    out asExit(west)
+    in asExit(west)
+    
+    east: TravelBarrier    
+    {
+        canTravelerPass(traveler) { return nil; }
+        explainTravelBarrier(traveler, connector)
+        {
+            if (boat.isIn(grottoWest))
+                "{I} {can\'t} swim, and there's no way into
+                the ship, so {i} couldn't possibly cross this sea.";
+            else
+                "{I} couldn't possibly cross this sea without a large ship.";
+        }
+        
+        /* There's not much point listing a direction the player can't travel in. */
+        isConnectorListed = nil
+        
+    }
+    
+    cross asExit(east)
+    over asExit(east)
+    across asExit(east)
+    
+    brassKey = largeKey    
+;
+
++ ship: Fixture 'vast wooden ship'
+    "Despite its vast scale, it is constructed like an
+    old-fashioned wooden rowing boat. "
+    
+    specialDesc = "A high wooden ship of vast
+        proportions extends out of the water to the east.  There
+        doesn't appear to be any way into the ship. "
+    
+    /* The 'ship' isn't here if the boat isn't in the corresponding location */
+    isHidden = !boat.isIn(grottoWest)
+    cannotEnterMsg = '{I} {can\'t} see any way to enter the ship. '
+    cannotBoardMsg = cannotEnterMsg
+    cannotClimbMsg = 'Even with rock-climbing equipment,
+        {i}\'d have great difficulty climbing the sheer hull of the ship. '
+    cannotTakeMsg = 'You must be joking! '
+;
+
+
+/* 168 */
+blueGrottoEast: Room 'At East Side of Blue Grotto'
+    "{I} {am} on the eastern shore of the Blue Grotto.  To the west
+    a large lake almost fills the cavern floor, and an ascending
+    tunnel disappears into the darkness to the SE."
+    
+    game551 = true
+    
+    southeast: TravelConnector ->windyTunnel
+    {
+        travelBarriers = [noBoatBarrier]
+    }
+    
+    up asExit(southeast)
+    passage asExit(southeast)
+    
+    north: TravelConnector -> bubbleChamber
+    {
+        travelBarriers = [boatBarrier, poleCheck]        
+    }
+    
+    south: TravelConnector -> gravelBeach
+    {
+        travelBarriers = [boatBarrier, poleCheck]        
+    }
+    
+    west: TravelConnector -> grottoWest
+    {
+        travelBarriers = [boatBarrier, poleCheck]        
+    }
+    
+    cross asExit(west)
+    over asExit(west)
+    across asExit(west)
+    
+    
+    
+;
+
+/* 169 */
+bubbleChamber: NoNPC, Room 'In Bubble Chamber'
+    desc
+    {
+        "{I} {am} at a high rock on the NE side of a watery chamber at the
+        mouth of a small brook. An unknown gas bubbles up through the water from
+        the chamber floor. ";
+        if (!grottoWest.seen)        
+            "To the southwest lies the Blue Grotto, a large chamber lit
+            by a bluish light.  A lake almost completely covers the
+            floor. ";           
+        else 
+            "A bluish light can be seen to the southwest. ";        
+    }
+    
+    
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    
+    south: TravelConnector -> blueGrottoEast
+    {
+        travelBarriers = [boatBarrier, poleCheck]        
+    }
+    
+    northwest: TravelConnector -> darkCove
+    {
+        travelBarriers = [boatBarrier, poleCheck]        
+    }
+    
+    southwest: TravelConnector -> grottoWest
+    {
+        travelBarriers = [boatBarrier, poleCheck]        
+    }
+    
+    east:TravelConnector -> muddyDefile
+    {
+        travelBarriers = [noBoatBarrier]
+    }
+    
+    passage asExit(east)
+    up asExit(east)
+    stream asExit(east)
+    upstream asExit(east)   
+;
+
+/* 170 */
+windyTunnel: DarkRoom 'In Windy Tunnel'
+    "{I} {am} in a windy E/W tunnel between two large rooms. "
+    
+    game551 = true
+    
+    east = batCave
+    up asExit(east)
+    west = blueGrottoEast
+    down asExit(east)
+;
+
+/* 171 */
+batCave: DarkRoom 'In Bat Cave'
+    desc
+    {
+        "{I} {am} in the Bat Cave.  The walls and ceiling are covered with
+        sleeping bats.  ";
+        if (guano.swept) 
+            "A mass of dry, foul-smelling guano has been swept
+            to one side of the room. ";
+        else 
+            "The floor is buried by a mass of dry, foul-smelling guano. ";
+        "The stench is overpowering. Exits to the NW and east.";
+    }
+    
+    northwest = windyTunnel
+    down asExit(northwest)
+    
+    east = tongueOfRock
+    up asExit(east)
+    
+    floorObj = batFloor
+    
+;
+
++ guano: Fixture 'some guano'
+    desc
+    {
+        if(swept)
+            "It's piled up against one side of the room";
+        else
+            "It covers the floor and smells absolutely terrible.  I
+            suggest that we make a move out of here as soon as possible. ";
+    }
+    
+    swept = nil
+    swept2 = nil
+    
+    smellDesc = "The stench is overpowering. Let's get out of here. "
+    cannotTakeMsg = 'I\'d rather not, thank you. '
+    dobjFor(PutIn)
+    {
+        verify() { illogical('I\'d prefer to leave the stinking guano where it is. '); }
+    }
+    
+    lookUnderMsg = 'There\'s nothing under the guano except the floor of the
+        cave.  Please get me out of here - I can\'t stand the smell. '
+    
+    dobjFor(LookIn)
+    {
+        verify() 
+        {
+            illogical('There\'s nothing hidden in the guano!  Can we go now,
+                please - the smell is making me feel unwell.');
+        }
+    }
+    
+    sweepmess() 
+    {        
+        if(swept) 
+        {
+            if (swept2) 
+                "If you think there's anything useful to do in this
+                room, you're barking up the wrong tree.  So I'll move
+                you on! ";            
+            else 
+            {
+                "Ignoring my advice, you attempt to sweep the guano once
+                again.  However, you are overwhelmed by a feeling of
+                nausea, and wisely decide to move on. ";
+                swept2 = true;
+            }
+            "<.p>";
+            if(gActor.getPreviousLocation == windyTunnel)
+                gActor.travelVia(tongueOfRock);
+            else
+                gActor.travelVia(windyTunnel);        
+            
+        }
+        else
+            "In the hope of finding a hidden treasure, you sweep the
+            guano to one side of the room, revealing nothing.  Vowing not
+            to be beaten, you then sweep it all to the other side - again
+            revealing nothing.  We now know for certain that nothing was
+            hidden here, and the smell is now absolutely nauseating.  So
+            please, PLEASE can we move on. ";
+            swept = true;
+    }
+    
+    dobjFor(CleanWith)
+    {
+        verify() {}
+        action() 
+        { 
+            if(gIobj == whiskbroom)
+                sweepmess(); 
+            else
+                inherited();
+        }
+    }
+    
+    dobjFor(SweepWith) asDobjFor(CleanWith)
+    
+;
+
++ Fixture 'bats; sleeping;;them'
+    "The bats are sleeping, and cover the walls and ceiling.  I
+        suggest that we leave them alone and move on.  It stinks in
+        here! "
+    isCleanable = nil
+    cannotCleanMsg = 'The bats don\'t need cleaning.  I suggest that
+        you leave them alone.'
+    dobjFor(Sweep) asDobjFor(Clean)
+    dobjFor(SweepWith) asDobjFor(CleanWith)
+    dobjFor(Wake)
+    {
+        verify()
+        {
+            illogical('Leave the bats alone, please! ');
+        }
+    }
+    
+;
+
+batFloor: Floor 'floor;;ground'
+    "The floor is covered in dried guano.  The smell is
+    indescribable!  Let's get out of here."
+;
+
+/* 172, 173 */
+tightCrack: DarkRoom 'In Tight N/S Crack'
+    desc
+    {
+        "{I} {am} in a very tight N/S crack. ";
+        if (cloakroom.caved)
+            "The passage south is blocked by a recent cave-in. ";
+        else
+            "The passage seems to widen to the south. ";
+    }
+    game551 = true
+    
+    north = atEastEndOfLongHall
+    
+    
+    passage asExit(south)
+    
+    south: TravelConnector ->cloakroom
+    {
+        canTravelerPass(actor) { return !cloakroom.caved; }
+        explainTravelBarrier(actor, connector)
+        {
+            "The passage south is blocked by a recent cave-in. ";
+        }
+    }
+    
+    
+    
+    NPCexit1 = cloakroom.caved ? nil : cloakroom
+    
+    ana2 
+    {
+        "You see a brief flash of blue light, then feel a sickening 
+        \"crunch\" as your entire body collides with a solid wall of 
+        concrete.  Fortunately the spell reverses itself, and you find 
+        yourself back in the crack. ";
+        return nil;
+    }
+
+;
+
+/* 191 */
+deadEndCrack: DeadEndRoom "In Dead End Crack"    
+    "{I}{'m} in a dead-end crack.";}
+
+    north = atEastEndOfLongHall
+//    ana2 = Blue_Dead_End_Crack
+;
+
+
+
+cloakroom: Room
+    
+    caved = nil
+;
+
+
+tongueOfRock: Room 'Tongue of Rock'
+;
+
+
+muddyDefile: Room 'Muddy Defile'
+;
+
+
+gravelBeach: Room 'Gravel Beach'
+;
+
+darkCove: Room 'Dark Cove'
+;
+    
 
 /* 227 */
 riverStyxApproach: OutsideRoom 'At Approach to River Styx'
@@ -669,14 +1567,12 @@ riverStyxApproach: OutsideRoom 'At Approach to River Styx'
 ;
 
 /* 228 */
-riverStyx: OutsideRoom '"At River Styx'
+riverStyx: IndoorRoom '"At River Styx'
     "{I} {am} at the River Styx, a narrow little stream cutting directly
     across the passageway.  The edge of the stream is littered with sticks
     and other debris washed in by a recent rainfall.  On the far side
     of the river, the passage continues east."
-    
-    isIndoors = true
-    regions = [indoors, outdoors]
+        
     game551 = true
     
 
@@ -736,6 +1632,14 @@ beachShelf: OutsideRoom
 ;
 
 beach: OutsideRoom
+;
+
+/* 232-234 */
+poling_messages: object
+    calm = "{I} {have} poled {my} boat across the calm water.<.p>"
+    dark = "{I} {have} poled {my} boat across the dark water.<.p>"
+    blue = "{I} {have} poled {my} boat across the Blue Grotto.<.p>"
+
 ;
 
 /* 238 */
@@ -915,7 +1819,8 @@ livingMaze5: OutsideRoom 'Near Edge of Maze (blueberries)'
     southwest = livingMaze6
 ;
 
-+blue2: Fixture 'bluberries' // needs to be changed to the Blueberry class
++blue2: Blueberries 
+    game551 = true
 ;
 
 

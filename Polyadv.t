@@ -15,8 +15,9 @@ versionInfo: GameID
     htmlDesc = 'A TADS3/adv3Lite port of the TADS 2 port of polyadv, itself a multi-version port
         based on the Colossal Adventure game by Crowther and Woods.'
     
-    showAbout()
+    showAbout()    
     {
+            
         "This is a work-in-progress attempt to port the TADS 2 polyadv game to TADS 3/advLite.
         Polyadv is in turn an implementation of the classic Crowther and Woods Colossal Adventure
         game together with several extensions to it. This TADS 3 port aims to reproduce the content
@@ -40,6 +41,9 @@ gameMain: GameMainDef
     
     showIntro()
     {
+        if(global.specialstart)
+            return;
+        
         "Somewhere nearby is Colossal Cave, where others have found
         fortunes in treasure and gold, though it is rumored that some
         who enter are never seen again.  Magic is said to work in the
@@ -131,3 +135,6 @@ modify scoreNotifySettingsItem
     
 ;
 
+    
+        
+    

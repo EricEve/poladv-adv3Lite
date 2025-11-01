@@ -377,6 +377,14 @@ gamePreinit: PreinitObject
 versionSetup: InitObject
     execute()
     {
+        /* 
+         *   If we want a special restart, e.g. for sitting on the throne, do that first          
+         */
+        if(specialRestart.isActive)
+        {
+            specialRestart.execute();
+        }
+        
         local o, copied, l, i, p;
         // adjust global variables for the game version (and do any
         // extra setup needed.)
@@ -402,7 +410,7 @@ versionSetup: InitObject
         }
         
         // save initial score for later use
-        global.startscore = global.score;        
+        global.startscore = libScore.totalScore;        
     
     
     
@@ -1096,12 +1104,31 @@ modify lookLister
 
 silentIncscore(num, txt = 'sundry adjustments')    
 {
-    local wasNotifying = scoreNotifySettingsItem.isOn;
-    scoreNotifySettingsItem.isOn = nil;
+    scoreNotifier.silentScore = true;
     addToScore(num, txt);
-    scoreNotifySettingsItem.isOn = wasNotifying;
+    
 }
     
+modify scoreNotifier
+    silentScore = nil
+    checkNotification()
+    {
+        if(silentScore)
+        {
+            /* Turn off the silentScore flag so it doesn't affect future score changes. */
+            silentScore = nil;
+            
+            /* Update lastScore so we done't generate a score notifactoion on a subsequent turn */
+            lastScore = libScore.totalScore;
+            return;
+        }
+        
+        inherited();
+    }
+    
+;
+    
+
 /* Function to move portable objects from one room to another */
 roomMove(oldroom,newroom) 
 {
@@ -1146,14 +1173,24 @@ modify Actor
             
             roomMove(getOutermostRoom, dest.getOutermostRoom);
             //        travelVia(dest);
-            travelTo(location.(moveprop)(dest));
+            self.(moveprop)(dest);
             //        global.travelActor = travelsave;
         }
         finally
         {
             gActor = currentsave;
-        }       
+        }  
     }
+    
+    /* 
+     *   The TADS 2 implementation defines a transmove method which may be redundant in TADS
+     *   3/adv3Lite. Fow now we keep it just in came but make it do the samea ss travelVia.
+     */
+    transmove(dest)
+    {
+        travelVia(dest);
+    }
+
     
     kaleid = nil
 
@@ -1494,3 +1531,82 @@ modify Player
 
 dummyActor: Actor 'dummy actor'
 ;
+
+
+transient specialRestart: object
+    isActive = nil
+    restartProp = nil
+    execute()
+    {
+        if(restartProp)
+            self.(restartProp);
+        
+        isActive = nil;
+        global.specialstart = true;
+        restartProp = nil;
+    }
+    
+    throneRestart()
+    {        
+        gTurns = turncount;
+        global.vNumber = vNumber;
+        global.novicemode = novicemode;
+        global.randomized = randomized;
+        global.nodwarves = nodwarves;    
+        gameMain.verbose = verbose;    
+        scoreNotifySettingsItem.isOn = notifyScore;
+                        
+        // Restore variables to do with the safe.  If the player knows
+       // it's there, flag it as being hidden behind the poster.
+        safe.moveInto(safeloc);
+        if(safe.location)
+            safe.hidden = true;
+        safe.isHidden = isHidden;
+        safeCombination.seen = safecombseen;
+        safeDial.comboSet = comboSet;
+        safe.hasOpened = safeopened;
+        safeDial.combo = combination;
+        
+        // Restore variables to do with the player's memory.  For example,
+        // if the throne room has been seen, the player won't crawl around
+        // in little passages when trying to find it.
+        throneRoom.seen = throneRoomSeen;
+        throneRoom.visited = throneRoomSeen;
+        riverStyxE.seen = riverStyxESeen;
+        riverStyxE.visited = riverStyxESeen;
+        pantry.seen = pantrySeen;
+        pantry.visited = pantrySeen;
+        
+        // If these variables are set to true, the player already knows the
+        // correct pronunciation of the relevant Elvish magic words
+        knoll.seenit = knollSeenit;
+        riseOverBay.seenit = knollSeenit;
+        outerCourtyard.seenit = OCseenit;
+        if(blue1.location != blue1loc)
+            blue1.moveInto(blue1loc);   
+       
+    }
+    
+    turncount = 0
+    newscore = 0
+    vNumber = 0
+    notifyScore = true
+    novicemode = nil
+    randomized = nil
+    nodwarves = nil
+    verbose = true
+    safeloc = nil
+    comboSet = nil
+    safeopened = nil
+    combination = [0,0,0]
+    safehidden = nil
+    safeisHidden = nil
+    safecombseen = nil
+    throneRoomSeen = true
+    riverStyxESeen = nil
+    pantrySeen = nil
+    knollSeenit = nil
+    ROBseenit = nil
+    OCseenit = nil
+    blue1loc = nil   
+;  

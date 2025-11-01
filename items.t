@@ -744,7 +744,7 @@ class WaveableRod: Thing
             if (isIn(westSideOfFissure) || 
                 isIn(onEastBankOfFissure)) 
             {
-                if (global.closed && !self.isUpgraded)
+                if (global.closed && isupgraded)
                     "Peculiar.  Nothing happens.";
                 else {
                     if (crystalBridge.exists)
@@ -756,11 +756,12 @@ class WaveableRod: Thing
         }
     }
     
-    isUpgraded = nil
+    isupgraded = nil
+    upgrade(stat)  {  isupgraded = stat;  }
 ;
    
 State
-    stateProp = &isUpgraded
+    stateProp = &isupgraded
     adjectives = [[nil, ['rusty']], [true, ['shiny']]]
 ;
 
@@ -769,7 +770,7 @@ State
 blackRod: EndgameClone, WaveableRod 'black rod;rusty star magic ;wand' @inDebrisRoom
     desc()
     {
-        "It's a three foot black rod with a <<if isUpgraded>>shiny<<else>>rusty<<end>>
+        "It's a three foot black rod with a <<if isupgraded>>shiny<<else>>rusty<<end>>
         star on an end. ";
         if (atSWEnd.visited)
         {
@@ -783,6 +784,7 @@ blackRod: EndgameClone, WaveableRod 'black rod;rusty star magic ;wand' @inDebris
     myHome = inDebrisRoom
     myHome2 = [inDebrisRoom]
     mass = 2
+    
     
 //    downgrade() {}
 ;
@@ -1669,21 +1671,12 @@ barsOfSilver: Treasure 'bars of silver;;;them' @lowNSPassage
 ;
 
 
-
-
-
-clover: Thing 'clover'
-;
-
 glassVial: Thing 'glass vial'
 ;
 
 
 
 flask: Thing;
-
-crown: Thing;
-
 
 
 turtle: Thing

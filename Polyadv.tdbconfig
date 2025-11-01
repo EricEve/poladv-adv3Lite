@@ -1,36 +1,40 @@
 # THIS FILE IS MACHINE GENERATED - DO NOT EDIT
 # TADS Workbench configuration settings
 
-*84 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\hintsys.t:S:0:0.000000
-DebugToolbar:rebarWidth:I:-1
-line wrap:Scripts\Auto 455.cmd:S:0:N
 line wrap:Scripts\Auto 482.cmd:S:0:N
+line wrap:Scripts\Auto 455.cmd:S:0:N
+DebugToolbar:rebarWidth:I:-1
+*84 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\hintsys.t:S:0:0.000000
 *79 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\lister.t:S:0:N
-*88 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\menucon.t:S:0:TADS 3
-*84 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\menusys.t:S:0:0.000000
 line wrap:Scripts\Auto 484.cmd:S:0:N
-Plain Text-editor-prefs:syntax coloring enabled:I:1
+*84 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\menusys.t:S:0:0.000000
+*88 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\menucon.t:S:0:TADS 3
 *79 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\events.t:S:0:N
-*87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\actions.t:S:0:0,0
-*87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\actions.t:S:1:26516,26516
+Plain Text-editor-prefs:syntax coloring enabled:I:1
 src win split:Polyadv.t:S:0:0.000000
-*79 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\extras.t:S:0:N
-line wrap:%tads%include\systype.h:S:0:N
+*87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\actions.t:S:0:0,0
+*87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\actions.t:S:1:52472,52570
 src win split:ccr-itm1.t:S:0:0.000000
-src win edit mode:%tads%lib\_main.t:S:0:TADS 3
+line wrap:%tads%include\systype.h:S:0:N
+*79 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\extras.t:S:0:N
 line wrap:rooms1.t:S:0:
+src win edit mode:%tads%lib\_main.t:S:0:TADS 3
 *82 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\thing.t:S:0:0.000000
-*88 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\advlite.h:S:0:TADS 3
-build:ext resfile cnt:I:0
 *82 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\score.t:S:0:0.000000
+build:ext resfile cnt:I:0
+*88 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\advlite.h:S:0:TADS 3
 *88 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\command.t:S:0:TADS 3
 build:defaults set:I:1
 line wrap:thingext.t:S:0:
-watch win:vis:I:0
 watch win:pos:R:312,783,596,894
+watch win:vis:I:0
 *79 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\status.t:S:0:N
-src win split:advmods.t:S:0:0.000000
 src win edit mode:License.txt:S:0:Plain Text
+src win split:advmods.t:S:0:0.000000
+line wrap:walk.cmd:S:0:N
+*97 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\extensions\fueled.t:S:0:0,0
+*97 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\extensions\fueled.t:S:1:958,975
+line wrap:map1.t:S:0:N
 HTML-editor-prefs:styles:S:0:,,0000ff,,
 HTML-editor-prefs:styles:S:1:,,8000ff,,
 HTML-editor-prefs:styles:S:2:,,ff0000,,
@@ -143,23 +147,19 @@ HTML-editor-prefs:styles:S:108:,,000000,,
 HTML-editor-prefs:styles:S:109:,,000000,,
 HTML-editor-prefs:styles:S:110:,,000000,,
 HTML-editor-prefs:styles:S:111:,,000000,,
-line wrap:map1.t:S:0:N
-*97 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\extensions\fueled.t:S:0:0,0
-*97 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\extensions\fueled.t:S:1:958,975
-line wrap:walk.cmd:S:0:N
 line wrap:map2.t:S:0:N
 editor:bookmark:S:0:513,0,C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\exits.t
-src win edit mode:npcs.t:S:0:TADS 3
-*88 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\precond.t:S:0:TADS 3
 *77 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\doer.t:S:0:N
-*77 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\misc.t:S:0:N
+*88 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\precond.t:S:0:TADS 3
+src win edit mode:npcs.t:S:0:TADS 3
 *85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\debug.t:S:0:0,0
-*85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\debug.t:S:1:29565,29565
-*80 src win pos:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\debug.t:R:208,208,1532,687
-*82 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\exits.t:S:0:0.000000
-*92 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\english\grammar.t:S:0:0.000000
+*85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\debug.t:S:1:3226,3226
+*77 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\misc.t:S:0:N
 src win selrange:endgame.t:S:0:0,0
 src win selrange:endgame.t:S:1:10370,10370
+*92 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\english\grammar.t:S:0:0.000000
+*82 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\exits.t:S:0:0.000000
+*80 src win pos:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\debug.t:R:208,208,1532,687
 key bindings:Text Editor:S:0:Ctrl+F3 = Edit.SearchIncremental
 key bindings:Text Editor:S:1:Down = Edit.LineDown
 key bindings:Text Editor:S:2:Ctrl+Down = Edit.LineScrollDown
@@ -221,28 +221,28 @@ key bindings:Text Editor:S:57:Alt+/ = Edit.ToggleBookmark
 key bindings:Text Editor:S:58:Alt+? = Edit.SetNamedBookmark
 key bindings:Text Editor:S:59:Ctrl+8 = Edit.CommentRegion
 key bindings:Text Editor:S:60:F6 = Edit.FindDefinition
-*92 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\english\english.t:S:0:0.000000
 *88 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\actions.t:S:0:TADS 3
-build:c ops:I:0
+*92 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\english\english.t:S:0:0.000000
 *79 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\output.t:S:0:N
+build:c ops:I:0
 *85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\modid.t:S:0:0,0
-*85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\modid.t:S:1:26308,26308
+*85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\modid.t:S:1:26307,26307
 SearchToolbar:rebarNewLine:I:0
-MenuBar:rebarVis:I:1
-log win pos::R:284,124,1534,791
 log win vis::I:1
-*82 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\query.t:S:0:0.000000
+log win pos::R:317,180,1615,750
+MenuBar:rebarVis:I:1
 *94 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\extensions\collective.t:S:0:N
+*82 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\query.t:S:0:0.000000
 *87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\hintsys.t:S:0:0,0
 *87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\hintsys.t:S:1:0,0
+DocToolbar:rebarIndex:I:3
 *87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\menusys.t:S:0:0,0
 *87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\menusys.t:S:1:0,0
-DocToolbar:rebarIndex:I:3
 src win selrange:Polyadv.t:S:0:0,0
-src win selrange:Polyadv.t:S:1:3757,3757
-Plain Text-editor-prefs:default style:S:0:,,,,
+src win selrange:Polyadv.t:S:1:4986,4986
 src win selrange:ccr-itm1.t:S:0:0,0
-src win selrange:ccr-itm1.t:S:1:1256,1256
+src win selrange:ccr-itm1.t:S:1:11742,11742
+Plain Text-editor-prefs:default style:S:0:,,,,
 build:include_files-sys:S:0:system
 build:include_files-sys:S:1:system
 build:include_files-sys:S:2:system
@@ -266,44 +266,39 @@ build:include_files-sys:S:19:system
 build:include_files-sys:S:20:system
 build:include_files-sys:S:21:lib
 *85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\thing.t:S:0:0,0
-*85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\thing.t:S:1:223751,223751
+*85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\thing.t:S:1:260187,260187
 *98 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\extensions\fueled.t:S:0:TADS 3
-DocToolbar:rebarWidth:I:-1
 *85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\score.t:S:0:0,0
-*85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\score.t:S:1:19862,19839
+*85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\score.t:S:1:9558,9558
+DocToolbar:rebarWidth:I:-1
 DebugToolbar:rebarVis:I:1
+src win split:%tads%lib\multmeth.t:S:0:0.000000
+CSS-editor-prefs:syntax coloring enabled:I:1
 Command Script-editor-prefs:styles:S:0:,,000000,,
 Command Script-editor-prefs:styles:S:1:,,808080,,
 Command Script-editor-prefs:styles:S:2:,,ff0000,,
 Command Script-editor-prefs:styles:S:3:,,0000ff,,
-CSS-editor-prefs:syntax coloring enabled:I:1
 *86 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\debug.t:S:0:TADS 3
 src win edit mode:endgame.t:S:0:TADS 3
 *85 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\remapcmd.t:S:0:0.000000
 src win selrange:advmods.t:S:0:0,0
-src win selrange:advmods.t:S:1:42801,42801
+src win selrange:advmods.t:S:1:43214,43214
 line wrap:Scripts\Runthru350.cmd:S:0:N
 *86 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\modid.t:S:0:TADS 3
-watch win:expression list 0:S:0:loc.isIlluminated
-watch win:expression list 0:S:1:conn.isConnectorVisible
-watch win:expression list 0:S:2:lastHintShown
-watch win:expression list 0:S:3:idx
-watch win:expression list 0:S:4:currentDest
-watch win:expression list 0:S:5:destination
-watch win:expression list 0:S:6:conn.isConnectorVisible
-watch win:expression list 0:S:7:conn.getApparentDestination(gRoom)
-ask save on build::I:1
 XML-editor-prefs:syntax coloring enabled:I:1
+ask save on build::I:1
+watch win:expression list 0:S:0:libScore
 build:zipfile:S:0:Polyadv.zip
 src win split:cc-hints.t:S:0:0.000000
-*88 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\hintsys.t:S:0:TADS 3
 src win split:ReadMe.txt:S:0:0.000000
-*85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\exits.t:S:0:0,0
-*85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\exits.t:S:1:11323,11323
+*88 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\hintsys.t:S:0:TADS 3
 *95 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\english\grammar.t:S:0:0,0
 *95 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\english\grammar.t:S:1:9230,9230
-*88 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\menusys.t:S:0:TADS 3
+*85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\exits.t:S:0:0,0
+*85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\exits.t:S:1:11323,11323
 watch win:sep xpos 0:I:220
+*88 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\menusys.t:S:0:TADS 3
+watch win:sep xpos 1:I:142
 key bindings:Global:S:0:Ctrl+A = Edit.SelectAll
 key bindings:Global:S:1:Ctrl+Insert = Edit.Copy
 key bindings:Global:S:2:Ctrl+C = Edit.Copy
@@ -347,49 +342,51 @@ key bindings:Global:S:39:Shift+F11 = Debug.StepOut
 key bindings:Global:S:40:Alt+J = Edit.PopBookmark
 key bindings:Global:S:41:Ctrl+Shift+J = Edit.JumpToNextBookmark
 key bindings:Global:S:42:Ctrl+J = Edit.JumpToNamedBookmark
-watch win:sep xpos 1:I:142
-*80 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\menucon.t:S:0:N
+src win edit mode:Polyadv.t:S:0:TADS 3
+watch win:sep xpos 2:I:142
 *95 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\english\english.t:S:0:0,0
 *95 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\english\english.t:S:1:144278,144458
-watch win:sep xpos 2:I:142
-src win edit mode:Polyadv.t:S:0:TADS 3
-*90 src win pos:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\english\english.t:R:130,130,1454,609
+*80 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\menucon.t:S:0:N
+src win edit mode:ccr-itm1.t:S:0:TADS 3
+watch win:sep xpos 3:I:142
 build:installer options:S:0:name=Polyadv
 build:installer options:S:1:savext=Polyadv
-watch win:sep xpos 3:I:142
-src win edit mode:ccr-itm1.t:S:0:TADS 3
-*85 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\messages.t:S:0:0.000000
+*90 src win pos:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\english\english.t:R:130,130,1454,609
 search:start at top:I:0
-src win split:verbs.t:S:0:0.000000
-*86 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\thing.t:S:0:TADS 3
-src win split:items.t:S:0:0.000000
+*85 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\messages.t:S:0:0.000000
 line wrap:%tads%lib\_main.t:S:0:N
+src win split:items.t:S:0:0.000000
+*86 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\thing.t:S:0:TADS 3
+src win split:verbs.t:S:0:0.000000
+*86 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\score.t:S:0:TADS 3
 *85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\query.t:S:0:0,0
 *85 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\query.t:S:1:16049,16049
-*86 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\score.t:S:0:TADS 3
 src win split:%tads%include\tadsgen.h:S:0:0.000000
 *80 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\advlite.h:S:0:N
 *80 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\command.t:S:0:N
 EditToolbar:rebarNewLine:I:1
-src win edit mode:advmods.t:S:0:TADS 3
 breakpoints:cond-mode:S:0:true
 breakpoints:cond-mode:S:1:true
 breakpoints:cond-mode:S:2:true
+src win edit mode:advmods.t:S:0:TADS 3
 TADS 3 Library-editor-prefs:styles:S:0:,,,,
-src win split:Scripts\Auto 99.cmd:S:0:0.000000
 line wrap:License.txt:S:0:\
+src win split:Scripts\Auto 99.cmd:S:0:0.000000
 src win split:rooms.t:S:0:0.000000
+src win selrange:%tads%lib\multmeth.t:S:0:0,0
+src win selrange:%tads%lib\multmeth.t:S:1:32560,32560
 TADS 3-editor-prefs:custom-keywords-1:S:0:
-line wrap:npcs.t:S:0:
-TADS 3-editor-prefs:custom-keywords-2:S:0:
 *80 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\precond.t:S:0:N
-*86 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\exits.t:S:0:TADS 3
-CSS-editor-prefs:default style:S:0:,,0000ff,,
-TADS 3-editor-prefs:custom-keywords-3:S:0:
+TADS 3-editor-prefs:custom-keywords-2:S:0:
+line wrap:npcs.t:S:0:
 *96 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\english\grammar.t:S:0:TADS 3
+TADS 3-editor-prefs:custom-keywords-3:S:0:
+CSS-editor-prefs:default style:S:0:,,0000ff,,
+*86 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\exits.t:S:0:TADS 3
+*83 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\gadget.t:S:0:0.000000
+proj search:exact case:I:0
 *88 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\remapcmd.t:S:0:0,0
 *88 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\remapcmd.t:S:1:14220,14220
-proj search:exact case:I:0
 *96 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\english\english.t:S:0:TADS 3
 TADS 3-editor-prefs:styles:S:0:,,,,
 TADS 3-editor-prefs:styles:S:1:,,000000,,
@@ -414,144 +411,146 @@ TADS 3-editor-prefs:styles:S:19:,,000000,,
 TADS 3-editor-prefs:styles:S:20:,,000000,,
 TADS 3-editor-prefs:styles:S:21:,,000000,,
 *80 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\actions.t:S:0:N
-DocToolbar:rebarVis:I:1
 Javascript-editor-prefs:syntax coloring enabled:I:1
+DocToolbar:rebarVis:I:1
 XML-editor-prefs:default style:S:0:,,0000ff,,
+*86 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\query.t:S:0:TADS 3
 src win selrange:cc-hints.t:S:0:0,0
 src win selrange:cc-hints.t:S:1:0,64
-*86 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\query.t:S:0:TADS 3
-auto-script:quit sequences:S:0:<nocase>[<]line[>]<space>*q(uit)?<space>*
-auto-script:quit sequences:S:1:<nocase>[<]line[>]<space>*y.*
 src win selrange:ReadMe.txt:S:0:0,0
 src win selrange:ReadMe.txt:S:1:0,0
+auto-script:quit sequences:S:0:<nocase>[<]line[>]<space>*q(uit)?<space>*
+auto-script:quit sequences:S:1:<nocase>[<]line[>]<space>*y.*
 SearchToolbar:rebarIndex:I:2
 search:wrap:I:1
 *88 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\messages.t:S:0:0,0
 *88 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\messages.t:S:1:45249,45249
-src win selrange:verbs.t:S:0:0,0
-src win selrange:verbs.t:S:1:0,64
-*83 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\action.t:S:0:0.000000
 src win selrange:items.t:S:0:0,0
-src win selrange:items.t:S:1:10471,10471
-auto-script:next-id:I:695
+src win selrange:items.t:S:1:48407,48407
+*83 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\action.t:S:0:0.000000
+src win selrange:verbs.t:S:0:0,0
+src win selrange:verbs.t:S:1:12162,12162
+auto-script:next-id:I:758
+*90 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\extensions\fueled.t:S:0:N
+SearchToolbar:rebarWidth:I:253
 src win selrange:%tads%include\tadsgen.h:S:0:0,0
 src win selrange:%tads%include\tadsgen.h:S:1:831,831
-SearchToolbar:rebarWidth:I:253
-*90 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\extensions\fueled.t:S:0:N
+src win edit mode:%tads%lib\multmeth.t:S:0:TADS 3
 statusline:visible:I:1
+*78 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\debug.t:S:0:N
+search:text:S:0:deadEndCrack
+search:text:S:1:
 docking config::S:0:CL
 docking config::S:1:W0,282,270,331,218,631,368,D,L,project win
 docking config::S:2:W0,282,150,175,752,345,902,D,L,script win
 docking config::S:3:CB
 docking config::S:4:W3,700,170,304,752,604,902,D,B,watch win
 docking config::S:5:W3,889,170,2,752,302,902,D,B,locals win
-docking config::S:6:W-1,170,170,125,125,1169,694,M,R,help win
-docking config::S:7:W-1,170,170,25,25,1339,634,M,R,log win
+docking config::S:6:W-1,170,170,225,225,1540,834,M,B,filesearch win
+docking config::S:7:W-1,170,170,200,200,1515,809,M,B,docsearch win
 docking config::S:8:W-1,170,170,50,50,1364,659,M,R,stack win
-docking config::S:9:W-1,170,170,200,200,1515,809,M,B,docsearch win
-docking config::S:10:W-1,170,170,225,225,1540,834,M,B,filesearch win
-search:text:S:0:poster
-search:text:S:1:
-*78 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\debug.t:S:0:N
-*89 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\remapcmd.t:S:0:TADS 3
+docking config::S:9:W-1,170,170,25,25,1339,634,M,R,log win
+docking config::S:10:W-1,170,170,125,125,1169,694,M,R,help win
 line wrap:endgame.t:S:0:
-locals win:vis:I:0
+*89 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\remapcmd.t:S:0:TADS 3
 locals win:pos:R:10,783,294,894
-main win max::I:1
+locals win:vis:I:0
+build special file:readme:S:0:ReadMe.txt
 src win selrange:Scripts\Auto 99.cmd:S:0:0,0
 src win selrange:Scripts\Auto 99.cmd:S:1:128,128
-build special file:readme:S:0:ReadMe.txt
+main win max::I:1
 src win selrange:rooms.t:S:0:0,0
-src win selrange:rooms.t:S:1:9771,9771
-*83 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\parser.t:S:0:0.000000
+src win selrange:rooms.t:S:1:67419,67419
 *78 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\modid.t:S:0:N
-*83 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\travel.t:S:0:0.000000
+*83 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\parser.t:S:0:0.000000
 src win split:Scripts\Auto 460.cmd:S:0:0.000000
-src win edit mode:cc-hints.t:S:0:TADS 3
+*83 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\travel.t:S:0:0.000000
 proj search:collapse spaces:I:0
-src win split:Scripts\Auto 390.cmd:S:0:0.000000
+src win edit mode:cc-hints.t:S:0:TADS 3
 src win edit mode:ReadMe.txt:S:0:Plain Text
+src win split:Scripts\Auto 390.cmd:S:0:0.000000
 HTML-editor-prefs:syntax coloring enabled:I:1
-*80 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\hintsys.t:S:0:N
-src win split:Scripts\Auto 455.cmd:S:0:0.000000
+*86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\gadget.t:S:0:0,0
+*86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\gadget.t:S:1:9429,9441
+src win split:Scripts\Auto 715.cmd:S:0:0.000000
 src win split:Scripts\Auto 482.cmd:S:0:0.000000
-search:exact case:I:0
+src win split:Scripts\Auto 455.cmd:S:0:0.000000
+*80 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\hintsys.t:S:0:N
 *83 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\lister.t:S:0:0.000000
-*80 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\menusys.t:S:0:N
-build on run::I:1
+search:exact case:I:0
 src win split:Scripts\Auto 484.cmd:S:0:0.000000
+build on run::I:1
+*80 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\menusys.t:S:0:N
 *83 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\events.t:S:0:0.000000
-build:webpage dir:S:0:web
-mdi win list::S:0::log
-mdi win list::S:1:rooms.t
-mdi win list::S:2:advmods.t
-mdi win list::S:3::filesearch
-mdi win list::S:4:Polyadv.t
-mdi win list::S:5:rooms1.t
-mdi win list::S:6:ccr-itm1.t
-mdi win list::S:7:thingext.t
-mdi win list::S:8:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\travel.t
-mdi win list::S:9::help
-mdi win list::S:10:map2.t
-mdi win list::S:11:verbs.t
-mdi win list::S:12:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\misc.t
-mdi win list::S:13:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\thing.t
-mdi win list::S:14:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\precond.t
-mdi win list::S:15:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\advlite.h
-mdi win list::S:16:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\modid.t
-mdi win list::S:17:endgame.t
-mdi win list::S:18:items.t
-mdi win list::S:19:npcs.t
-mdi win list::S:20:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\action.t
-mdi win list::S:21:cc-hints.t
 line wrap:Polyadv.t:S:0:N
-src win split:%tads%include\systype.h:S:0:0.000000
-*83 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\extras.t:S:0:0.000000
-*89 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\messages.t:S:0:TADS 3
-build:srczipfile:S:0:PolyadvSource.zip
+mdi win list::S:0:rooms.t
+mdi win list::S:1:rooms1.t
+mdi win list::S:2:ccr-itm1.t
+mdi win list::S:3:verbs.t
+mdi win list::S:4::filesearch
+mdi win list::S:5:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\thing.t
+mdi win list::S:6::log
+mdi win list::S:7:items.t
+mdi win list::S:8:Polyadv.t
+mdi win list::S:9:advmods.t
+mdi win list::S:10:thingext.t
+mdi win list::S:11:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\actions.t
+mdi win list::S:12:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\action.t
+mdi win list::S:13:endgame.t
+mdi win list::S:14:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\modid.t
+mdi win list::S:15::help
+mdi win list::S:16:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\misc.t
+mdi win list::S:17:Scripts\Auto 715.cmd
+mdi win list::S:18:map2.t
+mdi win list::S:19:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\advlite.h
+mdi win list::S:20:npcs.t
+build:webpage dir:S:0:web
+line wrap:ccr-itm1.t:S:0:N
 main win pos::R:-8,-8,1544,824
-line wrap:ccr-itm1.t:S:0: 
-src win edit mode:verbs.t:S:0:TADS 3
-proj search:whole word:I:0
-src win edit mode:items.t:S:0:TADS 3
+build:srczipfile:S:0:PolyadvSource.zip
+*89 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\messages.t:S:0:TADS 3
+*83 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\extras.t:S:0:0.000000
+src win split:%tads%include\systype.h:S:0:0.000000
 src win split:rooms1.t:S:0:0.000000
-*78 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\thing.t:S:0:N
+src win edit mode:items.t:S:0:TADS 3
+proj search:whole word:I:0
+src win edit mode:verbs.t:S:0:TADS 3
 Javascript-editor-prefs:default style:S:0:,,000000,,
-src win edit mode:%tads%include\tadsgen.h:S:0:TADS 3
-help win vis::I:1
+*78 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\thing.t:S:0:N
 help win pos::R:417,280,1445,810
-build:ignore case:I:0
+help win vis::I:1
+src win edit mode:%tads%include\tadsgen.h:S:0:TADS 3
 *78 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\score.t:S:0:N
-build:exe:S:0:Polyadv.exe
-docsearch win vis::I:0
+build:ignore case:I:0
 docsearch win pos::R:492,355,1791,925
+docsearch win vis::I:0
+build:exe:S:0:Polyadv.exe
+script win:pos:R:2,661,275,791
 script win:vis:I:1
-script win:pos:R:2,657,275,791
 src win split:thingext.t:S:0:0.000000
 *86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\action.t:S:0:0,0
-*86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\action.t:S:1:11156,11156
+*86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\action.t:S:1:44939,44939
 *83 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\status.t:S:0:0.000000
-line wrap:advmods.t:S:0:
-build:use charmap:I:0
 src win edit mode:Scripts\Auto 99.cmd:S:0:Command Script
-src win edit mode:rooms.t:S:0:TADS 3
-src win split:map1.t:S:0:0.000000
+build:use charmap:I:0
+line wrap:advmods.t:S:0:
 src win split:walk.cmd:S:0:0.000000
+src win split:map1.t:S:0:0.000000
+src win edit mode:rooms.t:S:0:TADS 3
 src win split:map2.t:S:0:0.000000
 EditToolbar:rebarIndex:I:1
-hist win vis::I:0
-Plain Text-editor-prefs:styles:S:0:,,,,
 *81 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\doer.t:S:0:0.000000
+Plain Text-editor-prefs:styles:S:0:,,,,
+hist win vis::I:0
+*87 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\gadget.t:S:0:TADS 3
 *81 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\misc.t:S:0:0.000000
-*78 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\exits.t:S:0:N
 *88 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\english\grammar.t:S:0:N
+*78 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\exits.t:S:0:N
 editor:cmdline:S:0:%f
-*88 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\english\english.t:S:0:N
 Command Script-editor-prefs:syntax coloring enabled:I:1
-EditToolbar:rebarWidth:I:578
+*88 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\english\english.t:S:0:N
 *83 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\output.t:S:0:0.000000
-*86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\parser.t:S:0:0,0
-*86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\parser.t:S:1:13221,13221
+EditToolbar:rebarWidth:I:578
 build:include_files:S:0:tads.h
 build:include_files:S:1:t3.h
 build:include_files:S:2:lookup.h
@@ -574,82 +573,89 @@ build:include_files:S:18:strcomp.h
 build:include_files:S:19:dynfunc.h
 build:include_files:S:20:date.h
 build:include_files:S:21:dynfunc.t
-SearchToolbar:rebarVis:I:1
-*86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\travel.t:S:0:0,0
-*86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\travel.t:S:1:69908,69908
+*86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\parser.t:S:0:0,0
+*86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\parser.t:S:1:13221,13221
 src win selrange:Scripts\Auto 460.cmd:S:0:0,0
 src win selrange:Scripts\Auto 460.cmd:S:1:0,0
+*86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\travel.t:S:0:0,0
+*86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\travel.t:S:1:72828,72828
+SearchToolbar:rebarVis:I:1
 MenuBar:rebarNewLine:I:0
 src win selrange:Scripts\Auto 390.cmd:S:0:0,0
 src win selrange:Scripts\Auto 390.cmd:S:1:542,542
-*78 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\query.t:S:0:N
 *98 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\extensions\collective.t:S:0:0.000000
-src win selrange:Scripts\Auto 455.cmd:S:0:0,0
-src win selrange:Scripts\Auto 455.cmd:S:1:0,0
+*78 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\query.t:S:0:N
+src win selrange:Scripts\Auto 715.cmd:S:0:0,0
+src win selrange:Scripts\Auto 715.cmd:S:1:502,502
 src win selrange:Scripts\Auto 482.cmd:S:0:0,0
 src win selrange:Scripts\Auto 482.cmd:S:1:3392,3392
-HTML-editor-prefs:default style:S:0:,,0000ff,,
-proj search:regex:I:0
+src win selrange:Scripts\Auto 455.cmd:S:0:0,0
+src win selrange:Scripts\Auto 455.cmd:S:1:0,0
 *86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\lister.t:S:0:0,0
 *86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\lister.t:S:1:1888,1888
+proj search:regex:I:0
+HTML-editor-prefs:default style:S:0:,,0000ff,,
 src win selrange:Scripts\Auto 484.cmd:S:0:0,0
 src win selrange:Scripts\Auto 484.cmd:S:1:3725,3725
-locals win:sep xpos 0:I:198
 *86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\events.t:S:0:0,0
 *86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\events.t:S:1:10129,10129
+locals win:sep xpos 0:I:198
 locals win:sep xpos 1:I:142
-src win selrange:%tads%include\systype.h:S:0:0,0
-src win selrange:%tads%include\systype.h:S:1:519,519
 *86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\extras.t:S:0:0,0
 *86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\extras.t:S:1:34389,34398
-*87 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\action.t:S:0:TADS 3
-search:whole word:I:0
-*81 src win pos:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\extras.t:R:156,156,1480,635
+src win selrange:%tads%include\systype.h:S:0:0,0
+src win selrange:%tads%include\systype.h:S:1:519,519
 src win selrange:rooms1.t:S:0:0,0
-src win selrange:rooms1.t:S:1:21037,21037
+src win selrange:rooms1.t:S:1:43912,43912
+*81 src win pos:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\extras.t:R:156,156,1480,635
+search:whole word:I:0
+*87 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\action.t:S:0:TADS 3
 extensions dir::S:0:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions
-build:debug_image_file:S:0:debug\Polyadv.t3
 DebugToolbar:rebarNewLine:I:1
-search dlg:old searches:S:0:poster
-search dlg:old searches:S:1:/* 40
-search dlg:old searches:S:2:pantry
-search dlg:old searches:S:3:asExit
-search dlg:old searches:S:4:asExir
-search dlg:old searches:S:5:travelTo(
-search dlg:old searches:S:6:restoreList
-search dlg:old searches:S:7:""
-search dlg:old searches:S:8:magazines
-search dlg:old searches:S:9:snake:
+build:debug_image_file:S:0:debug\Polyadv.t3
+line wrap:%tads%lib\multmeth.t:S:0:N
+search dlg:old searches:S:0:deadEndCrack
+search dlg:old searches:S:1:boat:
+search dlg:old searches:S:2:salt
+search dlg:old searches:S:3:steps:
+search dlg:old searches:S:4:brassKey
+search dlg:old searches:S:5:safe:
+search dlg:old searches:S:6:crown:
+search dlg:old searches:S:7:throne
+search dlg:old searches:S:8:/* 39
+search dlg:old searches:S:9:sweep
 src win selrange:thingext.t:S:0:0,0
-src win selrange:thingext.t:S:1:11267,11267
-*81 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\remapcmd.t:S:0:N
+src win selrange:thingext.t:S:1:7583,7583
 *86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\status.t:S:0:0,0
 *86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\status.t:S:1:11736,11736
-editor:program:S:0:C:\Program Files\Notepad++\notepad++.exe
-src win selrange:map1.t:S:0:0,0
-src win selrange:map1.t:S:1:185,185
-src win split:Scripts\Runthru350.cmd:S:0:0.000000
+*81 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\remapcmd.t:S:0:N
 src win selrange:walk.cmd:S:0:0,0
 src win selrange:walk.cmd:S:1:3122,3122
-*87 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\parser.t:S:0:TADS 3
+src win split:Scripts\Runthru350.cmd:S:0:0.000000
+src win selrange:map1.t:S:0:0,0
+src win selrange:map1.t:S:1:185,185
+editor:program:S:0:C:\Program Files\Notepad++\notepad++.exe
 src win selrange:map2.t:S:0:0,0
 src win selrange:map2.t:S:1:307,307
-editor:open libs readonly:I:0
-*87 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\travel.t:S:0:TADS 3
+*87 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\parser.t:S:0:TADS 3
 src win edit mode:Scripts\Auto 460.cmd:S:0:Command Script
-src win edit mode:Scripts\Auto 390.cmd:S:0:Command Script
-find dialog:pos:R:764,236,1208,489
+*87 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\travel.t:S:0:TADS 3
+editor:open libs readonly:I:0
 *84 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\doer.t:S:0:0,0
 *84 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\doer.t:S:1:37066,37066
-line wrap:cc-hints.t:S:0:N
+find dialog:pos:R:764,236,1208,489
+src win edit mode:Scripts\Auto 390.cmd:S:0:Command Script
 TADS 3 Library-editor-prefs:syntax coloring enabled:I:1
+line wrap:cc-hints.t:S:0:N
+src win edit mode:Scripts\Auto 715.cmd:S:0:Command Script
+src win edit mode:Scripts\Auto 482.cmd:S:0:Command Script
+src win edit mode:Scripts\Auto 455.cmd:S:0:Command Script
+line wrap:ReadMe.txt:S:0:N
 *84 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\misc.t:S:0:0,0
 *84 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\misc.t:S:1:0,0
-line wrap:ReadMe.txt:S:0:N
-src win edit mode:Scripts\Auto 455.cmd:S:0:Command Script
-src win edit mode:Scripts\Auto 482.cmd:S:0:Command Script
 *87 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\lister.t:S:0:TADS 3
 src win edit mode:Scripts\Auto 484.cmd:S:0:Command Script
+*87 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\events.t:S:0:TADS 3
 search dlg:old search opts:S:0:
 search dlg:old search opts:S:1:
 search dlg:old search opts:S:2:
@@ -660,18 +666,17 @@ search dlg:old search opts:S:6:
 search dlg:old search opts:S:7:
 search dlg:old search opts:S:8:
 search dlg:old search opts:S:9:
-*87 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\events.t:S:0:TADS 3
 *84 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\menucon.t:S:0:0.000000
-src win edit mode:%tads%include\systype.h:S:0:TADS 3
-*87 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\extras.t:S:0:TADS 3
 *86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\output.t:S:0:0,0
 *86 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\output.t:S:1:78946,78946
-Command Script-editor-prefs:default style:S:0:,,000000,,
+*87 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\extras.t:S:0:TADS 3
+src win edit mode:%tads%include\systype.h:S:0:TADS 3
 src win edit mode:rooms1.t:S:0:TADS 3
+Command Script-editor-prefs:default style:S:0:,,000000,,
 *81 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\messages.t:S:0:N
-line wrap:verbs.t:S:0:
-line wrap:items.t:S:0:N
 src win split:%tads%lib\_main.t:S:0:0.000000
+line wrap:items.t:S:0:N
+line wrap:verbs.t:S:0:
 CSS-editor-prefs:styles:S:0:,,0000ff,,
 CSS-editor-prefs:styles:S:1:,,800040,,
 CSS-editor-prefs:styles:S:2:,,0080ff,,
@@ -689,17 +694,16 @@ CSS-editor-prefs:styles:S:13:,,0000ff,,
 CSS-editor-prefs:styles:S:14:,,000080,,
 CSS-editor-prefs:styles:S:15:,,000080,,
 CSS-editor-prefs:styles:S:16:,,d0b000,,
-TADS 3-editor-prefs:syntax coloring enabled:I:1
 *101 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\extensions\collective.t:S:0:0,0
 *101 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\extensions\collective.t:S:1:5802,5802
+TADS 3-editor-prefs:syntax coloring enabled:I:1
 line wrap:%tads%include\tadsgen.h:S:0:N
-*84 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\advlite.h:S:0:0.000000
-startup:action:I:1
 search:regex:I:0
-mdi tab order::S:0:4,1,5,18,6,19,15,16,17,7,10,11,12,2,21,20,13,14,3,9,8,0
+startup:action:I:1
+*84 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\advlite.h:S:0:0.000000
 *84 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\command.t:S:0:0.000000
+mdi tab order::S:0:9,8,0,7,2,1,20,14,19,13,10,18,3,16,17,4,15,12,11,6,5
 src win edit mode:thingext.t:S:0:TADS 3
-build:rlsgam:S:0:Polyadv.t3
 XML-editor-prefs:styles:S:0:,,0000ff,,
 XML-editor-prefs:styles:S:1:,,8000ff,,
 XML-editor-prefs:styles:S:2:,,ff0000,,
@@ -812,20 +816,20 @@ XML-editor-prefs:styles:S:108:,,000000,,
 XML-editor-prefs:styles:S:109:,,000000,,
 XML-editor-prefs:styles:S:110:,,000000,,
 XML-editor-prefs:styles:S:111:,,000000,,
-EditToolbar:rebarVis:I:1
+build:rlsgam:S:0:Polyadv.t3
 *87 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\status.t:S:0:TADS 3
+EditToolbar:rebarVis:I:1
 key bindings:defaults loaded:I:1
-main win mdi max::I:1
-src win edit mode:map1.t:S:0:TADS 3
 src win edit mode:walk.cmd:S:0:Command Script
-src win edit mode:map2.t:S:0:TADS 3
-line wrap:Scripts\Auto 99.cmd:S:0:N
+src win edit mode:map1.t:S:0:TADS 3
+main win mdi max::I:1
 src win split:License.txt:S:0:0.000000
-line wrap:rooms.t:S:0:N
+line wrap:Scripts\Auto 99.cmd:S:0:N
+src win edit mode:map2.t:S:0:TADS 3
 auto-script:default quit sequences set:I:1
+line wrap:rooms.t:S:0:N
 *85 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\doer.t:S:0:TADS 3
-*85 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\misc.t:S:0:TADS 3
-src win split:npcs.t:S:0:0.000000
+*84 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\precond.t:S:0:0.000000
 key bindings:Incremental Search:S:0:Ctrl+F = Edit.IncSearch.Next
 key bindings:Incremental Search:S:1:Ctrl+F3 = Edit.IncSearch.Next
 key bindings:Incremental Search:S:2:Ctrl+R = Edit.IncSearch.Prev
@@ -835,8 +839,11 @@ key bindings:Incremental Search:S:5:Ctrl+T = Edit.IncSearch.ToggleRegEx
 key bindings:Incremental Search:S:6:Ctrl+W = Edit.IncSearch.ToggleWord
 key bindings:Incremental Search:S:7:Ctrl+G = Edit.IncSearch.Cancel
 key bindings:Incremental Search:S:8:Esc = Edit.IncSearch.Exit
-*84 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\precond.t:S:0:0.000000
+src win split:npcs.t:S:0:0.000000
+*85 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\misc.t:S:0:TADS 3
+*79 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\gadget.t:S:0:N
 save on build::I:1
+build:src in all pk:I:1
 searchbar history::S:0:restart
 searchbar history::S:1:retart
 searchbar history::S:2:saveGame(
@@ -847,60 +854,55 @@ searchbar history::S:6:Save(
 searchbar history::S:7:savepoint(
 searchbar history::S:8:undo(
 searchbar history::S:9:everything
-build:src in all pk:I:1
+*87 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\output.t:S:0:TADS 3
 src win selrange:Scripts\Runthru350.cmd:S:0:0,0
 src win selrange:Scripts\Runthru350.cmd:S:1:3729,3729
-*87 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\output.t:S:0:TADS 3
 *84 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\actions.t:S:0:0.000000
 DocToolbar:rebarNewLine:I:0
 *102 src win edit mode:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\extensions\collective.t:S:0:TADS 3
 TADS 3 Library-editor-prefs:default style:S:0:,,,,
+MenuBar:rebarIndex:I:0
 *87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\menucon.t:S:0:0,0
 *87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\menucon.t:S:1:0,0
-MenuBar:rebarIndex:I:0
-mdi win title::S:0:
-mdi win title::S:1:rooms.t
-mdi win title::S:2:advmods.t
-mdi win title::S:3:
-mdi win title::S:4:Polyadv.t
-mdi win title::S:5:rooms1.t
-mdi win title::S:6:ccr-itm1.t
-mdi win title::S:7:thingext.t
-mdi win title::S:8:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\travel.t
-mdi win title::S:9:
-mdi win title::S:10:map2.t
-mdi win title::S:11:verbs.t
-mdi win title::S:12:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\misc.t
-mdi win title::S:13:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\thing.t
-mdi win title::S:14:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\precond.t
-mdi win title::S:15:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\advlite.h
-mdi win title::S:16:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\modid.t
-mdi win title::S:17:endgame.t
-mdi win title::S:18:items.t
-mdi win title::S:19:npcs.t
-mdi win title::S:20:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\action.t
-mdi win title::S:21:cc-hints.t
-*79 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\action.t:S:0:N
+mdi win title::S:0:rooms.t
+mdi win title::S:1:rooms1.t
+mdi win title::S:2:ccr-itm1.t
+mdi win title::S:3:verbs.t
+mdi win title::S:4:
+mdi win title::S:5:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\thing.t
+mdi win title::S:6:
+mdi win title::S:7:items.t
+mdi win title::S:8:Polyadv.t
+mdi win title::S:9:advmods.t
+mdi win title::S:10:thingext.t
+mdi win title::S:11:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\actions.t
+mdi win title::S:12:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\action.t
+mdi win title::S:13:endgame.t
+mdi win title::S:14:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\modid.t
+mdi win title::S:15:
+mdi win title::S:16:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\misc.t
+mdi win title::S:17:Scripts\Auto 715.cmd
+mdi win title::S:18:map2.t
+mdi win title::S:19:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\advlite.h
+mdi win title::S:20:npcs.t
 src win selrange:%tads%lib\_main.t:S:0:0,0
 src win selrange:%tads%lib\_main.t:S:1:51599,51599
+*79 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\action.t:S:0:N
 build special file:license:S:0:License.txt
-search:dir:I:1
 *94 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\Extensions\adv3Lite\extensions\fueled.t:S:0:0.000000
+search:dir:I:1
+TADS 3-editor-prefs:default style:S:0:,,,,
+MenuBar:rebarWidth:I:-1
+build:installer prog:S:0:Polyadv_Setup.exe
 *87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\advlite.h:S:0:0,0
 *87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\advlite.h:S:1:24563,24563
-build:installer prog:S:0:Polyadv_Setup.exe
-MenuBar:rebarWidth:I:-1
-TADS 3-editor-prefs:default style:S:0:,,,,
+project win:pos:R:2,121,275,635
 project win:vis:I:1
-project win:pos:R:2,121,275,631
 *87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\command.t:S:0:0,0
 *87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\command.t:S:1:13618,13618
 auto-script:dir:S:0:Scripts
 *82 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\debug.t:S:0:0.000000
-stack win vis::I:0
-filesearch win pos::R:517,380,1816,950
-filesearch win vis::I:1
-stack win pos::R:342,205,1640,775
+src win split:endgame.t:S:0:0.000000
 Javascript-editor-prefs:styles:S:0:,,000000,,
 Javascript-editor-prefs:styles:S:1:,,008000,,
 Javascript-editor-prefs:styles:S:2:,,008000,,
@@ -914,20 +916,24 @@ Javascript-editor-prefs:styles:S:9:,,c00000,,
 Javascript-editor-prefs:styles:S:10:,,000000,,
 Javascript-editor-prefs:styles:S:11:,,c00000,,
 Javascript-editor-prefs:styles:S:12:,,ff00ff,,
-src win split:endgame.t:S:0:0.000000
-DebugToolbar:rebarIndex:I:4
+stack win pos::R:342,205,1640,775
+filesearch win vis::I:1
+filesearch win pos::R:517,380,1816,950
+stack win vis::I:0
 src win edit mode:Scripts\Runthru350.cmd:S:0:Command Script
+DebugToolbar:rebarIndex:I:4
 src win selrange:License.txt:S:0:0,0
 src win selrange:License.txt:S:1:304,304
-*79 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\parser.t:S:0:N
-searchMode::I:2
 *82 src win split:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\modid.t:S:0:0.000000
-*79 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\travel.t:S:0:N
+searchMode::I:2
+*79 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\parser.t:S:0:N
 line wrap:Scripts\Auto 460.cmd:S:0:N
-search dlg:old repl text:S:0:
-line wrap:Scripts\Auto 390.cmd:S:0:N
+*79 line wrap:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\travel.t:S:0:N
+*87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\precond.t:S:0:0,0
+*87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\precond.t:S:1:27845,27845
 src win selrange:npcs.t:S:0:0,0
 src win selrange:npcs.t:S:1:10596,10596
-*87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\precond.t:S:0:0,0
-*87 src win selrange:C:\Users\erice\OneDrive\Documents\TADS 3\extensions\adv3Lite\precond.t:S:1:12138,12138
+line wrap:Scripts\Auto 390.cmd:S:0:N
+search dlg:old repl text:S:0:
+line wrap:Scripts\Auto 715.cmd:S:0:N
 

@@ -239,6 +239,48 @@ VerbRule(SwimIn)
     action = Swim
     verbPhrase = 'swim/swimming (in what)'
 ;
+
+DefineTAction(PoleDir)
+    
+    execAction(cmd)
+    {
+        /* Get the direction of travel from the command */
+        direction = cmd.verbProd.dirMatch.dir;
+        
+        inherited(cmd);
+    }
+    direction = nil
+;
+
+DefineTAction(RideDir)
+    
+    execAction(cmd)
+    {
+        /* Get the direction of travel from the command */
+        direction = cmd.verbProd.dirMatch.dir;
+        
+        inherited(cmd);
+    }
+    direction = nil
+;
+
+VerbRule(PoleDir)
+    'pole' singleDobj singleDir
+    : VerbProduction
+    action = PoleDir
+    verbPhrase = 'pole/poling (what)'
+    missinqQ = 'what do you want to poll'
+;
+
+VerbRule(RideDir)
+    'ride' singleDobj singleDir
+    : VerbProduction
+    action = RideDir
+    verbPhrase = 'ride/riding (what)'
+    missinqQ = 'what do you want to ride'
+;
+
+
 DefineMagicWord(Fee)
     omegapsical_order = 15
     omegaps580_order = 17
@@ -610,12 +652,6 @@ DefineTIVerb(DustWith, ('brush' | 'sweep' | 'dust') multiDobj 'with' singleIobj,
 /* blow, play (for lyre, horn) */
 DefineTVerbS(Blow, 'blow' singleDobj, 'blow', 'blowing');
 DefineTVerbS(Play, 'play' singleDobj, 'play', 'playing');
-
-
-
-
-
-
 
 
 

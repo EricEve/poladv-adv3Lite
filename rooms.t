@@ -2183,24 +2183,104 @@ inDustyRockRoom: DarkRoom 'In Dusty Rock Room'
 ;
 
 + Fixture 'dusty rocks;dirty;stones boulderns stone boulder rock;them'
-    "They're just rocks.  (Dusty ones, that is.) "
+    desc()
+    {
+        if (global.oldGame)
+            "They're just rocks.  (Dusty ones, that is.)";
+        else if (areswept)
+            "They are covered with a thick coating of dust.  However, the
+            dust has been swept away from one of the larger rocks,
+            revealing a carved inscription. ";
+        // this happens if we sit on the throne without a crown
+        else if (safeCombination.seen)
+            "They are covered with a thick coating of dust.  I know that
+            there is an inscription on one of the rocks, but I can no
+            longer see it - you'll have to sweep the rock again. ";
+        else
+            "They are covered with a thick coating of dust.  You'll have
+            to find some way to remove it before you can examine them
+            properly. ";
+
+    }
+    
+    areswept = nil
+    
+    readDesc 
+    {        
+        if(!areswept) 
+        {
+            if (safeCombination.seen)
+                "Sorry, but I can't quite remember what the inscription
+                reads.  You'll have to sweep the rock again. ";
+            else
+                "Even if there was anything readable, I wouldn't be able
+                to see it for all the dust!";
+        }
+        else 
+            "In the rock is carved the message: <q><<safeCombination.showCombo()>></q>. ";
+    }       
+    
+    dobjFor(Clean)
+    {
+        preCond = [touchObj]
+        verify()  {  }
+        check() { sweepCheck(); }
+        action() { askForIobj(CleanWith); }
+    }
+    
+    dobjFor(CleanWith)
+    {
+        verify() {}
+        
+        check()
+        {
+            if(gIobj != whiskbroom)
+                "{The subj iobj} won't do much of a job. ";
+            else 
+                sweepCheck();
+        }
+        
+        action()  {  sweep(); }
+    }        
+
+    sweepCheck()
+    {
+        if(areswept)
+            "Enough dusting, already!  {I}{\'m} making me sneeze.
+            If {i} want{s/ed} to read the inscription, please say so. ";
+    }
+    
+    dobjFor(SweepWith) asDobjFor(CleanWith)
+    sweep()
+    {        
+        if (!safeDial.comboSet) 
+            safeDial.setComb();
+        "Brushing the dust from one of the larger rocks reveals some carved
+        characters.  They appear to read: <q><<safeCombination.showCombo>></q>. ";        
+        
+        areswept = true;
+        safeCombination.moveInto(location);
+        safeCombination.seen = true;
+        
+        
+        
+    }    
 ;
 
 safeCombination: Fixture 'carved inscription; writing; combination letters characters; it them'
     "They are just 2-inch high characters, carved into the rock. "
     
-    readDesc
+    readDesc = "They read: <<showCombo()>>. "
+    
+    showCombo()
     {
         local i;
-        "They read: ";
         for (i = 1; i <= safeDial.comblen; i++) 
         {
             say(safeDial.combo[i]); 
             if (i < safeDial.comblen) "-";
         }
-        ". ";        
     }
-   
 ;
 
 /* 40 is a message */
@@ -2413,21 +2493,34 @@ atEastEndOfLongHall: DarkRoom 'At East End of Long Hall'
     north = crossover
     down asExit(north)
     hole asExit(north)
-    
-    // south -- will need modifying for not oldGame
-    
-    
-//    north: TravelConnector
-//    {
-//        travelDesc()
-//        {
-//            gActor.nextRoute = 1;
-//            "{I} {have} crawled through a very low wide passage
-//            parallel to and north of the hall of mists.\b";
-//        }
-//        
-//        destination = westSideOfFissure
-//    }
+ 
+    south: VarDest, TravelConnector
+    {
+        isConnectorApparent = !global.oldGame
+        
+        calcDest()
+        {
+            local movecontents = deadEndCrack.contents.subset({o: !o.isFixed});   
+            if(!deadEndCrack.seen || movecontents.length > 0)
+            {
+                randomChoice = true;
+                return rand(100) < 50 ? tightCrack: deadEndCrack;
+            }
+            else
+            {
+                randomChoice = nil;
+                return tightCrack;
+            }
+                
+        }
+        
+        travelDesc = "\n(choosing <<<if randomChoice>>one of the cracks at random<<else>>the left
+            crack<<end>>)\n"
+        
+        randomChoice = true
+    }
+       
+ 
 ;
 
 northHole: MultiLoc, Fixture 'round hole; (n) (north) two foor two-foot'

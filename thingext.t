@@ -319,10 +319,10 @@ modify Thing
     iobjFor(DustWith)
     {
         preCond = [objHeld]
-        verify() { illogical('{The iobj} will hardly serve as a broom' ); }
+        verify() { illogical('{The subj iobj} will hardly serve as a broom' ); }
     }
     
-    cannotCleanWithMsg = '{The iobj} {is}n\'t much use for cleaning. '
+    cannotCleanWithMsg = '{The subj iobj} {is}n\'t much use for cleaning. '
     
     dobjFor(Blow)
     {
@@ -338,6 +338,12 @@ modify Thing
        
     }
     
+    dobjFor(PoleDir)
+    {
+        preCond = [touchObj, new ObjectPreCondition(pole, objHeld)]
+        verify() { illogical(cannotPoleMsg); }    
+    }
+    cannotPoleMsg = '{I} {can\'t} pole {that dobj}'
     
     /* Other mods roughly corresponding to mods to thing and item classes in TADS 2 advmods.t */
     
