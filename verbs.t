@@ -265,11 +265,11 @@ DefineTAction(RideDir)
 ;
 
 VerbRule(PoleDir)
-    'pole' singleDobj singleDir
+    ('pole' | 'punt') singleDobj (|'to'|'to' 'the') singleDir
     : VerbProduction
     action = PoleDir
     verbPhrase = 'pole/poling (what)'
-    missinqQ = 'what do you want to poll'
+    missinqQ = 'what do you want to pole; which way do you want to pole it'
 ;
 
 VerbRule(RideDir)
@@ -277,7 +277,7 @@ VerbRule(RideDir)
     : VerbProduction
     action = RideDir
     verbPhrase = 'ride/riding (what)'
-    missinqQ = 'what do you want to ride'
+    missinqQ = 'what do you want to ride; which way do you want to ride it'
 ;
 
 
@@ -676,9 +676,11 @@ DefSpecialTravel(Rock, &rock, 'rock');
 DefSpecialTravel(BedAction, &bed, 'bed');
 DefSpecialTravel(Crawl, &crawl, 'crawl');
 DefSpecialTravel(Cobble, &cobble, 'cobble');
-DefSpecialTravel(PassageAction, &passage, 'passage' | 'tunnel' | 'opening');
+DefSpecialTravel(PassageAction, &passage, (|'follow' | 'go through' | 'enter') 
+                 ('passage' | 'tunnel' | 'opening'));
 DefSpecialTravel(Left, &left, 'left');
 DefSpecialTravel(Right, &right, 'right');
+DefSpecialTravel(Middle, &middle, 'middle');
 DefSpecialTravel(Giant, &giant, 'giant');
 DefSpecialTravel(Pit, &pit, 'pit');
 DefSpecialTravel(Hall, &hall, 'hall');

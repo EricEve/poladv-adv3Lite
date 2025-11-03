@@ -1476,8 +1476,7 @@ tightCrack: DarkRoom 'In Tight N/S Crack'
             "The passage south is blocked by a recent cave-in. ";
         }
     }
-    
-    
+       
     
     NPCexit1 = cloakroom.caved ? nil : cloakroom
     
@@ -1492,34 +1491,1180 @@ tightCrack: DarkRoom 'In Tight N/S Crack'
 
 ;
 
-/* 191 */
-deadEndCrack: DeadEndRoom "In Dead End Crack"    
-    "{I}{'m} in a dead-end crack.";}
 
+
+crackrocks: MultiLoc, Fixture, Surface 'rocks; large loose;;them'
+    "The rocks are too large to move or carry, and they are
+    now blocking the southern end of the passage.  "
+    
+    game551 = true
+
+
+    locationList = [greenTightCrack]
+
+    cannotMoveMsg ='The rocks are far too large to move. '
+    cannotTakeMsg = 'The rocks are too large to carry. '   
+    
+    lookInMsg = 'You find nothing of interest. '
+;
+
+greenTightCrack:Room
+;
+
+/* 174 */
+cloakroom: DarkRoom 'In Cloakroom'
+    "{I}{'m} in the Cloakroom.  This is where the dreaded Wumpus
+      repairs to sleep off heavy meals.  (Adventurers are his favorite
+      dinner!)  Two very narrow passages exit NW and NE. <<if caved>> 
+      Unfortunately, the NE passage is now blocked by a rockslide.<<end>>  "
+    
+    game551 = true
+    caved = nil
+    
+    passage: TravelConnector -> cloakPits
+    {
+        canTravelerPass(actor) { return caved; }
+        explainTravelBarrier(actor, connector)
+        {
+            "There's more than one passage - please tell me which
+            direction you want to go. ";
+        }
+    }
+    
+    northeast: TravelConnector -> tightCrack
+    {
+        canTravelerPass(actor) { return !caved; }
+        explainTravelBarrier(actor, connector)
+        {
+            ne_blocked.msg;
+        }
+    }
+      
+    
+    crack asExit(northeast)
+    
+    northwest = cloakPits
+    cave 
+    { // used when cloak is taken        
+        "{I} {have} jerked the cloak free of the rocks.  However, in doing
+        so {i} {have} caused a small rockslide, blocking the entrance
+        and making an unholy din.";
+        caved = true;        
+        crackrocks.moveIntoAdd(tightCrack);
+        tightCrack.seen = nil; // full description when next seen
+        if (wumpus.isAsleep && wumpus.isIn(self))              
+        { 
+            "<.p>";
+            wumpus.actionDobjWake();
+        }
+    }
+
+    NPCexit1 {if(caved)return nil; else return tightCrack;}
+    
+//    myhints = [Cloakhint]
+    ana2 = "You see a brief flash of blue light, then feel a sickening 
+        <i>crunch</i>.  For a short moment you are surrounded by junk of all
+        kinds - old display boards, broken filing cabinets and worn-out
+        office machinery.   The pendant then transports you back to Red level. ";
+        
+;
+
+cloakrocks: Fixture, Surface 'rocks; large loose' @cloakroom
+    desc 
+    {
+        "The rocks are too large to move or carry.  ";
+        if(cloakroom.caved) 
+        {
+            "Unfortunately, they are now blocking the passage to the
+            northeast.  ";
+        }
+    }
+    
+    game551 = true
+    
+    cannotMoveMsg = 'The rocks are far too large to move. '
+    cannotTakeMsg = 'The rocks are too large to carry. '
+    lookInMsg =  'You find nothing of interest. '   
+;
+
+
+/* 175 */
+cloakPits: DarkRoom 'In Room with Small Pits'
+    "{I}{'m} in a damp room containing several small climbable pits.
+    Passages exit to the east and north.  On the south wall you see the
+    remains of an iron ladder which once led upwards, but it is now badly
+    corroded and unclimbable. "
+    
+    game551 = true
+    
+    passage = "There's more than one passage - please tell me which
+        direction you want to go. "
+    
+    pitlist = [cloakPit1, cloakPit2, cloakPit3]
+    south = cloakPit1
+    northeast = cloakPit2
+    northwest = cloakPit3
+    
+    north = atHighHole
+    east = cloakroom
+    
+    pit: VarDest, TravelConnector
+    {
+        calcDsst() { return rand(lexicalParent.pitlist); }
+    }
+    
+    up =  "<<ladder1.cannotClimbMsg>>"
+    climb asExit(up)
+    
+    ana2 =  "You see a brief flash of blue light, then feel a sickening 
+        <i>crunch</i> as your body collides with solid concrete.  For a
+        brief moment you see that the floor at Blue level has been raised,
+        and is almost at the level of your shoulders.  Then the pendant
+        returns you to Red level. ";
+        
+;
+
++ ladder1: Fixture 'remains of the ladder[n];iron rusted corroded rusty metal fragile;;them it'
+    "Years of corrosion in this damp room have reduced the ladder
+    to a few broken pieces of heavily rusted metal.  They certainly
+    won't bear your weight. "
+    
+    
+    cannotClimbMsg = 'You attempt to climb up, but the remains of the ladder are too
+        fragile to bear your weight.  You give up the attempt.'
+;
+
++ featurelessPits: CollectiveGroup 'featureless pits;;pits; them'
+    "There are three pits, to the south, northeast and northwest.
+    To find out more, I suggest that you enter them. "
+    
+    collectiveActions = [Examine, ClimbDown, Climb, Enter]
+    
+    dobjFor(Enter) 
+    {
+        verify() {}
+        check = "You'll have to tell me which pit you want to enter.  For example,
+        to enter the south pit say ENTER SOUTH PIT or just SOUTH. "
+    }
+    
+    dobjFor(Climb) asDobjFor(Enter)
+    dobjFor(ClimbDown) asDobjFor(Enter)
+    
+    game551 = true
+;
+
++ pit1: Featurelesspit 'south pit; s southern'
+    destination = cloakPit1
+;
+
++ pit2: Featurelesspit 'northeast pit; ne northeastern'
+    destination = cloakPit2
+;
+
++ pit3: Featurelesspit 'northwast pit; nw northwestern'
+    destination = cloakPit3
+;
+
+
+class Featurelesspit: StairwayDown
+    desc = "To find out more, I suggest that you enter <<theName>>. "
+    game551 = true
+    dobjFor(Enter) asDobjFor(ClimbDown)
+    dobjFor(Board) asDobjFor(ClimbDown)
+    dobjFor(Climb) asDobjFor(ClimbDown)
+    collectiveGroups = [featurelessPits]
+    
+;
+
+/* 176 */
+
+// From version 2.00 there are three pits.  Two of them contain
+// a ring, but the third is empty because the Wumpus has stolen the gold
+// ring.  A clue to the significance of the rings is in the Octagonal Room.
+
+class CloakPitRoom: NoNPC, DarkRoom
+    game551 = true
+    
+    up:TravelConnector -> cloakPits
+    {
+        noteTraversal(actor) { actor.nextRoute = 1; }
+    }
+    climp = up
+    out asExit(up)
+    
+    dobjFor(Climb)
+    {
+        verify() {}
+        action() { goInstead(up); }
+    }
+    ana2 = "You see a brief flash of blue light, then feel a sickening 
+        <i>crunch</i> as your entire body collides with solid concrete.  The
+        pendant then returns you to Red level. "
+    
+;
+
+cloakPit1: CloakPitRoom 'In Featureless Pit'
+    "{I} {am} at the bottom of a small pit, which is featureless
+    except for large footprints which suggest that
+    someone - or something - has been here before you. "
+;
+
++ Fixture 'large footprints;foot;prints; them'
+    "They look too large to have been made by a human being. "
+    
+    cannotTakeMsg = 'I\'d like to see you try! '
+;
+
+cloakPit2: CloakPitRoom 'In Very Featureless Pit'
+    "{I} {am} at the bottom of a small, totally featureless pit. "
+;
+
+cloakPit3: CloakPitRoom 'In Fairly Small Pit'
+    "{I} {am} at the bottom of a fairly small, featureless pit. "
+;
+
+
+/* 177 */
+atHighHole: DarkRoom 'At High Hole'
+    "{I} {am} at a high hole in a rock wall."
+    game551 = true
+    
+    down = atEastEndOfLongHall
+    climb asExit(down)
+    jump asExit(down)
+    south = cloakPits
+    ana2  = "You see a brief flash of blue light, and for a short moment you
+        seem to be inside a water tank!  More familiar surroundings reappear
+        moments later, and you are relieved to find that you and your
+        possessions are still dry.  Evidently the pendant is able to protect
+        the wearer in situations like this. "      
+;
+
+
+/* 178 */
+ne_blocked: object
+    msg = "The NE passage is blocked by a recent cave-in.\b";
+;
+
+/* 179 */
+muddyDefile: NoNPC, DarkRoom 'In Muddy Defile'
+    "{I} {am} in a sloping muddy defile, next to a tumbling brook."
+    
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    game551 = true
+
+    down asExit(west)
+    downstream asExit(west) // Added - DJP
+    west = bubbleChamber
+    
+    up asExit(east)
+    upstream asExit(east)// Added - DJP
+    east = fairyGrotto
+    stream asExit(east)
+
+;
+
+/* 180 */
+tongueOfRock: DarkRoom 'At Tongue of Rock'
+    "{I} {am} in a level E/W passage partially blocked by an overhanging
+    tongue of rock.  A steep scramble would take you up over the tongue,
+    whence continues an upward crawl."
+    
+    game551 = true
+   
+    passage = "The passage goes in two directions.  Please tell me which way
+        you want to go. "
+        
+    west = batCave
+    up = upperPassage
+    climb asExit(up)
+    east = passageEndAtHole
+;
+
+/* 181 */
+dog_message: object
+    msg = "The dog won't let you pass."
+;
+
+/* 182 */
+upperPassage: DarkRoom 'In Upper Passage'
+    "{I}{'m} in the Upper Passage, a long level E/W tunnel. "
+    
+    game551 = true
+    
+    passage = "The passage goes in two directions.  Please tell me which way
+        you want to go "
+        
+    west = tongueOfRock
+    east = starChamber
+;
+
+;
+/* 183 */
+starChamber: DarkRoom 'In Star Chamber '
+    "{I} {am} in a star-shaped chamber.  Passages exit north, east,
+    south and west. "
+    
+    game551 = true
+    
+    passage = "There's more than one passage -- please tell me which
+        direction you want to go. "
+        
+
+    west = upperPassage
+    east: VarDest, TravelConnector
+    {
+        calcDest
+        {
+            if (rand(100) <= 50)
+                return elbowInPassage;
+            else
+                return tunnelIntersection;
+        }
+    }
+        
+    south = deadEnd15
+    north = narrowEWPassage
+
+    NPCexit1 = elbowInPassage
+    NPCexit2 = tunnelIntersection
+;
+
+;
+/* 184 */
+elbowInPassage: DarkRoom 'At Elbow in Passage'
+    "{I} {am} at an elbow in a winding E/W passage.  %You% can go SW or SE. "
+    
+    game551 = true   
+
+    passage = "The passage goes in two directions.  Please tell me which way
+        you want to go. "
+    
+    southwest = starChamber
+    southeast = rotunda
+;
+
+/* 185 */
+deadEnd15: DeadEndRoom
+    game551 = true
+
+    north = starChamber
+    out asExit(north)
+;
+
+/* 186 */
+tunnelIntersection: DarkRoom 'At Tunnel Intersection'
+    "{I}{'m}at the intersection of two long tunnels.  One goes NW,
+    the other NE. "
+    
+    game551 = true
+    
+    passage = "The tunnel goes in two directions.  Please tell me which way
+        you want to go "
+        
+    northwest = starChamber
+    northeast = rotunda
+;
+
+/* 187 */
+narrowEWPassage: DarkRoom 'In Narrow East-West Passage'
+    "{I}{'m} in a long narrow east-west passage which curves out of sight
+    at both ends. "
+    
+    passage = "There's more than one passage - please tell me which
+        direction you want to go. "
+    
+    west = starChamber
+    east = rotunda
+;
+
+/* 188 */
+rotunda: DarkRoom 'In Rotunda'
+    "{I}{'m} in the Rotunda.  Corridors radiate in all directions.\b       
+        There is a telephone booth standing against the north wall."
+    
+    
+    game551 = true
+    
+    hasfloor = true // this seems to be a room in the normal sense rather
+                    // than a natural chamber.
+    passage =  "There's more than one passage - please tell me which
+        direction you want to go. "
+        
+    north = narrowEWPassage
+    west = elbowInPassage
+    
+    southwest: VarDest, TravelConnector
+    {
+        calcDest()
+        {
+            if (rand(100)<= 65) return devilsChair;
+            else return tunnelIntersection;
+        }
+    }
+    
+    down asExit(southwest)
+  
+
+//    in {
+//        local actor := getActor(&travelActor);
+//        Phone_Booth1.doEnter(actor); return nil;
+//    }
+   
+    
+    travelerLeaving(actor, dest)
+    {
+        if (noleaveroom) 
+        {
+            // leave things as we expect to find them when we re-enter
+            // the room.
+            // Remove the gnome
+            gnome.moveInto(nil);
+            // The booth door will be closed
+            phoneBooth1.mydoor.isOpen = nil;
+            // If the phone is unbroken, it will be ringing and
+            // the gnome may barge in.
+            if (!phoneBooth1.myphone.isbroken) 
+            {
+                gnome.isntcoming = nil;
+                phoneBooth1.myphone.isringing = true;
+            }
+            // If the phone is broken, the gnome won't be coming.
+            else gnome.isntcoming = true;
+        }
+        noleaveroom = nil;
+        inherited(actor, dest);
+        
+    }
+    
+    noleaveroom = nil
+
+    NPCexit1 = devilsChair
+    NPCexit2 = tunnelIntersection
+
+
+;
+
+// The gnome doesn't need much code because he's always unreachable!
+gnome: Fixture 'gnome; large'
+   "The large gnome is occupying the phone booth, firmly
+    blocking the door.  He is talking excitedly to someone at the
+     other end of the phone. "
+    game551 = true  
+    isntcoming = nil //? Not defined as a property of gnome in TADS 2 port, though referenced
+;
+
+/* 189 */
+// I'll come back to do the phone booth and phone later
+// Is it best to make the phone booth a Booth or a Room with a separate Enterable?
+
+phoneBooth1: Thing
+    myphone = nil
+;
+
+phone: Thing
+    isringing = nil
+    isbroken = nil
+;
+
+
+/* 190 */
+devilsChair: DarkRoom 'At Devil\'s Chair.'
+    "{I}{'m} at the Devil's Chair, a large crystallization shaped like a
+    seat, at the edge of a black abyss. {I} {can't} see the bottom.
+    An upward path leads away from the abyss. "
+    
+    game551 = true
+    
+    north = decrepitBridge
+    cross asExit(north)
+    scross asExit(north)
+    bridge asExit(north)
+    up = rotunda
+
+       
+    NPCexit1
+    {
+         if (!decrepitBridge.isfallen) return nil;
+         else return dantesRest;
+    }
+    jump 
+    {
+        if (!decrepitBridge.isfallen)         
+            "I respectfully suggest you go across the
+            bridge instead of jumping.";        
+        else
+            didnt_make_it.death;
+    }
+    
+    listenDesc
+    {
+        inherited();
+        if (global.oldGame) 
+            return;
+        global.listenAdd = true;       
+        "You hear a distant roar, like the sound of a fast-flowing
+             river, from the depths of the abyss. ";
+    }
+;
+
+
+
+decrepitBridge: DSPassage 'bridge; natural decrepit' @devilsChair @dantesRest
+    desc 
+    {
+        if(!isfallen) 
+        {
+            "That bridge looks very fragile. ";
+            if(crosscount >= 0) "I'd take care when crossing
+                it. ";
+        }
+        else
+            "The remnants of the bridge can still be seen, but there
+            is now no way across the chasm. ";
+    }
+    
+    canTravelerPass(actor) { return !isfallen; }
+    explainTravelBarrier(actor, connector)
+    {
+        "There is no longer any way across the chasm. ";
+    }
+    
+    specialDesc()
+    {
+        if(!isfallen)         
+            "A decrepit natural bridge spans the chasm.  A message
+            scrawled into the rock wall reads: <q>Bridge out of repair.
+            Maximum load: 35 Foonts.</q>";        
+        else 
+            "The remnants of a natural bridge partially overhang the
+            chasm. ";        
+    }
+    
+    /* Code for crossing the bridge follows.  It can always be crossed
+       safely if the total weight of objects carried is 4 or less.  If
+       more than 4, the bridge may collapse and we'll end up in the
+       Lost River Canyon.  Each time the bridge is crossed, the probability
+       of collapse goes up (provided that the allowable weight was
+       exceeded).   The upgraded magic wand can temporarily make the
+       bridge safer.
+    */
+    
+    noteTraversal(actor)
+    {
+        local safecross = nil, fallpct, i, l, o;
+        local olist, wt;
+        
+        crosscount++;
+        wt = actor.getCarriedWeight();
+        
+        if((crosscount <= 0) || (wt <= 4))
+            safecross = true;
+        
+        if(!safecross) 
+        {
+            fallpct = ((wt + crosscount) * (wt + crosscount))/10;
+            if(fallpct < 10) 
+                fallpct = 10;
+            if(rand(100) <= fallpct) 
+            {
+                isfallen = true;
+                "The load is too much for the bridge!  With a roar, the
+                entire structure gives way, plunging you headlong into the
+                raging river at the bottom of the chasm and scattering all
+                your holdings.  As the icy waters close over your head,
+                you flail and thrash with all your might, and with your
+                last ounce of strength pull yourself onto the south bank
+                of the river.<p>";
+                
+                if(brassLantern.isIn(actor))
+                    brassLantern.moveInto(lostCanyonE);
+                if(axe.isIn(actor))
+                    axe.moveInto(lostCanyonS);
+                l = FreshBatteries.list.length;
+                for (i = 1; i <= l; i++) 
+                {
+                    o = FreshBatteries.list[i];
+                    if(o.isIn(actor))
+                        o.moveInto(lostCanyonS);
+                }
+                l = actor.contents.length; 
+                olist = actor.contents;
+                for (i = 1; i <= l; i++) 
+                {
+                    o = olist[i];
+                    o.moveInto(nil);
+                    if (o == mushrooms || o == mushroom) // Regrow mushrooms
+                        new Fuse(o, &regrow, o.growtime);                        
+                }
+                actor.travelVia(lostCanyonE);
+                exit;
+            }
+            else         
+                "The bridge shakes as you cross.  Large hunks of clay and
+                rock near the edge break off and hurtle far down into the
+                chasm.  Several of the cracks on the bridge surface widen
+                perceptibly. <.p>";
+            
+        }
+        
+    }
+    
+    
+    game551 = true
+    dobjFor(Cross) asDobjFor(TravelVia)
+    isfallen = nil
+    iswavetarget = true 
+    crosscount = 0
+    
+    
+;
+
+bridgeMess: MultiLoc, Decoration 'message; warning'
+    desc
+    {       
+        readDesc();
+        if(decrepitBridge.isfallen) 
+            "It's certainly out of repair now.  You should have taken
+            more heed of the warning. ";
+        
+        else if (decrepitBridge.crosscount >= 0) 
+            "The bridge certainly looks very fragile.\b
+            You'll need to keep the weight of your inventory to a bare
+            minimum, otherwise it won't be safe to cross. ";
+    }
+        
+    readDesc = "It reads: <q>Bridge out of repair. Maximum load: 35 Foonts.</q> " 
+    locationList = [dantesRest, devilsChair]
+    game551 = true
+;
+
+/* 191 */
+deadEndCrack: DeadEndRoom 'In Dead End Crack'
+    "{I]{'m} in a dead-end crack. "
+    
+    game551 = true
+    
     north = atEastEndOfLongHall
+    out asExit(north)
 //    ana2 = Blue_Dead_End_Crack
 ;
 
-
-
-cloakroom: Room
+/* 192 */
+gravelBeach: NoNPC, Room 'On Gravel Beach'
+    "{I}{'m} on a small gravel beach at the south wall of the Blue Grotto.
+    A gravelly path leads east. "
     
-    caved = nil
+    game551 = true
+    sober = true // don't allow player to leave by drinking wine
+    
+    north: TravelConnector -> grottoWest
+    {
+        travelBerriers = [boatBarrier, poleCheck]
+    }
+    
+    northeast: TravelConnector -> blueGrottoEast
+    {
+        travelBerriers = [boatBarrier, poleCheck]
+    }
+    
+    east: TravelConnector -> vestibule
+    {
+        travelBarriers = [noBoatBarrier]
+    }
+    
+;
+
+/* 193 */
+flowerRoom: NoNPC, DarkRoom 'In Flower Room'
+    "{I}{'m} in the Flower Room.  The walls are covered with colorful,
+    intricate, flower-like patterns of crystallized gypsum. A hole leads
+    to the west. "
+    game551 = true
+    sober = true // don't allow player to leave by drinking wine    
+
+    west = vestibule
 ;
 
 
-tongueOfRock: Room 'Tongue of Rock'
++ hive: Fixture, Container 'beehive; (bee) ;hive '
+    desc()
+    {
+        
+        if (!bees.arefed)
+            "Due to the bees, you can't examine the hive closely. ";
+        else
+            "It's a normal-looking beehive, securely fixed to the floor. ";
+//        if (itemcnt(self.contents) > 0) {
+//            "\nIt contains "; listcont(self);".  ";   
+    }
+    
+    contentsListed = bees.arefed
+    
+    game551 = true
+     
+    specialDesc 
+    {        
+        if(!bees.arefed)
+            "There is an active beehive nearby.  The bees hum
+            protectively around the hive.  ";
+        else
+            "There is a beehive here, securely fixed to the floor. ";
+    }
+
+    checkReach(actor)
+    {
+        if(!bees.arefed)
+            "The hum of the bees rises to an angry buzz as you move
+            towards the hive. ";
+    }
+    
+    dobjFor(LookIn)
+    {
+        check()
+        {
+            if(!bees.arefed)
+                desc();
+        }        
+    }
+    
+    iobjFor(ThrowAt)
+    {
+        check()
+        {
+            if(gDobj != flowers)
+            "That would only enrage the bees!";    
+        }
+        action
+        {
+            doInstead(FeedWith, bees, gIobj);
+        }
+    }
+           
+   
+/* 
+ *   Allow objects to be put in the hive provided they are not too bulky, and provided that the bees
+ *   have been fed (the latter condition should be enforced by checkReach() )
+ */    
+    iobjFor(PutIn)
+    {
+        check()
+        {
+            if(gDobj.islong)
+                "{The subj dobj} {is} too long to go into {the iobj}. ";
+            else if(gDobj.isLarge)
+                "{The subj dobj} {is} too large to go into {the iobj}. ";
+            else if(gDobj.isHuge)
+                "{The subj dobj} {is} are too large to go into {the iobj}. ";
+            else 
+                inherited();                
+        }
+    }   
+;
+
+/* 194, 195 */
+
+EWCorridorE: DarkRoom 'At East End of Short E/W Corridor'
+    desc() 
+    {
+        if(inArchedHall.jericho) 
+            
+            "{I} {am{ looking west from the end of a short E/W corridor.
+            At %your% feet is a pile of loose rubble. On {my} left is
+            a hole into another chamber. ";
+        
+        else 
+            "{I} {am} at the end of a short E/W corridor.";
+    }
+    
+    game551 = true
+    sober = (!inArchedHall.jericho)
+    
+    south: TravelConnector -> inArchedHall
+    {
+        isConnectorApparent = inArchedHall.jericho
+    }
+    
+    hole asExit(south)
+    wall asExit(south)
+    cross asExit(south)
+    left asExit(south)
+    west = crypt
+
+    // Avoid getting NPC's trapped in here.
+    NPCexit1 = inArchedHall
+    // Exit info. for 'back' command:
+    
+    listenDesc
+    {
+        if (jericho || global.oldGame)
+            inherited();
+        else
+            "You pace around the room, listening carefully to your
+            footsteps.  You have a strong feeling that the wall to your
+            south is hollow. ";
+    }
+    
+;
+
+corridorRubble: Fixture 'loose rubble'
+    "It's just loose rubble. "
+    game551 = true
+   
+    cannotTakeMsg = 'You\'ve come here to find treasures, not to cart
+    useless rubble around the cave.  I suggest that you leave it where
+    it is. '
+    
+    lookInMssg = 'You sift through the rubble, but find nothing
+    of interest. '
+ 
+    dobjFor(Move)
+    {
+        verify() {}
+        action = "You move the rubble to one side, but find nothing of interest. "
+    }
+;
+
+/* 196 incorporated with In_Arched_Hall */
+/* 197 */
+vestibule: NoNPC, DarkRoom 'In the Vestibule'
+    "{I}{'m} in the Vestibule, a short east-west passage between two rooms. "
+    
+    game551 = true
+    sober = true // don't allow the player to leave by drinking wine
+    
+    passage = "The passage goes in two directions.  Please tell me which way
+        you want to go "
+        
+    east = flowerRoom
+    west = gravelBeach
+;
+
+/* 198 */
+fairyGrotto: Room 'In the Fairy Grotto'
+    "{I} {am} in the Fairy Grotto.  All around {me} innumerable
+    stalactites,
+    arranged in immense colonnades, form elegant arches.  On every side
+    you hear the dripping of water, like the footsteps of a thousand
+    fairies.  A small stream runs from the SW corner.  A bright glow
+    emanates from the south side of the grotto, and a steep passage
+    descends to the east."
+    
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    game551 = true
+    
+
+    southwest = muddyDefile
+    stream asExit(southwest)
+    downstream asExit(southwest)
+    passage asExit(southwest)
+    
+    east = coldPassage
+    down asExit(east)
+    
+    south: TravelConnector -> crystalPalace
+    {
+        canTravelerPass(actor)
+        {
+            return !brassLantern.isIn(actor) && brassLantern.isLit;    
+        }
+        explainTravelerBarrier(actor, connector)
+        {
+            "You go a short way down the bright passage, but the light
+            grows to blinding intensity.  You can't continue. ";
+        }
+    }
+        
+    up asExit(south)
+    NPCexit1 = crystalPalace
+    // Exit info. for 'back' command:
+    
+;
+
+/* 199 */
+too_cold: object
+    mag = "{I} {have}} approached the lower end of a steep passage,
+        but it is just too cold here to hang around, and {i} {aren't}
+        properly equipped to continue.  With teeth chattering, {i} climb{s/ed}
+    back up....<.p>"
 ;
 
 
-muddyDefile: Room 'Muddy Defile'
+/* 200 */
+// This is the reverse of a darkroom.  When the lamp is on, the light is
+// blinding.
+
+crystalPalace: Room 'In the Crystal Palace'
+    "{I} {am} in the Crystal Palace.  An overhead vein of
+        phosphorescent quartz casts a luminous glow which is reflected by
+        countless chips of mica embedded in both walls, which consist of
+        some sort of highly reflective glass, apparently of volcanic
+        origin.  A winding path of yellow sandstone leads west and rises
+        steeply to the east. "
+    
+    lookAroundWithin()
+    {
+        if(blinding)
+            "The glare from the walls is absolutely
+            blinding.  If you were to proceed you would almost certainly fall
+            into a pit. ";
+        else
+            inherited();
+    }
+    
+    listStatusExits(lst, cnt)
+    {
+        if(blinding)
+            "too dazzling to make out";
+        else
+            return true;
+        return nil;
+    }
+    
+
+
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    
+            
+    west: TravelConnector -> fairyGrotto
+    {
+        travelBarriers = [blindingBarrier]
+    }
+
+    east: TravelConnector -> yellowPath
+    {
+        travelBarriers = [blindingBarrier]
+    }
+
+    up asExit(east)
+
+
+    NPCexit1 = fairyGrotto
+    NPCexit2 = yellowPath
+
+   
+    // This property indicates that the light level in the room is too
+    // high ...
+    blinding = (brassLantern.isLit && brassLantern.isIn(self))
+    
+    roomBeforeAction()
+    {
+        
+        if(gActionIn(PutIn) && gDobj.ofKind(FreshBatteries) && gIobj == brassLantern
+           && gActor.canReach(gDobj) && gActor.canReach(gIobj))
+            return;
+        
+        if(gActionIn(Replace, Change) && gDobj.ofKind(FreshBatteries) &&
+           gActor.canReach(brassLantern) && gActor.canReach(gDobj))
+            return;
+        
+        if(gActionIs(Drop) || gAction.ofKind(SystemAction) || gAction.ofKind(TravelAction)
+           || gAction.ofKind(IAction))
+            return;
+        
+        if(gActionIn(Extinguish, SwitchOff) && gDobj == brassLantern && 
+           gActor.canReach(brassLantern) && gActor.canReach(gDobj))
+            return;
+        
+        if(blinding)
+        {
+            
+            "The glare from the walls is so bright that you can\'t see
+            a thing.\n";
+            exit;
+        }       
+    }  
+;
+
+blindingBarrier: TravelBarrier
+    canTravelerPass(traveler, connector)
+    {
+        return !traveler.getOutermostRoom.blinding;
+    }
+    explainTravelBarrier(traveler, connector)
+    {
+        "The glare from the walls is absolutely blinding.
+         If you tried to proceed you would almost certainly fall into
+         a pit. ";
+    }
+;
+
+/* 201 */
+yellowPath: Room 'On the Yellow Path'
+    "{I} {am} following an east-west yellow sandstone path.  There is a
+    glow to the west.   A dark passage branches off to the north. "
+    
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    
+
+/* Mention of the north passage has been added, on the grounds of fairness
+to Adventurers.  */
+    
+    west: TravelConnector -> crystalPalace
+    {
+        canTravelerPass(actor)
+        {
+            return !(brassLantern.isIn(actor) && brassLantern.isLit);
+        }
+        explainTravelBarrier(actor, connector)
+        {
+            "You go a short way down the bright passage, but the light
+            grows to blinding intensity.  You can't continue. ";
+        }      
+    }
+    down asExit(west)
+    east = rainbowRoom
+    north = ledgeAbovePinnacles
+    passage asExit(north)
+    
+    NPCexit1 = crystalPalace    
+;
+
+/* 202 */
+rainbowRoom: DarkRoom 'In the Rainbow Room.'
+    "{I} {am} in a very tall chamber whose walls are comprised of many
+    different rock strata.  Layers of red and yellow sandstone
+    intertwine with bright bands of calcareous limestone in a rainbow-
+    like profusion of color.  The rainbow effect is so real, you
+    are almost tempted to look for a pot of gold!  Poised far over 
+    {my} head, a gigantic slab, wedged tightly between the north and
+    south walls, forms a natural bridge across the roof of the chamber.
+    A trail leads east and west. "
+    
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    
+    west = yellowPath
+    click = overRainbow
+    east = greenLakeRoom
+//    myhints = [Bridgehint]
+;
+
+rainbowSlab: MultiLoc, Fixture 'natural bridge; gigantic; slab'   
+    checkReach(actor)
+    {
+        if(actor.isIn(rainbowRoom))
+            "It's too far away. ";
+    } 
+;
+
+/* 203 */
+coldPassage: DarkRoom 'In Cold Passage'
+    "{I}{'m} in a steeply sloping passage.  It is very cold here. "
+    
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    
+    
+    passage = "The passage goes in two directions.  Please tell me which way
+        you want to go "
+    
+    east: TravelConnector -> hallOfIce
+    {
+        canTravlerPass(actor) { return cloak.wornBy == actor; }
+        explainTravelBarrier(actor, connector) { too_cold.msg; }             
+    }
+    
+    down asExit(east)
+    ice asExit(east)
+    west = fairyGrotto
+    up asExit(west)    
+    
+    // No NPCexits - hall of ice is off limits to dwarves
+;
+
+/* 204 */
+//too cold for NPCs
+hallOfIce: NoNPC, DarkRoom 'In Hall of Ice' 
+    "{I} {am} in the Hall of Ice, in the deepest part of the caverns.
+    During winter, frigid outside air settles here, making this room
+    extremely cold all year round.  The walls and ceiling are covered
+    with a thick coating of ice.  An upward passage exits to the west. "
+    
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    
+    west = coldPassage
+    up asExit(west)
+    out asExit(west)
+    passage asExit(west)
+;
+
++ Decoration 'ice'
+    "It covers the walls and ceiling. "
+    game551 = true    
+;
+
+/* 205 */
+overRainbow: DarkRoom 'Over the Rainbow (Room)'
+    "{I} {am} standing on a natural bridge far above the floor of a circular
+    chamber whose walls are a rainbow of multi-colored rock.  The bridge
+    was formed eons ago by a huge slab which fell from the ceiling and
+    is now jammed between the north and south walls of the chamber."
+    
+    game551 = true
+    // Don't allow drinking unless the Walls of Jericho are down.
+    sober = (!inArchedHall.jericho)  
+
+    north = gothicCathedral
+    click = rainbowRoom
+    jump = rainbow_demise
+;
+
+/* 206 */
+greenLakeRoom: DarkRoom 'In Green Lake Room'
+   "{I} {am} in a low, wide room below another chamber.  A small green
+    pond fills the center of the room.  The lake is apparently spring-
+    fed.  A small stream exits through a narrow passage to the north.
+    A larger passage continues west. "
+    
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+   
+    passage =  "There's more than one passage -- please tell me which
+        direction you want to go. "
+        
+    north = redRockCrawl
+    stream asExit(north)
+    downstream asExit(north)    
+    crawl asExit(north)
+    
+    west = rainbowRoom
+    up = 'The hole is too far up for {me} to reach. '
+    hole = up
+    climb = up
+;
+
+redRockCrawl: Room;
+
+gothicCathedral: Room;
+
+
+ledgeAbovePinnacles: Room;
+
+
+
+
+crypt: Room;
+
+lostCanyonS:Room;
+lostCanyonE:Room;
+
+passageEndAtHole: Room
 ;
 
 
-gravelBeach: Room 'Gravel Beach'
-;
+
 
 darkCove: Room 'Dark Cove'
+;
+
+/* 226 */
+rainbow_demise: Room 'Floor of the Rainbow Room'
+    ldesc = "{I} {am} on the floor of the Rainbow Room.  In fact,
+        {i} {am} spread *ALL OVER* the floor of the Rainbow Room. <<die()>>"    
 ;
     
 
@@ -1981,16 +3126,12 @@ hedges: MultiLoc, Decoration 'hedges and their leaves and flowers; multicolored 
 //        multicolored hedges. ";}
 ;
 
-castleRoom: OutsideRoom 'Octagonal Castle Room'
+castleRoom: IndoorRoom 'Octagonal Castle Room'
     "You're in an a large octagonal room with shiny white marble walls
     Doorways, each marked with a sign in Elvish, lead out in all compass directions.  "
     
     game551 = true
    
-    
-    isindoors = true
-    regions = [indoors]
-    
     north: TravelConnector -> atEndOfRoad
     {
         travelDesc()

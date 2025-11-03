@@ -22,6 +22,154 @@ pole: Thing 'wooden pole' @saltMarshEdge
 //    verDoSpinOver(actor,io) = {} // attempt to spin over fissure
 ;
 
+/* 46 */
+flowers: CanPick, Thing 'beautiful flowers; yellow blue wild attractive;;them' @oceanVista
+    desc()
+    {
+        if (! bees.arefed)
+            "I don't really know what species they are, but they are
+            attractive blue and yellow flowers.  ";
+        else
+            "The bees are swarming around the flowers, and %you% can't get
+            close to them now! ";
+    }
+    game551 = true
+    mass = 1
+    
+    isFixed = bees.arefed
+    
+    smellDesc = "The fresh flowers have a fragrant scent. "
+    
+    specialDesc = "The bees are eagerly swarming over the fresh flowers, collecting
+        nectar to take back to the hive. "
+    
+    useSpecialDesc = bees.arefed            
+    
+    //    verDoCount(actor) = {self.verDoSmell(actor);}
+    //    doCount(actor) = {
+    //        "You have roughly 20 flowers. ";
+    //    }
+    
+    checkReach(actor)
+    {
+        if(bees.arefed)
+            "The hum of the bees rises to an angry buzz as [i]
+            move{s/d} towards the flowers. ";
+    }    
+;
+
+/*
+ *   Treasures
+ */
+/* 47 */
+cloak: Wearable, Treasure 'silken cloak; lovely warm' @cloakroom
+    desc()
+    {
+        "It's a valuable-looking silken cloak";
+        if(!moved)
+            ", partially buried under the rocks.
+            There's little chance of moving the rocks, but you could
+            probably yank it out without tearing it. ";
+        else if (wornBy == gPlayerChar)
+            "(being worn). You feel very warm! ";
+        else ". ";
+    }
+    
+    game551 = true
+    mass = 1
+    basis = 3
+    
+    
+    initSpecialDesc = "A lovely silken cloak lies partially buried under a pile of
+      loose rocks. "
+    
+    fromloc = cloakrocks
+    
+    dobjFor(Take)
+    {
+        check()
+        {
+            if(!moved)
+                "The cloak is stuck tight under the rocks.  You'll probably
+                have to yank it out. ";        
+        }
+        action()
+        {
+            local m = moved;
+            inherited();
+            if(moved && !m)
+                cloakroom.cave();
+        }
+    }
+    
+    icecheck(actor)
+    {
+        if(wornBy == actor && actor.isIn(hallOfIce))   
+        {
+            "You'll freeze to death if you take off the cloak in
+            here! ";        
+            return nil;
+        }
+        return true;
+    }
+    
+    dobjFor(Doff)
+    {
+        check()
+        {
+            if(icecheck(gActor))        
+                inherited();
+        }
+    }
+    dobjFor(PutIn)
+    {
+        check()
+        {
+            if(icecheck(gActor))        
+                inherited();
+        }        
+    }
+        
+    dobjFor(PutOn)
+    {
+        check()
+        {
+            if(icecheck(gActor))        
+                inherited();
+        }        
+    }
+    
+    dobjFor(Drop)
+    {
+        check()
+        {
+            if(icecheck(gActor))        
+                inherited();
+        }        
+    }
+    
+    yankobj = (!moved)        
+    
+//    doWear(actor) = {
+//        local pendanlist := [pendant, pendant2, pendant3, broken_pendant];
+//        local i, o, l := length(pendanlist), count := 0;
+//        inherited.doWear(actor);
+//        for (i := 1; i <= l; i++) {
+//            o := pendanlist[i];
+//            if ((self.location = actor) and self.isworn and 
+//            (o.location = actor) and o.isworn)
+//                count++;
+//        }
+//        if (count = 1)
+//            "The pendant which you are wearing is now concealed under the 
+//            cloak. ";
+//        else if (count > 1)
+//            "The pendants which you are wearing are now concealed under 
+//            the cloak. ";  
+//    }
+;
+
+
 /* 66 */
  // Not to be confused with irid_crown   
 crown: Wearable, Treasure 'elfin crown'
@@ -423,3 +571,5 @@ boat: Fixture, Booth 'wooden boat; small rowing; dinghy' @grottoWest
     }
     
 ;
+
+mushroom: Thing;

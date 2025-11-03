@@ -2514,14 +2514,140 @@ atEastEndOfLongHall: DarkRoom 'At East End of Long Hall'
                 
         }
         
-        travelDesc = "\n(choosing <<<if randomChoice>>one of the cracks at random<<else>>the left
+        travelDesc = "\n(choosing <<if randomChoice>>one of the cracks at random<<else>>the left
             crack<<end>>)\n"
         
         randomChoice = true
     }
        
- 
+    crack asExit(south)
+    left = global.newGame ? tightCrack: nil
+    middle = global.newGame ? tightCrack: nil
+    right = global.newGame ? deadEndCrack : nil
+    
+    NPCexit1 {
+        if(global.newGame) return tightCrack;
+        else return nil;
+    }
+    NPCexit2 {
+        if(global.newGame) return tightCrack2;
+        else return nil;
+    }
+    NPCexit3 {
+        if(global.newGame) return deadEndCrack;
+        else return nil;
+    }
 ;
+
+hallCracks: MultiLoc, Fixture 'cracks;;;them'
+    desc
+    {
+        if(analevel == 1) 
+        {
+            "There are three cracks in the south wall, but the middle and
+            left cracks have been blocked with concrete.  ";
+        }
+        else 
+        {
+            "There are three cracks in the south wall.  To choose which
+            one to enter, type LEFT, MIDDLE or RIGHT.  ";
+            if(self.location.analevel != 2) 
+            {
+                "The middle crack is narrower than the other two";
+                if (tightCrack2.seen)
+                    ". ";
+                else 
+                    " and it doesn't appear that you can proceed very far down 
+                    it. ";
+            }
+        }
+    }
+    
+    dobjFor(Enter)
+    {
+        verify() {}
+        action() { gActor.travelVia(location.crack); }
+    }
+    
+    dobjFor(Board) asDobjFor(Enter)
+    dobjFor(GoThrough) asDobjFor(Enter)
+    
+    locationList = [atEastEndOfLongHall]
+;
+
+leftCrack: MultiLoc, Enterable 'left crack'
+    "It's one of three cracks on the south wall.  It looks large
+     enough to enter. "
+    
+    game551 = true // in 551-point game only
+    
+    locationList = [atEastEndOfLongHall]
+
+    connector = tightCrack
+    
+    dobjFor(Board) asDobjFor(Enter)
+;
+
+rightCrack: MultiLoc, Enterable 'right crack'
+    desc 
+    {
+        "It's one of three cracks on the south wall.  It looks large
+        enough to enter";
+        if(location.analevel ==1)
+           ", but unfortunately it has been blocked up with concrete. ";
+        else
+           ". ";
+    }
+    
+    game551 = true // in 551-point game only
+
+    locationList = [atEastEndOfLongHall]
+    //        , Blue_East_End_Of_Long_Hall, Green_East_End_Of_Long_Hall]
+    
+    dobjFor(Board) asDobjFor(Enter)
+    dobjFor(GoThrough) asDobjFor(Enter)    
+    
+    connector = location.right    
+;
+
+
+middleCrack: MultiLoc, Enterable 'middle crack; centre center'
+    desc
+    {
+        if(location.analevel == 2)
+            "It's one of three cracks on the south wall.  It may once have been
+            narrow like its counterpart at Red level, but it appears to have
+            been widened at some time in the past. ";
+        else 
+        {
+            "It's one of three cracks on the south wall.  It's very
+            narrow, although it looks just large enough to enter";
+            if(location.analevel == 1)
+                ".  Unfortunately you can't, because it has been blocked up
+                with concrete. ";
+            else if (tightCrack2.seen)
+                ". ";
+            else 
+                ", but I doubt whether you could proceed very far down it. ";
+        }
+    }
+    
+    
+    game551 = true // in 551-point game only
+    sdesc = "middle crack"
+    
+    connector = location.middle
+    
+    locationList = [atEastEndOfLongHall]
+    //        , Blue_East_End_Of_Long_Hall, Green_East_End_Of_Long_Hall]
+    
+    dobjFor(Board) asDobjFor(Enter)
+    dobjFor(GoThrough) asDobjFor(Enter)    
+;
+
+
+
+
 
 northHole: MultiLoc, Fixture 'round hole; (n) (north) two foor two-foot'
     "It's a round two-foot hole, going north. "
@@ -2536,8 +2662,7 @@ northHole: MultiLoc, Fixture 'round hole; (n) (north) two foor two-foot'
     }
     dobjFor(GoThrough) asDobjFor(Enter)
     dobjFor(ClimbDown) asDobjFor(Enter)
-    locationList = [atEastEndOfLongHall]
-                                 
+    locationList = [atEastEndOfLongHall]                               
                 
 ;
 

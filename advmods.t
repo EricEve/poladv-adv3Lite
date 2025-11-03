@@ -1139,7 +1139,7 @@ roomMove(oldroom,newroom)
     {
         cur = l[i];
         /* Move all the non-fixed objects from oldroom to newroom */
-        if (cur.isFixed)
+        if (!cur.isFixed)
             cur.moveInto(newroom);
     }
 }
@@ -1184,7 +1184,7 @@ modify Actor
     
     /* 
      *   The TADS 2 implementation defines a transmove method which may be redundant in TADS
-     *   3/adv3Lite. Fow now we keep it just in came but make it do the samea ss travelVia.
+     *   3/adv3Lite. Fow now we keep it just in case but make it do the samea ss travelVia.
      */
     transmove(dest)
     {

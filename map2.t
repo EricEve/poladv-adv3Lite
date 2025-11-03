@@ -26,9 +26,6 @@ InSecretNSCanyon1: DarkRoom
 
 
 
-EWCorridorE: DarkRoom
-;
-
 dantesRest: DarkRoom
 ;
 
@@ -90,8 +87,5 @@ sandstoneChamber: DarkRoom 'Sandstone Chamber'
 S_Of_Center: Room
 ;
 
-crystalPalace: DarkRoom
-;
-
-rainbowRoom: Room 'Rainbow Room'
+tightCrack2: DarkRoom
 ;

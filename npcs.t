@@ -771,8 +771,12 @@ dragonCorpse: Fixture 'dragon;dead green huge;corpse'
 dragonTeeth: Thing
 ;
 
-wumpus:NPC 'wumpus'
+wumpus: NPC 'wumpus'
     isChasing = nil
+    isAsleep = true
+    
+    
+    
 ;
 
 dog: NPC 'dog'
@@ -793,6 +797,11 @@ Dwarves: NPC 'dwarves;;;them'
 pirates: NPC 'pirate;;;him'
     
     
+;
+
+bees: Feedable, Fixture 'bees;;;them'
+    
+    arefed = nil
 ;
 
 dwarfstart(parm)
