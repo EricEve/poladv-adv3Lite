@@ -252,6 +252,18 @@ largeKey: Key 'large brass key'
     getFacets = [tinyKey, smallKey]
 ;
 
+/* 95 */
+slugs: Coin 'lead slugs;;;them'
+    "They look similar to coins, and have a crude design stamped
+        on them.  Maybe they are actually used as a form of currency 
+        within the cave. "
+    
+    game551 = true
+    mass = 3    
+    initSpecialDesc = "There are some lead slugs here! "    
+;
+
+
 /* 96 */
 honeycomb: Food 'sweet honeycomb; honey; comb'
     "It looks delicious, but something in the back of your mind

@@ -3,6 +3,39 @@
 #include <tads.h>
 #include "advlite.h"
 
+MultiLoc, Decoration 'hole'
+    "It's just a hole. "
+    notImportantMsg = 'You can type HOLE to go through it. '
+    initialLocationClass = Room
+    isInitiallyIn(obj) { return obj.propDefined(&hole); }
+    dobjFor(Enter) 
+    {
+        verify() {}
+        action() { gActor.travelVia(location.hole); }
+    }
+    
+    
+    
+    dobjFor(GoThrough) asDobjFor(Enter)
+    decorationActions = [Examine, GoThrough, Enter]
+;
+
+MultiLoc, Decoration 'passage'
+    "Passages are just passages. "
+    notImportantMsg = 'You can type PASSAGE to go through it. '
+    initialLocationClass = Room
+    isInitiallyIn(obj) { return obj.propDefined(&passage); }
+    dobjFor(Enter) 
+    {
+        verify() {}
+        action() { gActor.travelVia(location.passage); }
+    }    
+    
+    dobjFor(GoThrough) asDobjFor(Enter)
+    decorationActions = [Examine, GoThrough, Enter]
+;
+
+
 /* Additional rooms for 551-point version */
 
 /* Mix-in class for rooms with a brassKey property */
@@ -1905,16 +1938,11 @@ rotunda: DarkRoom 'In Rotunda'
     
     down asExit(southwest)
   
-
-//    in {
-//        local actor := getActor(&travelActor);
-//        Phone_Booth1.doEnter(actor); return nil;
-//    }
-   
+    in = phoneBooth1Door   
     
     travelerLeaving(actor, dest)
     {
-        if (noleaveroom) 
+        if (dest != inPhoneBooth1) 
         {
             // leave things as we expect to find them when we re-enter
             // the room.
@@ -1942,29 +1970,421 @@ rotunda: DarkRoom 'In Rotunda'
     NPCexit1 = devilsChair
     NPCexit2 = tunnelIntersection
 
-
+//    extraScopeItems = (gnome.isIn(inPhoneBooth1) ? [gnome] : [])
 ;
 
-// The gnome doesn't need much code because he's always unreachable!
-gnome: Fixture 'gnome; large'
-   "The large gnome is occupying the phone booth, firmly
-    blocking the door.  He is talking excitedly to someone at the
-     other end of the phone. "
-    game551 = true  
-    isntcoming = nil //? Not defined as a property of gnome in TADS 2 port, though referenced
-;
 
 /* 189 */
 // I'll come back to do the phone booth and phone later
 // Is it best to make the phone booth a Booth or a Room with a separate Enterable?
 
-phoneBooth1: Thing
-    myphone = nil
++ phoneBooth1: Enterable 'phone booth' -> phoneBooth1Door
+    desc()
+    {
+        if(gnome.isIn(inPhoneBooth1))
+            "At present, it is occupied by a gnome who is talking excitedly
+            to someone at the other end of the line. ";
+        else
+            "It contains a banged-up pay telephone of ancient design. ";
+    }
+    game551 = true
+    
+    specialDesc
+    {        
+        if(gnome.isIn(inPhoneBooth1))
+            "The phone booth is occupied by a gnome.  He is talking
+            excitedly to someone at the other end.";
+        else if (myphone.isringing)
+            "The telephone booth is unoccupied.  The phone is ringing.";
+        else "The telephone booth is unoccupied.";
+    }
+    
+    
+    gnomecount = 0
+    gnomecheck
+    {
+       if(gnome.isIn(inPhoneBooth1)) 
+        {
+            "You can't, because the gnome is inside the booth and firmly
+            blocks the door.";
+            return;
+       }
+       if(!gnome.isntcoming && !global.closed && !myphone.isbroken &&
+         (gnomecount == 0 || rand(100) <= 55)) 
+        {
+            gnomecount++ ;
+            "As you move towards the phone booth, a gnome suddenly streaks
+            around the corner, jumps into the booth and rudely slams the
+            door in your face.  You can't get in.";
+            gnome.moveInto([inPhoneBooth1, rotunda]);
+            myphone.isringing = nil;
+            mydoor.makeOpen(nil);
+       }
+       else gnome.isntcoming = true;
+    }
+    
+    mydoor = phoneBooth1Door
+    myphone = phone1
+    
+    dobjFor(Open) { remap = mydoor }
+    dobjFor(Close) { remap = mydoor }
 ;
 
-phone: Thing
+++ Component, ProxyPhone 'phone; ancient banged-up'
+    "You can't examine the phone more closely until you enter the booth. "
+    checkReach(actor)
+    {
+        "You'll need to get inside the phone booth to do that. ";
+    }
+    myphone = phone1   
+    
+    game551 = true
+;
+
+ProxyPhone: Distant
+    myphone = nil
+    isringing = (myphone ? myphone.isringing : nil)
+    listenDesc
+    {
+        if(isringing)
+            "The phone is ringing. ";
+        else
+            inherited;
+    }
+    
+    isProminentNoise = isringing
+    notImportantMsg = '{I}\'d have to get into the booth for that. '
+    decorationActions = [ListenTo, Examine]
+;
+
+
+inPhoneBooth1: Room 'In Phone Booth'
+    "{I} {am} standing in a telephone booth at the side of a
+     large chamber.  Hung on the wall is a banged-up pay telephone of
+     ancient design. <<if myphone.isringing>>The phone is ringing.<<end>> "
+    isLit = rotunda.isLit
+    myphone = phone1
+    
+;
+
++ phone1: Phone 'old banged-up payphone;ancient pay;phone receiver telephone handset payphone'
+    isringing = true
+    
+    answermethod()
+    {
+        "No one replies.  Instead, {i} hear{s/ed} music, which {i} {think}
+        {i} recognize{s/d} as <q>The Walls of Jericho</q>.  Maybe it's a crossed
+        line.   After a few seconds, the line goes dead with a definite
+        <i>Click</i>.  You replace the receiver.  ";
+        isbroken = true;
+        dropmethod();
+    }
+   
+    dobjFor(Attack)
+    {
+        action()
+        {
+            "A few lead slugs drop from the coinbox.  (Gnomes are
+            notoriously cheap....)  But {i} {have} broken the phone
+            beyond all hope.  ";
+            vandalize();
+            slugs.moveInto(location);            
+        }
+    }
+    
+;
+
+class Phone: Fixture 
+// a telephone.  The following properties are set:
+    // enddesc: description of what phone is doing for use in
+    // ldesc
+    // isringing:  Whether it is ringing.
+    // isoffhook:  Whether the receiver has been lifted.
+    // isanswering: (When isoffhook is set) we are answering the phone
+    // isbroken (when phone is out of order)
+    // isdented (when phone has been hit)
+
+    // It is recommended that the following properties be customized
+    // as required:
+    // mybooth - if non-nil, this is set to the room which the player
+    //           must be in to interact with the phone.  By default, it
+    //           is set to the location of the phone.
+    // ldesc - long description, which may include self.enddesc
+    // location - where it is
+    // needtopay - true if coins must be inserted before dialing
+    // doTake (actor) - all actions when receiver is lifted
+    // takemethod (actor) - basic variable settings for when the
+    // receiver is lifted
+    // dropmethod (actor) - actions when the receiver is replaced.
+    // answermethod(actor) - what to do when the phone is answered
+    // dialtonemethod(actor) - message to be issued when a dial tone is
+    //                         received.
+    // brokenmethod - message when the phone is broken
+    // dialmethod(actor, value) - what to do when the phone is dialled
+    // with value 'value' (value = -1 if no number was specified)    
+    
+    desc = "It's an old battered payphone. <<enddesc>>"
+    enddesc()
+    {
+        if(isoffhook) 
+            "<.p>You have lifted the receiver.  ";        
+        if(self.isringing) 
+            "<.p>The phone is ringing. ";        
+        else if(self.isbroken) 
+        {
+            "<.p>The phone is out of order";
+            if(isdented)
+                " and is badly dented";
+            ". ";
+        }
+    }    
+    
     isringing = nil
     isbroken = nil
+    isoffhook = nil
+    isanswering = nil
+    isdented = nil
+    mybooth = location
+    needtopay = true
+    ispaid = nil
+    
+    dobjFor(Take)
+    {
+        verify()
+        {
+            if(isanswering && !isringing)
+                illogicalNow('{The subj dobj} {is}n\'t ringing. ');
+            
+            if(isoffhook)
+                illogicalAlready('{The subj dobj} {is} already off the hook. ');
+        }
+        
+        check() {}
+        
+        action()
+        {
+            takemethod();
+            if (isanswering) answermethod();
+            else if (isbroken) brokenmethod(actor);
+            else dialtonemethod(actor);
+            
+            isanswering = nil;
+        }            
+    }
+    
+    dobjFor(Drop)
+    {
+        verfy()
+        {
+            if(!isoffhook)
+                illogicalAlready('The receiver has already been replaced. ');
+        }
+        
+        action()
+        {
+            dropmethod();
+            "Done. ";
+        }
+    }
+    
+    dobjFor(DialOn)
+    {              
+        verify()
+        {
+            if(isringing)
+                illogicalNow('{The subj dobj} {is} ringing. {I}\'d better answer it first. ');
+        }
+        
+        check()
+        {
+            dialNum = tryInt(gLiteral);
+            if(dialNum == nil)
+                "{I} {can\'t} dial that! ";
+            else if(dialNum < 0)
+                "{I} {can\'t} dial a negative number. ";            
+        }
+        
+        action()
+        {
+            if(!isoffhook)
+            {
+                "\n(first lifting the receiver)\n";
+                takemethod();"\n";
+            }
+            else if(isanswering)
+            {
+                "\n(first replacing and lifting the receiver)\n";
+                dropmethod();
+                actionDobjTake();"\n";
+            }
+            
+            if(isbroken) 
+                brokenmethod();
+            else 
+                dialmethod(dialNum);
+        }    
+    }
+    
+    dialNum = nil
+    
+    // Sabotage the phone.  By default, it goes out of order and refuses to
+    // return your coins.
+    dobjFor(Attack)
+    {
+        verify()             
+        {
+            if(isdented)
+                illogicalAlready('The phone is out of order and your hand is sore. ');
+        }
+        
+        check() {}
+        action()
+        {
+            "The telephone is now badly dented, and {i} {have} broken
+            it beyond all hope.  ";
+            vandalize();
+        }
+    }
+    
+    dobjFor(Break) asDobjFor(Attack)
+    
+    vandalize()
+    {
+        isdented = true;
+        isbroken = true;
+        isanswering = nil;
+        isringing = nil;
+        brokenretain = true;
+    }
+    
+    brokenretain = nil
+    
+    // basic actions for lifting receiver (doTake does the complete job)
+    takemethod()
+    {
+        isoffhook = true;
+        if (isringing) 
+        {
+            isanswering = true;
+            isringing = nil;
+        }
+    }
+    // method for replacing receiver.  If ispaid is set to an object, it
+    // is returned unless the brokenretain property is set.
+    dropmethod() 
+    {
+        isoffhook = nil;
+        isanswering = nil;
+        isringing = nil;
+        if(ispaid && !(isbroken && brokenretain)) 
+        {
+            "\nThe phone returns your coins, which you take.\n";
+            ispaid.moveInto(actor);
+        }
+        ispaid = nil;
+    }
+    // The following methods should be customized as required
+    answermethod()
+    {
+        "You answer the phone, but there is no-one at the other end.";
+    }
+    dialtonemethod()
+    {
+        "You hear a dial tone.  ";
+    }
+    brokenmethod()
+    {
+        "The phone appears to be out of order.  There is no dial tone. ";
+    }
+    
+    dialmethod(val)
+    {
+         if(val == nil)          
+            "Please tell me what number you want to dial, e.g.
+            dial &lt;number&gt; on <<theName>>. ";         
+        else if(needtopay && ispaid == nil)
+            "Nothing happens.  {I} will need to insert coins first.";
+        else {
+            "You hear a <q>number unobtainable</q>tone and replace the receiver.  ";
+            dropmethod();        }
+    }
+    
+    iobjFor(PutIn)
+    {
+        
+        check()
+        {
+            if(!gDobj.ofKind(Coin))
+                "{I} only want{s/ed} to put coins into the phone. ";
+            else if(!needtopay)
+                "(I} {don't need} to insert coins to use this phone. ";
+            else if(isanswering || isringing)
+                "{I} {don't need} to insert coins for an incoming call. ";
+            else if (ispaid)
+                "Hold on!  {I} {have} already put coins into the phone. ";
+        }
+        
+        action()
+        {           
+            if (!isoffhook) {
+                "\n(Lifting the receiver)\n";
+                actionDobjTake();
+            }
+            if (isbroken) 
+            {
+                "{The subj dobj} drop{s/ped} into the coinbox with a dull
+                <I>clunk</i>. There is still no dial tone. ";
+            }
+            else "Done.  ";
+            gDobj.moveInto(nil);
+            ispaid = gDobj;           
+        }       
+    }
+    
+    listenDesc
+    {
+        if(isringing)
+            "The phone is ringing. ";
+        else
+            inherited;
+    }
+    
+    isProminentNoise = isringing
+;
+
+/* Make ANSWER PHONE equivalent to TAKE PHONE */
+SpecialVerb 'answer' 'take' [Phone, ProxyPhone]
+    objChecks(dobj, iobj, aobj)
+    {
+        dobj.isanswering = true;
+    }
+;
+
+/* Make REPLACE PHONE equivalent to DROP PHONE */
+SpecialVerb 'replace' 'drop' @Phone;
+
+phoneBooth1Door: DSDoor '(phone) (booth) door' @rotunda @inPhoneBooth1
+    "It's <<if isOpen>>open<<else>>closed<<end>>. "
+    mybooth = phoneBooth1 
+    dobjFor(Open)
+    {
+        check()
+        {
+            mybooth.gnomecheck();
+            inherited();              
+        }
+    }
+;
+
+// The gnome doesn't need much code because he's always unreachable!
+gnome: MultiLoc, Fixture 'gnome; large'
+   "The large gnome is occupying the phone booth, firmly
+    blocking the door.  He is talking excitedly to someone at the
+     other end of the phone. "
+    game551 = true  
+    isntcoming = nil //? Not defined as a property of gnome in TADS 2 port, though referenced
+    checkReach(actor) { "You can't get at the gnome while he's in the phone booth. "; }
+    isAttackable = true
 ;
 
 
@@ -2637,28 +3057,382 @@ greenLakeRoom: DarkRoom 'In Green Lake Room'
     climb = up
 ;
 
-redRockCrawl: Room;
++ greenLake: StreamItem 'green pond;;lake water'
+    "It would be better described as a small pond rather than a
+      lake.  It fills the center of the room and has a definite
+     green tint, probably caused by minerals dissolved from the
+      floor of the chamber. "
+    
+    game551 = true    
+;
 
-gothicCathedral: Room;
-
-
-ledgeAbovePinnacles: Room;
-
-
-
-
-crypt: Room;
-
-lostCanyonS:Room;
-lostCanyonE:Room;
-
-passageEndAtHole: Room
+/* 207 */
+redRockCrawl: DarkRoom 'In Red Rock Crawl'
+    "{I} {am} in a tight north/south crawl through a stratum of red
+    colored rock.  The air is damp with mist. "
+    
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+   
+    north = lostCanyonS
+    south = greenLakeRoom
+    upstream asExit(south)
+    downstream asExit(north)
 ;
 
 
 
+/* 208 */
+lostCanyonS: DarkRoom 'On South Side of Lost River Canyon'
+    "{I} {am} in a tall canyon on the south side of a swift, wide river.
+    Written in the mud in crude letters are the words: <q>You Have Found
+    Lost River.</q>  A wide path leads east and west along the bank.  A tight
+    crawlway would take you south out of the canyon. "
+    
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+   
+    east = lostCanyonE
+    upstream asExit(east)
+    south = redRockCrawl
+    crawl = redRockCrawl
+    west = lostCanyonEnd
+    downstream = lostCanyonEnd 
+    cross =  north
+    across = north
+    north = 'The river is too wide and deep to cross. ' 
+    
+    
+;
 
-darkCove: Room 'Dark Cove'
+
++ Fixture 'mud;crude ordinary;lettering letters note'
+      "It's just ordinary mud, on which a previous adventurer has
+        written the following:\b<q><<readDesc>></q> "   
+;
+
+lost: MultiLoc, StreamItem 'river; wide deep swift rapid fart flowing list fast-flowing; 
+    water stream'
+    "The river is wide, deep and fast-flowing.  There's no way to cross it. "
+    locationList = [lostCanyonS, lostCanyonEnd, lostCanyonE,
+        nicheAboveRiver, narrowLedge]
+
+    cannotCrossMsg = 'The river is too wide and deep to cross. '
+    
+     // The river is a distant item in some locations.
+    checkReach(actor)
+    {
+        if(actor.getOutermostRoom not in (lostCanyonS, lostCanyonE))
+           "It's too far away. ";
+    }
+    
+    listenDesc = "You hear the roar of the wide, fast-flowing river. "
+;
+
+/* 209 */
+lostCanyonEnd: DarkRoom 'At End of Lost River Canyon'
+    "{I} {am} standing on a large flat rock table at the western end of
+    Lost River Canyon.  Beneath {my} feet, the river disappears amidst
+    foam and spray into a large sinkhole.  A gentle path leads east
+    along the river's south shore.  Another leads sharply upward along
+    the river's north side. "
+    
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    
+    downstrean = "Don't be ridiculous! " 
+    jump = downstream    
+    
+    east = lostCanyonS
+    upstream = lostCanyonS 
+    up = nicheAboveRiver
+    climb = nicheAboveRiver
+//    listendesc = "You hear the roar of the wide, fast-flowing river. "
+;
+
+
+/* 210 */
+nicheAboveRiver: DarkRoom 'At Niche in Ledge above Lost River'
+    "{I} {am} at a niche in the canyon wall, far above a raging river.
+    The air is filled with mist and spray, making it difficult to see
+    ahead.  A downward sloping ledge narrows to the east. The path
+    to the west is easier. "
+    
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    sdesc = "."
+    
+    east = narrowLedge
+    sown asExit(east)
+    west = lostCanyonEnd
+    
+    // This should be provided by the lost river object:
+//    listendesc = "You hear the roar of the wide, fast-flowing river, far
+//    below you. "
+;
+
+/* 211 */
+narrowLedge: DarkRoom 'At Narrow Ledge'
+    "The ledge is growing very narrow and treacherous, and falls off almost
+    vertically.  {I} could go down, but {i} won't be able to climb
+    back. "
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    
+    west = nicheAboveRiver
+    up asExit(west)
+    east = onNESideOfChasm
+    down asExit(east)
+    
+    // Let NPC's get out of here
+    NPCexit1 = onSWSideOfChasm
+//    listendesc = "You hear the roar of the wide, fast-flowing river, far
+//    below you. "
+;
+
+
+/* 212 */
+// See inPhoneBooth2 in endgame.t
+//phoneBooth2: NoNPC, Room 'In Phone Booth' 
+//    "{I} {am} standing in a telephone booth at the side of the Repository. "
+//    game551 = true
+//       
+//    south = atNEEnd
+//    out = asExit(south)
+//;
+
+/* 213 */
+passageEndAtHole: DarkRoom 'At East End of Level Passage'
+    "{I}{'m} at the east end of a level passage at a hole in the floor. "    
+    game551 = true
+    
+    down = greenLakeRoom
+    hole = greenLakeRoom
+    passage = tongueOfRock
+    west = tongueOfRock
+
+;
+
+/* 214 */
+darkCove: NoNPC, Room 'In Dark Cove'
+    "{I}{'m} at the north edge of a dark cove.  To your south lies
+    the Blue Grotto.  A large lake almost fills the cavern floor. "
+    
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    game551 = true
+    
+    south: TravelConnector -> grottoWest
+    {
+        travelBarriers = [boatBarrier, poleCheck]
+    }
+    southeast: TravelConnector -> bubbleChamber
+    {
+        travelBarriers = [boatBarrier, poleCheck]
+    }
+    
+    northeast: TravelConnector -> dryBasin
+    {
+        travelBarriers = [noBoatBarrier]
+    }    
+;
+
+/* 215 */
+dryBasin: NoNPC, DarkRoom 'In Dry Basin'
+    "{I} {am} in a dry granite basin, worn smooth eons ago by water
+    swirling down from a now-dry spillway. "
+    
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    
+    southwest = darkCove
+    up = oldSpillway
+;
+
+
+/* 216 */
+oldSpillway: NoNPC, DarkRoom 'In Old Spillway'
+    "{I}{'m} in a dry spillway east of and above a smooth rock basin. "
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+   
+    down = dryBasin
+    east = winery
+    up asExit(up)
+;
+
+/* 217 */
+winery: NoNPC, DarkRoom 'In Winery'
+    "{I} {am} in the Winery, a cool dark room which extends some
+    distance off to the east." 
+    
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    
+    west = oldSpillway
+    down asExit(west)
+    out asExit(west)
+    
+    east = limestonePinnacles
+    pit = limestonePinnacles
+;
+
++ winefountain: RoomLiquid 'wine; of[prep];fountain'
+    "It appears to be expensive vintage wine!  It would be
+        very valuable if you could find a suitable cask to carry it in.  "
+    
+    game551 = true
+
+    liquid = 'wine'
+    /* wine prefers to go into the cask by default */
+    contlist = [cask, bottle]
+    specialDesc =  "There is a fountain of sparkling vintage wine here! "
+
+    dobjFor(Drink)
+    {
+        check()        
+        {
+            local numdwarves = Dwarves.numberhere(gActor);
+            if (wumpus.isChasing) 
+                "You'd better do something about the Wumpus
+                first - this isn't going to help! ";
+            
+            else if(numdwarves > 0)
+                "You'd better do something about the <<numdwarves == 1 ? 'dwarf' : 'dwarves'>> 
+                first -- this isn't going to help! ";                
+            
+        }
+        action() { cask.winocode(); }
+    }   
+;
+
+/* 218 */
+limestonePinnacles: NoNPC, DarkRoom 'At Limestone Pinnacles'
+    "{I} {am} to the east of the Winery, where the room ends in a
+    thicket of high, sharp, pointed, climable limestone pinnacles.  There is a
+    narrow ledge just above the top of the spires.  If you go up, it
+    might be difficult to get back down."
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+
+    west = winery
+    up = ledgeAbovePinnacles
+    climb = ledgeAbovePinnacles
+;
+
+/* 219 */
+gothicCathedral: DarkRoom 'In Gothic Cathedral'
+    "{I} {am} in a high-vaulted cavern whose roof rises over fifty
+    meters to culminate in a series of pointed arches directly over 
+    {my} head.  There are also two low arches to either side, forming
+    side portals.  The whole effect is that of a gothic cathedral. 
+    {I} [can] proceed north, south, east, or west. "
+    
+    game551 = true
+    // Don't allow drinking unless the Walls of Jericho are down.
+    sober = (!inArchedHall.jericho)
+    
+    south = overRainbow
+    bridge = overRainbow
+    north = altarFoot
+    altar = altarFoot
+    east = eastPortal
+    west = westPortal
+    pray = insideBuilding
+;
+
+/* 220 */
+eastPortal: DarkRoom 'At East Portal of Gothic Cathedral'
+    "{I}{'m} at the east portal of the Gothic Cathedral. The path
+    leads east and west. "
+    game551 = true
+    // Don't allow drinking unless the Walls of Jericho are down.
+    sober = (!inArchedHall.jericho)
+    
+    west = gothicCathedral
+    east = gothicChapel
+;
+
+/* 221 */
+westPortal: DarkRoom 'At West Portal of Gothic Cathedral'
+    "{I}{'m} at the west portal of the Gothic Cathedral. "
+    game551 = true
+    // Don't allow drinking unless the Walls of Jericho are down.
+    sober = (!inArchedHall.jericho)
+    
+    east = gothicCathedral
+;
+
+/* 222 */
+altarFoot: DarkRoom 'At Foot of Altar'
+    "{I} {am} at the foot of the Altar, an immense, broad stalagmite.
+     An opening leads south. "
+    game551 = true
+    // Don't allow drinking unless the Walls of Jericho are down.
+    sober = (!inArchedHall.jericho)
+    
+    passage = gothicCathedral
+    south = gothicCathedral
+    up = topOfStalagmite
+    climb = topOfStalagmite
+    pray = insideBuilding
+;
+
++ StairwayUp 'immense broad stalagmite;enormous broad;altar'
+    "It does have an uncanny resemblance to a large cathedral altar. "
+    game551 = true
+    
+    destination = topOfStalagmite
+    
+    // Don't allow drinking unless the Walls of Jericho are down.
+    sober = (!inArchedHall.jericho) 
+;
+
+/* 223 */
+topOfStalagmite: DarkRoom 'On Top of Stalagmite'
+    "{I}{'m} on top of an enormous, broad stalagmite.  There is a hole
+    in the ceiling overhead. "
+    
+    game551 = true
+    // Don't allow drinking unless the Walls of Jericho are down.
+    sober = (!inArchedHall.jericho)
+    down = altarFoot
+    climb = altarFoot    
+    up = crypt
+    hole = crypt
+;
+
+
++ StairwayDown 'enormous broad stalagmite;immense broad;altar'
+    "If you want to find out more, I suggest that you climb down it. "
+    game551 = true
+    
+    dobjFor(Climb) asDobjFor(ClimbDown)
+    destination = altarFoot
+;
+
+/* 224 */
+crypt: DarkRoom 'In the Crypt'
+    "{I} {am} in a room the size and shape of a small crypt.  A narrow
+    cut exits east.  There is a hole in the floor. "
+
+    game551 = true
+    // Don't allow drinking unless the Walls of Jericho are down.
+    sober = (!inArchedHall.jericho)
+    
+    down = topOfStalagmite
+    hole = topOfStalagmite
+    east = EWCorridorE
+;
+
+/* 225 */
+gothicChapel: DarkRoom 'In Gothic Chapel'
+    "{I} {am} in the Gothic Chapel, a small chamber adjoining the Gothic
+    Cathedral. A path leads west. "
+    game551 = true
+    // Don't allow drinking unless the Walls of Jericho are down.
+    sober = (!inArchedHall.jericho)
+    
+    west = eastPortal
 ;
 
 /* 226 */
@@ -2758,6 +3532,13 @@ riverStyx: IndoorRoom '"At River Styx'
     outer rocks of the cave. "
 ;
 
+MultiLoc, Decoration 'sticks at Styx;;branches'
+    "The sticks and branches litter the edge of the stream. "
+    notImportantMsg = 'The sticks and branches are all in a tangle and are stuck in the
+        mud.  You\'d need a shovel to dig them out. '    
+    
+;
+
 /* 229 */
 riverStyxE: OutsideRoom 'On East Side of River Styx'
     "{I}{'m} on the east side of the river's sticks. "
@@ -2773,11 +3554,72 @@ riverStyxE: OutsideRoom 'On East Side of River Styx'
 ;
 
 
-beachShelf: OutsideRoom
+/* 230 */
+ledgeAbovePinnacles: DarkRoom 'On ledge above limestone pinnacles'
+    "{I} {am} on a ledge at the northern end of a long N/S crawl.  The
+    ledge is above a large number of sharp vertical limestone spires.
+    An attempt to climb down with bulky items could be dangerous, if
+    you get my *point*!"
+    
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    
+
+/* The effect of going down here has been reworked.  Now you can get down
+   safely unless you are carrying any bulky items. */
+
+    down 
+    {        
+        local o, tx, skewered = nil;
+        o = gActor.allContents.subset(
+            {x: !x.isFixed && x != sack && (x.isHuge || x.isLarge)});
+        
+        if(o.length > 0)
+        {
+            skewered = true;
+            if(o.length == 1)            
+                tx = 'the bulky ' + o[1].name;
+            else
+                tx = 'the bulky items';
+        }       
+       
+        if (skewered) return pinnacle_demise.bulkdeath(tx);
+        else return limestonePinnacles;
+    }
+    // Jumping down will always get you skewered.
+    jump {return pinnacle_demise.jumpdeath;}
+    south = yellowPath
+    crawl = yellowPath
+    // Exit info. for 'back' command:
+//    exithints = [Limestone_Pinnacles, &down]
+//    myhints = [Caskhint]
 ;
 
-beach: OutsideRoom
+/* 231 */
+pinnacle_demise: object
+    jump = "That wasn't exactly your most brilliant move!
+    You are very neatly skewered on the point of a sharp
+    rock. "
+    bulk(tx) 
+    {
+        "Your attempt to climb down is hampered by
+        <<tx>> you are carrying.  You lose your grip and fall to
+        your death! You are now very neatly skewered on the point
+        of a sharp rock. ";
+    }
+
+    // Note that we don't drop the player's possessions at
+    // Limestone Spires.  This would be realistic, but it would allow the
+    // player to obtain the wine after reincarnation!  The main
+    // objection to this is that the player might be misled into seeking
+    // the wrong type of solution (i.e. getting the cask down safely
+    // instead of finding the way round.)
+
+    jumpdeath {jump; die(); return nil;}
+    bulkdeath(tx) {bulk(tx); die(); return nil;}
 ;
+
+
 
 /* 232-234 */
 poling_messages: object
@@ -2786,6 +3628,62 @@ poling_messages: object
     blue = "{I} {have} poled {my} boat across the Blue Grotto.<.p>"
 
 ;
+
+
+beachShelf: OutsideRoom
+;
+
+beach: OutsideRoom
+;
+
+/* 235 */
+dantesRest: DarkRoom 'At Dante\'s Rest'
+    "{I}{'m} at Dante's Rest, on the north side of a yawning dark chasm.
+    A passage continues west along the chasm's edge. "
+    game551 = true
+    
+    cross = decrepitBridge
+        
+    south = decrepitBridge
+    across = decrepitBridge
+    bridge = decrepitBridge
+    passage = inMistyCavern
+    west = inMistyCavern
+    
+    NPCexit1 
+    {
+         if (decrepitBridge.isfallen) return nil;
+         else return devilsChair;
+    }
+    jump 
+    {
+        if (!decrepitBridge.isfallen) 
+        {
+            "I respectfully suggest you go across the
+            bridge instead of jumping.";
+
+            return nil;
+        }
+        else
+            return didnt_make_it.death;
+    }
+    
+    listenDesc = "You hear a distant roar, like the sound of a fast-flowing
+             river, from the depths of the chasm. "  
+;
+
+
+/* 236 */
+lostCanyonE: DarkRoom 'At East End of Lost River Canyon'
+    "{I} {am} at the east end of a riverbank path in Lost River Canyon. "
+    game551 = true
+    wino_trollstop = true // troll stops a wino from getting to cloak_pits
+    
+    west = lostCanyonS
+    downstream = lostCanyonS 
+    upstream = "The path ends here and you can't go any further upstream. "
+;
+
 
 /* 238 */
 pantry: IndoorRoom 'In the Caretaker\'s Pantry'

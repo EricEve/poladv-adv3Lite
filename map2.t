@@ -25,12 +25,6 @@ InSecretNSCanyon1: DarkRoom
 
 
 
-
-dantesRest: DarkRoom
-;
-
-
-
 northOfReservoir: DarkRoom
 ;
 
@@ -74,8 +68,6 @@ corridor1: Room 'Corridor 1'
 vault: Room 'Vault'
 ;
 
-lostCanyonEnd : Room 'Lost Canyon End'
-;
  
 coralPassage: DarkRoom
 ;

@@ -625,6 +625,17 @@ VerbRule(Release)
     missingQ = 'what do you want to release'
 ;
 
+DefineLiteralTAction(DialOn)
+;
+
+VerbRule(DialOn)
+    'dial' literalIobj 'on' singleDobj
+    : VerbProduction
+    action = DialOn
+    verbPhrase = 'dial/dialling (what) (on what)'
+    missingQ = 'what do you want to dial; what do you want to dial it on'
+;
+
 DefineTVerb(BlastWith, ('blast' | 'detonate') (|'with') singleDobj, 'blast', 'blasting');
 
 DefineIVerb(Blast, 'blast'|'detonate'|'explode', 'blast', 'blasting')
@@ -709,7 +720,9 @@ DefSpecialTravel(Thunder, &thunder, 'thunder');
 DefSpecialTravel(Smichel, &smichel, 'smichel'|'saint-michel');
 DefSpecialTravel(GateAction, &gate, 'gate');
 DefSpecialTravel(Phleece, &phleece, 'phleece');
-
+DefSpecialTravel(Pray, &pray, 'pray');
+DefSpecialTravel(Bridge, &bridge, 'bridge');
+DefSpecialTravel(Altar, &altar, 'altar');
 
 
 

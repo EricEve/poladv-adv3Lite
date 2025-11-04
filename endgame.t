@@ -670,15 +670,20 @@ cylindricalRoom: Room 'Cylindrical Room'
 
 phoneBooth2: Enterable 'phone booth'
     
+    
+    game551 = true
     connector = phoneBooth2Door
 ;
 
 phoneBooth2Door: DSDoor 'phone booth door' @atSWEnd @inPhoneBooth2
     
     isConnectorApparent = (phoneBooth2.isIn(room1))
+    game551 = true
 ;
 
-inPhoneBooth2: Room 'Inside the Phone Booth'
+inPhoneBooth2: NoNPC, Room 'Inside the Phone Booth'
+    south = phoneBooth2Door
+    out asExit(south)
 ;
 
 win()

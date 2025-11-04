@@ -345,6 +345,12 @@ modify Thing
     }
     cannotPoleMsg = '{I} {can\'t} pole {that dobj}'
     
+    dobjFor(DialOn)
+    {
+        preCond = [touchObj]
+        verify() { illogical('{I} {can\'t} dial anything on that. '); }
+    }
+    
     /* Other mods roughly corresponding to mods to thing and item classes in TADS 2 advmods.t */
     
     actionMoveInto(loc)

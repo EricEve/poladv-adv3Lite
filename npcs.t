@@ -792,6 +792,7 @@ Dwarves: NPC 'dwarves;;;them'
     /* Methods to be added: */
     move() { }
     place() {}
+    numberhere(actor) { return 0; } // temporary - to be fixed.
 ;
 
 pirates: NPC 'pirate;;;him'

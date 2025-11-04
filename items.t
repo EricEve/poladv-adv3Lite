@@ -1850,6 +1850,7 @@ oilInTheBottle: ContLiquid 'oil in the bottle; bottled'
 ;
 
 cask: LiquidContainer 'cask'
+    winocode() {}
 ;
     
 
