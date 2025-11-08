@@ -36,6 +36,9 @@ initNPC()
 do_exitlist(o) {}
 do_npclist(o) {}
 
+/* Make ANSWER <actor> equivalent to TALL TO <actor> */
+SpecialVerb 'answer' @Actor 'talk to';
+
 modify Actor
     locationHistoryLength = 2  
      handleCommand(action)
@@ -781,7 +784,7 @@ wumpus: NPC 'wumpus'
 
 dog: NPC 'dog'
     isAsleep = nil
-    
+    sleepLie() {}
     blockMessage = "The dog won't let you pass! " // temporary
 ;
 
@@ -820,3 +823,13 @@ dwarfstart(parm)
 
     global.NPCstarted = true;
 }
+
+wumpi:Fixture 'Wumpi'
+    game701 = true
+;
+
+wumpiRemnant: Fixture 'Wumpi'
+    game701 = true
+;
+    
+   

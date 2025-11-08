@@ -263,18 +263,23 @@ modify Thing
         action()
         {
             if(isIn(gActor))
-                actionDobjDrop();
+            {
+                actionDobjDrop();                
+            }
             else
+            {
                 actionDobjTake();
+                actionReport('{I} yank{s/ed} {the dobj} free. ');
+            }
         }
         
-        report()
-        {
-            if(isIn(gActor))
-                reportDobjDrop();
-            else
-                reportDobjTake();
-        }
+//        report()
+//        {
+//            if(!isIn(gActor))
+//                reportDobjDrop();
+//            else
+//                reportDobjTake();
+//        }
         
     }
     
@@ -349,6 +354,13 @@ modify Thing
     {
         preCond = [touchObj]
         verify() { illogical('{I} {can\'t} dial anything on that. '); }
+    }
+    
+    dobjFor(Knock)
+    {
+        preCond = [touchObj]
+        verify()  { }
+        report() { "Knocking on <<gActionListStr>> achieves nothing. ";}
     }
     
     /* Other mods roughly corresponding to mods to thing and item classes in TADS 2 advmods.t */

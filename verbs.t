@@ -663,6 +663,7 @@ DefineTIVerb(DustWith, ('brush' | 'sweep' | 'dust') multiDobj 'with' singleIobj,
 /* blow, play (for lyre, horn) */
 DefineTVerbS(Blow, 'blow' singleDobj, 'blow', 'blowing');
 DefineTVerbS(Play, 'play' singleDobj, 'play', 'playing');
+DefineTVerbS(Knock, 'knock' ('on'|) singleDobj, 'knock', 'knocking');
 
 
 
@@ -687,8 +688,7 @@ DefSpecialTravel(Rock, &rock, 'rock');
 DefSpecialTravel(BedAction, &bed, 'bed');
 DefSpecialTravel(Crawl, &crawl, 'crawl');
 DefSpecialTravel(Cobble, &cobble, 'cobble');
-DefSpecialTravel(PassageAction, &passage, (|'follow' | 'go through' | 'enter') 
-                 ('passage' | 'tunnel' | 'opening'));
+DefSpecialTravel(PassageAction, &passage, (|'follow') ('passage' | 'tunnel' | 'opening'));
 DefSpecialTravel(Left, &left, 'left');
 DefSpecialTravel(Right, &right, 'right');
 DefSpecialTravel(Middle, &middle, 'middle');
@@ -723,6 +723,25 @@ DefSpecialTravel(Phleece, &phleece, 'phleece');
 DefSpecialTravel(Pray, &pray, 'pray');
 DefSpecialTravel(Bridge, &bridge, 'bridge');
 DefSpecialTravel(Altar, &altar, 'altar');
+DefSpecialTravel(Click, &click, 'click' (|('my'|'your'|)'heels'))
+    execAction(cmd)
+{
+    if(slippers.wornBy != gActor)
+    {  
+        "{I} click{s/ed} {my} heels but nothing happens. ";                 
+    }
+    else
+    {
+        slippers.clicked = true;
+        inherited(cmd);
+    }
+}    
+noGoodHereMsg = "{I} click{s/ed} {my} heels and feel a slight tug, but nothing else happens. "
+    omegaps701_order = 19
+    omegaps701p_order = 21
+;
+                 
+
 
 
 

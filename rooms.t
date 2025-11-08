@@ -30,6 +30,28 @@ class OutsideRoom: NotFarIn, NoNPC, Room
     regions = [outdoors]
 ;
 
+/* 
+ *   Objects that can stand in for any holes or passages in rooms that define the hole or passage
+ *   pseud-direction  property respectively.
+ */
+ProxyExit 'hole'
+    "It's just a hole. "
+    exitProp = &hole
+    travelAction = Hole
+    notImportantMsg = 'You can just type HOLE to go through it. '
+;
+
+ProxyExit 'passage'
+    "Passages are just passages. "
+    exitProp = &passage
+    travelAction = PassageAction
+    notImportantMsg = 'You can just type PASSAGE to go through it. '
+    dobjFor(GoAlong) asDobjFor(TravelVia)
+    dobjFor(Follow) asDobjFor(TravelVia)
+    dobjFor(ClimbDown) asDobjFor(TravelVia)
+    dobjFor(ClimbUp) asDobjFor(TravelVia)
+    decorationActions = inherited + [Follow, GoAlong, ClimbDown, ClimbUp]
+;
 
 outdoors: Region
 ;
@@ -3764,7 +3786,7 @@ inArchedHall: DarkRoom 'In Arched Hall'
     out asExit(down)
     up asExit(east)
     
-    north = jerichoHole
+    north = inArchedHallWalls
     hole asExit(north)
     
     
@@ -3794,24 +3816,46 @@ inArchedHall: DarkRoom 'In Arched Hall'
 ;
 
 // May need more work once EWCorridorE is implemented
-+ jerichoHole: SecretDoor
+inArchedHallWalls: SecretDoor, DSDoor 'north wall; (n); walls'  @inArchedHall @EWCorridorE
     vocabWhenClosed = 'north wall; (n); walls'
     vocabWhenOpened = 'hole; (north) (n) crumbled; wall walls'
     desc()
     {
-        if(isOpen)
+        if(!global.newGame)
+            "I've already told all I know about the walls. ";
+        
+        else if(isOpen)
             "The north wall has partially crumbled, exposing a
               connecting hole to another room. ";
         else
-            "It's just a wall. ";
+            "You can't see anything unusual about the walls. ";
     }
     
-    travelBarriers = [clamBarrier]
-    otherSide = self
+    travelBarriers = [clamBarrier]  
     
-    destination =  EWCorridorE
+    dobjFor(Break) asDobjFor(Attack)
+    dobjFor(Attack)
+    {
+        verify()
+        {
+            if(inArchedHall.jericho)
+                illogicalAlready('{I}{\'ve} already done enough damage. ');
+        }
+        action()
+        {
+            "The <<dirName>> wall sounds hollow, but holds firm against 
+            your onslaught. ";
+        }
+    }
     
-   
+    dobjFor(Knock)
+    {
+        verify() {}
+        action()
+        {
+            "The <<dirName>> wall sounds hollow. ";
+        }
+    }
 ;
 
 clamBarrier: TravelBarrier

@@ -3,37 +3,8 @@
 #include <tads.h>
 #include "advlite.h"
 
-MultiLoc, Decoration 'hole'
-    "It's just a hole. "
-    notImportantMsg = 'You can type HOLE to go through it. '
-    initialLocationClass = Room
-    isInitiallyIn(obj) { return obj.propDefined(&hole); }
-    dobjFor(Enter) 
-    {
-        verify() {}
-        action() { gActor.travelVia(location.hole); }
-    }
-    
-    
-    
-    dobjFor(GoThrough) asDobjFor(Enter)
-    decorationActions = [Examine, GoThrough, Enter]
-;
 
-MultiLoc, Decoration 'passage'
-    "Passages are just passages. "
-    notImportantMsg = 'You can type PASSAGE to go through it. '
-    initialLocationClass = Room
-    isInitiallyIn(obj) { return obj.propDefined(&passage); }
-    dobjFor(Enter) 
-    {
-        verify() {}
-        action() { gActor.travelVia(location.passage); }
-    }    
-    
-    dobjFor(GoThrough) asDobjFor(Enter)
-    decorationActions = [Examine, GoThrough, Enter]
-;
+
 
 
 /* Additional rooms for 551-point version */
@@ -389,7 +360,7 @@ vastChamber: NoNPC, DarkRoom 'In a Vast Chamber'
     traveled = nil
 ;
 
-// TO DO - Complete throne room and throne
+
 
 
 /* 146 */
@@ -1866,7 +1837,7 @@ starChamber: DarkRoom 'In Star Chamber '
 ;
 /* 184 */
 elbowInPassage: DarkRoom 'At Elbow in Passage'
-    "{I} {am} at an elbow in a winding E/W passage.  %You% can go SW or SE. "
+    "{I} {am} at an elbow in a winding E/W passage.  {I(} {can} go SW or SE. "
     
     game551 = true   
 
@@ -2700,10 +2671,12 @@ EWCorridorE: DarkRoom 'At East End of Short E/W Corridor'
     game551 = true
     sober = (!inArchedHall.jericho)
     
-    south: TravelConnector -> inArchedHall
-    {
-        isConnectorApparent = inArchedHall.jericho
-    }
+    south = inArchedHallWalls
+    
+//    south: TravelConnector -> inArchedHall
+//    {
+//        isConnectorApparent = inArchedHall.jericho
+//    }
     
     hole asExit(south)
     wall asExit(south)

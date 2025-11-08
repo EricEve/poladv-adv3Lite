@@ -56,6 +56,10 @@ class CondListed: Thing
 class CanPick: Thing // for mushrooms, flowers
 ;
 
+class LightSource: object
+    isLit = true
+;
+
 SpecialVerb 'pick' 'take' @CanPick;
 
 class PendantItem: Thing
@@ -1848,11 +1852,7 @@ oilInTheBottle: ContLiquid 'oil in the bottle; bottled'
     aName = 'oil'
     theName = 'the bottled oil'    
 ;
-
-cask: LiquidContainer 'cask'
-    winocode() {}
-;
-    
+ 
 
 wine: ContLiquid 'wine'
 ;
@@ -1860,19 +1860,10 @@ wine: ContLiquid 'wine'
 greyRod:Thing 'gray rod'
 ;
 
-glowingStone: Treasure 'glowing stone'
-    game550 = true
-;
-
-leadBox: Container 'lead box'
-    game550 = true
-;
-
-slippers: Thing 'slippers;;;them'
-;
-
-throneSign: Thing 'throne sign'
-;
-
 brokenPendant: Thing
 ;
+
+singingSword: Weapon
+;
+
+transindectionKey: Thing;
