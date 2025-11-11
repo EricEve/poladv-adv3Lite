@@ -243,8 +243,7 @@ class StreamItem: RoomLiquid
 atEndOfRoad: OutsideRoom 'At End of Road'
     "{I} {am} standing at the end of a road before a
     small brick building. Around {me} is a forest.  A
-        small stream flows out of the building and down a
-        gully. "
+        small stream flows out of the building and down a gully. "
     
     west = atHillInRoad
     up asExit(west)
@@ -1592,7 +1591,7 @@ atWestEndOfTwoPitRoom: DarkRoom 'At West End of Twopit Room' 'west end of the tw
     {
         "{I} {am} at the west end of the twopit room.
         There is a large hole in the wall above the pit at
-        this end of the room.";
+        this end of the room. ";
 
         if (plantStickingUp.isIn(self)) 
         {
@@ -2302,7 +2301,10 @@ safeCombination: Fixture 'carved inscription; writing; combination letters chara
             say(safeDial.combo[i]); 
             if (i < safeDial.comblen) "-";
         }
+        isseen = true;
     }
+    
+    isseen = nil
 ;
 
 /* 40 is a message */
@@ -3327,32 +3329,36 @@ inCavernWithWaterfall: DarkRoom 'In Cavern With Waterfall'
     
     west = atSteepInclineAboveLargeRoom
     
-    down: VarDest, TravelConnector
-    {
-        calcDest()
+    down
+    {            
+        if (global.oldGame && !global.game550) 
         {
-            if (global.oldGame && !global.game550) 
-                return inherited;
-            else if (global.newGame && !global.game701) 
-            {            
-                return swordPoint;
-            }
-            else if (global.game550) 
-            {
-                "What, into the whirlpool? ";
-                waterfall.rhetoricalturn = gTurns;
-                return nil;
-            }
-            
-            return inherited;
+            "You can't be serious! ";
+            return;
         }
+        else if (global.newGame && !global.game701) 
+        {            
+            dragged_down.msg;
+            swordPoint.travelVia(gActor);
+        }
+        
+        else if (global.game550) 
+        {
+            "What, into the whirlpool? ";
+            //                waterfall.rhetoricalturn = gTurns;
+            if(yesOrNo())
+            {
+                waterfall.enter;
+                northOfReservoir.travelVia(gActor);
+            }                
+        }      
     }
    
     
-    hole asExit(down)
+    hole = down
 ;
 
-+ waterfall: Fixture 'waterfall;sparkling whirlinng; whirlpool'    
++ waterfall: Fixture 'waterfall;sparkling whirling; whirlpool'    
     desc 
     {
         if(global.oldGame && !global.game550)
@@ -3390,15 +3396,14 @@ inCavernWithWaterfall: DarkRoom 'In Cavern With Waterfall'
     // BJS: routine for 550-point and 701-point games.
     // DJP: changed to keep items which are worn - and to remark about the
     // crown when it's still there.
-    in: VarDest, TravelConnector
+    enter
     {
-        travelDesc        
-        { 
+         
             local obj, ripped = nil, wornkept = 0, crownkept = nil;
             local actor = gActor;
             
             if (brassLantern.isIn(actor)) 
-                "You plunge into the water andare sucked down by the whirlpool.  ";
+                "You plunge into the water and are sucked down by the whirlpool.  ";
             else 
                 "You plunge into the water and are sucked down by
                 the whirlpool into pitch darkness.  ";
@@ -3446,20 +3451,7 @@ inCavernWithWaterfall: DarkRoom 'In Cavern With Waterfall'
             "<.p>The swirling waters deposit you, not ungently, on solid ground. ";
             if (crownkept) "<.p>Instinctively, you reach up to
                 check that the crown is still there.  Miraculously, it is! <.p>";     
-            
-        }
-        
-        varDest()
-        {
-            if (global.game701) 
-                return swordPoint;
-            else  
-                return northOfReservoir;
-            
-        }
-        
-        isConnectorListed = nil
-    }       
+    }
 ;
 
 
@@ -4214,7 +4206,7 @@ reservoir: MultiLoc, StreamItem 'reservoir;;lake water stream'
             "There is no way across the reservoir. ";
     }
     
-    locationList = [atReservoir, swordPoint]
+    locationList = [atReservoir, swordPoint, northOfReservoir]
     
     dobjFor(Cross)
     {
@@ -4241,7 +4233,7 @@ reservoir: MultiLoc, StreamItem 'reservoir;;lake water stream'
             and he carries you smoothly over to the southern
             side of the reservoir.  He then blows a couple of
             bubbles at you and sinks back out of sight.";
-            turtle.moveInto(nil)
+            turtle.moveInto(nil);
                 
             gActor.travelVia(atReservoir);
         }
@@ -4821,16 +4813,19 @@ atBreathtakingView: Room, NoNPC 'At Breath-Taking View'
         return nil;            
     }  
     
-    north()
-    {
-        if(global.game550)
-            return wheatStoneBridge;
-        else
-            "There is no way over the gorge. ";
-        return nil;
-    }
+    north = wheatStoneBridge
     
-    
+//    north: TravelConnector -> wheatStoneBridge
+//    {
+//        canTravelerPass(actor) { return isConnectorListed; }
+//        explainTravelBarrier(actor, connector)
+//        {
+//            "There is no way over the gorge. ";
+//        }
+//        isConnectorListed = (global.game550 && wheatStoneBridge.exists)
+////        travelVia(actor) { wheatStoneBridge.travelVia(actor); }
+//    }
+       
     cross asExit(north)
     gorge asExit(north)
 
@@ -4840,6 +4835,14 @@ atBreathtakingView: Room, NoNPC 'At Breath-Taking View'
     
     listenDesc = "The sound of the volcano is almost deafening. "
 //    exithints = [ Valley_Faces, &north ]
+    
+    cannotGoThatWay(dir)
+    {
+        if(dir == northDir)
+            "There is no way over the gorge. ";
+        else
+            inherited(dir);
+    }
 ;
 
 + Distant 'some sparks of ash; flickering; air spark; them'

@@ -743,8 +743,14 @@ class WaveableRod: Thing
     
     dobjFor(Wave)
     {
-        action()
+        action()        
         {
+            /* clear global.noAskWave (see thing.doWave) */
+            global.noAskWave = nil;
+            if (window.isIn(getOutermostRoom))
+                "The shadowy figure waves back at you with a
+                similar-looking rod, but nothing else happens. ";
+            
             if (isIn(westSideOfFissure) || 
                 isIn(onEastBankOfFissure)) 
             {
@@ -757,6 +763,80 @@ class WaveableRod: Thing
                         crystalBridge.appear();
                 }
             }
+            
+            else if(decrepitBridge.isIn(getOutermostRoom) &&
+                    isupgraded && !decrepitBridge.isfallen) 
+            {
+                "Nothing obvious happens. ";
+                decrepitBridge.crosscount = -1;
+            }
+            
+            else if(ricketyBridge.isIn(getOutermostRoom) &&
+                    isupgraded && ricketyBridge.exists) 
+            {
+                "Nothing obvious happens. ";
+                ricketyBridge.strengthened = true;
+            }
+            
+            else if(isIn(atBreathtakingView) || isIn(valleyFaces)) 
+            {
+                if (!global.game550) 
+                    "Nothing happens (in this version of Adventure). ";
+                else if (global.closed && !isupgraded)             
+                    "Peculiar.  Nothing happens. ";
+                
+                // In the 701-point game the rod must be upgraded before you
+                // can create the bridge
+                else if (global.game701 && !isupgraded) 
+                    "Flakes of rust fall off the rod, but nothing else happens. ";            
+                else 
+                {
+                    if (wheatStoneBridge.exists) 
+                    {
+                        "The earth shudders violently,
+                        and steam blasts upward from
+                        the geyser.  The wheat-stone
+                        bridge cracks and splits, and
+                        the fragments fall into the gorge. ";
+                        //  wheatStoneBridge.moveInto(nil); // may not be needed 
+                        wheatStoneBridge.exists = nil;
+                    }
+                    else {
+                        "The earth begins to shudder
+                        violently, and smoke flows up
+                        from the gorge beneath your
+                        feet.  With a violent <i>glop</i>,
+                        the volcano belches out an
+                        immense blast of molten lava
+                        which flies into the air above
+                        the gorge and suddenly solidifies
+                        into a fragile-looking arch of
+                        wheat-colored stone that bridges
+                        the gorge. ";
+                        //                    wheatStoneBridge.moveInto(
+                        //                    [atBreathTakingView, valleyFaces]); // may not be needed
+                        wheatStoneBridge.exists = true;
+                    }
+                }
+            }
+            // This is only possible in the 550-point or 701-point game.  In the 
+        // latter, we require that the rod be upgraded.
+        else if (isIn(coralPassage) || isIn(coralPass2)) 
+            {
+            if(global.closed && ! isupgraded)
+                "Peculiar. Nothing happens. ";
+            else if(global.game701 && ! isupgraded) 
+                "Flakes of rust fall off the rod, but nothing else happens. ";            
+            else {
+                // Don't soften the quicksand when the rod is waved again.
+                // That would be too difficult.
+                "Nothing obvious happens.";
+                quickSand.isHard = true;
+            }
+        }
+        else
+            "Nothing happens.";
+            
         }
     }
     
@@ -985,7 +1065,7 @@ spelunkerToday: Thing 'recent issues of Spelunker Today;dwarvish; magazines issu
         {
              isRead = true;
 //            "However, two pictures attract {my} attention. ";
-//             if (SafeCombination.isseen) {
+//             if (safeCombination.isseen) {
 //                 "One shows a dwarf sweeping the rock in the
 //                 Dusty Rock room, revealing the inscription. ";
 //             }
@@ -1683,25 +1763,26 @@ glassVial: Thing 'glass vial'
 flask: Thing;
 
 
-turtle: Thing
+turtle: Actor 'Darwin the Tortoise;large;turtle'
+    "On the tortoise's back is inscribed, <q>I'm Darwin - ride me!</q> "
+    
+    specialDesc = "Darwin the tortoise is swimming in the reservoir nearby. "
+    
+    dobjFor(Board)
+    {
+        verify() {}
+        action()
+        {
+            doInstead(Cross, reservoir);
+        }
+    }
+    dobjFor(Enter) asDobjFor(Board)
+    dobjFor(Ride) asDobjFor(Board)
+    
 ;
 
 //pirates: MultiLoc, Thing
 //;
-
-
-
-
-wheatStoneBridge: Passage 'wheat-stone bridge'
-    "The bridge is a fragile-looking arch of wheat-colored stone,
-        leading across the volcanic gorge. "
-    game550 = true
-    exists = nil
-    isConnectorApparent = exists //???
-    
-    specialDesc = "There is a wheat-colored stone bridge arching over the gorge."
-    isHidden = (!exists)
-;
 
 
 /* Provided here for testing purposes for now. */
@@ -1867,3 +1948,11 @@ singingSword: Weapon
 ;
 
 transindectionKey: Thing;
+
+quickSand: Fixture
+    isHard = nil
+;
+
+mithrilRing: Thing;
+
+sceptre: Thing;

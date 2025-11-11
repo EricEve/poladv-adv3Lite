@@ -12,25 +12,12 @@
 
 
 
-valleyFaces: DarkRoom
-;
-
-
 swordPointNOfReservoir: DarkRoom
 ;
 
 
 InSecretNSCanyon1: DarkRoom
 ;
-
-
-
-northOfReservoir: DarkRoom
-;
-
-
-
-
 
 debrisWest: Room 'Debris West'
 ;
@@ -72,6 +59,9 @@ vault: Room 'Vault'
 coralPassage: DarkRoom
 ;
 
+coralPass2: DarkRoom
+;
+
 sandstoneChamber: DarkRoom 'Sandstone Chamber'
 ;
  
@@ -81,3 +71,17 @@ S_Of_Center: Room
 
 tightCrack2: DarkRoom
 ;
+
+volcanoPlatform: Room 'Volcano Platform';
+
+
+catacombs: Room 'Catacombs'
+    roomNumber = 0
+    leaveRoom() {}
+    enterRoom() {}
+    
+;
+
+elsewhere: Room;
+
+fakeY2: Room 'At Y2 (fake)';

@@ -482,7 +482,7 @@ modify Thing
     bonusFound = nil
     list = []
     undiscovered = nil//?
-    
+    catac_room_num = 0
     objClass = nil
     
     /* This will need some figuring out to get it to work for TADS 3 */

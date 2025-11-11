@@ -53,7 +53,7 @@ flowers: CanPick, Thing 'beautiful flowers; yellow blue wild attractive;;them' @
     checkReach(actor)
     {
         if(bees.arefed)
-            "The hum of the bees rises to an angry buzz as [i]
+            "The hum of the bees rises to an angry buzz as {i}
             move{s/d} towards the flowers. ";
     }    
 ;
@@ -1099,10 +1099,11 @@ lyre: Treasure 'delicate lyre' @lowNSPassage
 ;
 
 /* 69 */
-sapphire: Treasure 'star sapphire; six-pointed blue;starstone'
+sapphire: Treasure 'star sapphire; six-pointed blue;starstone' @starChamber
     "Its appearance is very striking -- a brilliant blue six-pointed star. "
     game551 = true
     mass = 2
+    plughed = nil
 ;
 
 
@@ -1199,6 +1200,7 @@ goldRing: ProtectRing, Wearable, Treasure 'small gold ring; plain'
     basis = 4
     protection = 3
     taken = nil
+    seenspecial = nil
     
     initSpecialDesc = "On the Wumpus' finger is a small gold ring! "
     fromloc = wumpus
@@ -1440,12 +1442,13 @@ crystalBall: Treasure 'crystal ball; quartz;sphere palantir' @crystalPalace
     game551 = true
     mass = 2
     basis = 2
+    noelf = nil
 
     dobjFor(LookIn)
     {
         check()
         {               
-            if (wumpus.ischasing)
+            if (wumpus.isChasing)
                 "You'd better do something about the Wumpus first - this
                 isn't going to help! ";
 //            if (Goblins.ischasing)
@@ -1454,272 +1457,288 @@ crystalBall: Treasure 'crystal ball; quartz;sphere palantir' @crystalPalace
 //            else if (Blob.ischasing and Blob.chase >= 13)
 //                "You'd better do something about the strange blob first - this
 //                isn't going to help! ";
-            else if (Dwarves.numberhere(actor) == 1) 
+            else if (Dwarves.numberhere(gActor) == 1) 
                 "You'd better do something about the dwarf first -
                 this isn't going to help! ";            
-            else if (Dwarves.numberhere(actor) > 1) 
+            else if (Dwarves.numberhere(gActor) > 1) 
                 "You'd better do something about the dwarves
                 first - this isn't going to help! ";           
+        }    
+    
+        action() 
+        {
+            local sapphloc, catobj, myloc = gActor.location, myprep, 
+                catacnum;
+            local toploc = gActor.getOutermostRoom;
+            sapphloc = sapphire.getOutermostRoom;
+            if (sapphloc == nil) sapphloc = sapphire.location;
+            if (sapphloc.ofKind(Actor)) 
+            {
+                if(sapphloc.location)
+                    sapphloc = sapphloc.location;
+            }
+            // Special coding is needed if the sapphire is in Elsewhere,
+            // indicating that the sapphire is really in a Catacomb (and if the
+            // player is in a Catacomb, the sapphire is in a different one).
+            // Adjust the contents of the Catacombs as appropriate
+            if (sapphire.isIn(elsewhere)) 
+            {
+                catobj = sapphire;
+                // If the object is contained, find the outermost
+                // container.
+                while (catobj.location != elsewhere) 
+                {
+                    catobj = catobj.location;
+                    if (catobj == nil) 
+                    {
+                        "Internal error while trying to find the
+                        outermost container of <<sapphire.theName>>.";
+                        return;
+                    }
+                }
+                // Remove objects from Catacombs (if the player is there) 
+                // and label their room number
+                if (gActor.isIn(catacombs))catacombs.leaveRoom;
+                // Save the current Catacombs room number
+                catacnum = catacombs.roomNumber;
+                // Set the Catacombs room number and move the relevant objects
+                // into the room.
+                catacombs.roomNumber = catobj.catac_room_num;
+                catacombs.enterRoom;
+                if (sapphloc == elsewhere) sapphloc = catacombs;
+            }
+            if (toploc.ofKind(OutsideRoom) && !toploc.ofKind(IndoorRoom))
+                "You gaze into the crystal ball.  An image begins to form,
+                but the bright daylight prevents you from seeing any detail.
+                Maybe if you went somewhere a little darker ...";
+            else 
+            {
+                "You feel rather disembodied, as if you were suddenly somewhere
+                else entirely.<.p>";
+                // Move the player out of the way if he's in the Catacombs and
+                // the sapphire is in a different Catacomb, so the player's lamp
+                // won't illuminate the location.
+                if (catacnum && gActor.isIn(catacombs)) gActor.actionMoveInto(elsewhere);
+                if (!sapphire.outermostVisibleParent.isIlluminated) 
+                {
+                    "You sense that you are in a dark place. The only thing in
+                    sight appears to be a companion to the crystal ball which
+                    holds your gaze. It seems to be searching the gloom for
+                    something to show you, but all it can see is itself: a
+                    brilliant blue six-pointed star suspended in space.";
+                    if (gActor.isIn(atY2) || gActor.isIn(fakeY2))                         
+                        "A hollow voice says \"Plugh\". ";
+                    
+                    gActor.actionMoveInto(myloc);
+                    goto withdraw;
+                }
+                else
+                    gActor.actionMoveInto(myloc);
+                
+                if (gActor.isIn(sapphloc.getOutermostRoom) &&
+                    sapphloc.ofKind(Room) && catacnum == nil) 
+                {
+                    "You then have a very strange and unnerving experience.
+                    You see yourself staring into the crystal
+                    ball, to which you somehow feel irresistibly drawn -- and
+                    inside the ball, you see another image of yourself, and
+                    another ball, and another image, and another ball, until
+                    you realize that you can stop the process by closing
+                    your eyes. ";
+                }
+                else if(sapphloc.ofKind(Room)) 
+                {
+                    gActor.actionMoveInto(sapphloc);
+                    global.view_artifact = self;
+                    global.onlyviewing = true;
+                    showRoom(gActor.location);                    
+                    global.onlyviewing = nil;
+                    global.view_artifact = nil;
+                    if(Dwarves.numberhere(actor) == 1) {
+                        "<.p>You see a little dwarf here. ";
+                    }
+                    else if(Dwarves.numberhere(actor) > 1) {                        
+                        "<.p>You see <<say(Dwarves.numberhere(actor))>> little
+                        dwarves here. ";
+                    }
+                    if(gActor.location == riseOverBay) {
+                        if (!riseOverBay.seenit || ((rand(100) <= 10)
+                            && !goldRing.seenspecial)) {
+                            
+                            "<.p>A large, stately elf walks up the rise, says the
+                            word \"Saint-Michel\", and is instantly
+                            transported to the castle. ";
+                            riseOverBay.seenit = true;
+                            if(goldRing.wornBy == gActor) 
+                            {   
+                                goldRing.seenspecial = true;
+                                "<.p>You hear yourself repeat the word which the
+                                elf has just issued. Out of the corner of your
+                                eye, you then see your gold ring quiver - and
+                                you seem to be somewhere else again...<.p>"; 
+                                gActor.actionMoveInto(castlePinnacle);
+                                sapphire.actionMoveInto(castlePinnacle);
+                                "\("; gActor.location.theName; "\)";
+                                gActor.location.lookAroundWithin();
+                                
+                                "<.p>You see the elf walk down the steps. ";
+                            }
+                        }
+                    }
+                    else if(gActor.location == castlePinnacle) {
+                        if (!castlePinnacle.seenit || rand(100) <= 10) {
+                            
+                            "<.p>A large, stately elf appears and walks down
+                            the steps.";
+                            castlePinnacle.seenit = true;
+                        }
+                    }
+                    else if(gActor.location == outerCourtyard) {
+                        if (!outerCourtyard.seenit || ((rand(100) <= 10)
+                            && !goldRing.seenspecial)) {
+                            
+                            "<.p>A large, stately elf comes down the steps.  He
+                            says <q>Phleece</q>.  You notice that a bracelet,
+                            which he wears on his wrist, begins to glow -- then
+                            he disappears in a flash of light. ";
+                            outerCourtyard.seenit = true;
+                            if(goldRing.wornBy == gActor) 
+                                
+                                goldRing.seenspecial = true;
+                            if(global.game701p) {
+                                KataVerb.seenspecial = true;
+                                AnaVerb.seenspecial = true;
+                            }
+                            "<.p>You hear yourself repeat the word which
+                            the elf has just used.  Out of the corner of 
+                            your eye, you see your gold ring quiver - and
+                            you seem to be somewhere else again...<.p>"; 
+                            sapphire.actionMoveInto(castleRoom);
+                            gActor.actionMoveInto(castleRoom);
+                            "\("; gActor.location.theName; "\)";
+                            gActor.location.lookAroundWithin();
+                            "\b";
+                            if (global.game701p && !self.noelf) {
+                                "You see the elf enter the room to the east,
+                                and say \"Kata\".  The air around him seems to
+                                shimmer, and he disappears!  Fearing that you 
+                                may lose the emerald if you transport it again,
+                                you stop yourself from repeating the word. ";
+                                
+                            } else if (!self.noelf) {
+                                "You see the elf enter the room to the east,
+                                and utter a magic word which you don't quite
+                                manage to hear.  The air around him seems to
+                                shimmer, and he disappears!  ";
+                            }
+                        }
+                    }
+                    
+                    if((gActor.location == castleRoom) && 
+                       sapphire.isIn(castleRoom) && !sapphire.plughed) 
+                    {
+                        
+                        "<.p>You start to move your eyes away from the crystal
+                        ball, but you notice movement in the sphere and
+                        look again. Two elves come into the room from the 
+                        southwest, deep in conversation.  Suddenly they notice the
+                        sapphire, and immediately step back.  One of them
+                        goes into a room to the north, and comes back
+                        moments later, wearing a large glowing bracelet,
+                        covered in knobs and buttons. He fiddles with the 
+                        bracelet, then shouts a familiar word: <q>Plugh!</q>
+                        You stop yourself from repeating the word, but
+                        a hollow voice seems to say it anyway, 
+                        and your gold ring quivers.  Once again, 
+                        the elf and the sapphire are both transported.<.p>";
+                        
+                        if (myloc.getOutermostRoom == atY2)
+                            sapphire.actionMoveInto(insideBuilding);
+                        else if(myloc.getOutermostRoom == fakeY2)
+                            sapphire.actionMoveInto(volcanoPlatform);
+                        else if (myloc.getOutermostRoom == volcanoPlatform)
+                            sapphire.actionMoveInto(fakeY2);
+                        else
+                            sapphire.actionMoveInto(atY2);
+                        gActor.actionMoveInto(sapphire.location);                        
+                        showRoom(gActor.location);
+                        "\b";
+                        "The elf picks up the sapphire and 
+                        puts it down again, satisfied that it's now
+                        out of harm's way.  Then he presses
+                        another button on his glowing bracelet and 
+                        disappears! ";
+                        sapphire.plughed = true;
+                    }
+                    else if((gActor.location == castleRoom) && 
+                            sapphire.isIn(castleRoom)){
+                        
+                        "<.p>You start to move your eyes away from the crystal ball,
+                        but you notice movement in the sphere and look again.
+                        Three elves are standing in the room, conversing in Elvish
+                        and looking at the sapphire as if it's an unexploded bomb!
+                        Once again a bracelet is produced, and once again a
+                        button is pushed...<.p>";
+                        
+                        sapphire.actionMoveInto(trollTreasure);
+                        gActor.actionMoveInto(sapphire.location);
+                        showRoom(actor.location);                        
+                    }
+                    gActor.moveInto(myloc);
+                }
+                else 
+                {
+                    if (sapphloc.ofKind(Surface))
+                        myprep = 'on';
+                    else
+                        myprep = 'in';
+                    "You're somehow <<myprep>> <<sapphloc.aName>>! ";
+                    if (sapphloc.contents.length > 0)                         
+                        "<.p>You can see <<list of sapphloc.contents>> here. ";                   
+                    else 
+                        "<.p>It appears to be empty. ";
+                    
+                }
+                withdraw: "\b";
+                "Your gaze withdraws from the crystal ball, and you are
+                now back in your normal senses.<.p>";
+                myloc.lookAroundWithin();
+            }
+            // If catacnum is set, remove objects from the Catacombs location
+            // and (if appropriate) move the right objects in.
+            if (catacnum) 
+            {
+                // Remove objects
+                catacombs.leaveRoom;
+                // Restore original room number
+                catacombs.roomNumber = catacnum;
+                // If the player is in the Catacombs, move the right objects back.
+                if(gActor.isIn(catacombs)) catacombs.enterRoom;
+            }
         }
     }
     
-//        action() 
-//        {
-//            local sapphloc, catobj, myloc = gActor.location, count, myprep, 
-//                catacnum;
-//            local toploc = gActor.getOutermostRoom;
-//            sapphloc = toplocation(sapphire);
-//            if (sapphloc == nil) sapphloc = sapphire.location;
-//            if (sapphloc.ofKind(Actor)) 
-//            {
-//                if(sapphloc.location)
-//                    sapphloc = sapphloc.location;
-//            }
-//            // Special coding is needed if the sapphire is in Elsewhere,
-//            // indicating that the sapphire is really in a Catacomb (and if the
-//            // player is in a Catacomb, the sapphire is in a different one).
-//            // Adjust the contents of the Catacombs as appropriate
-//            if (sapphire.isIn(elsewhere)) {
-//                catobj = sapphire;
-//                // If the object is contained, find the outermost
-//                // container.
-//                while (catobj.location != elsewhere) 
-//                {
-//                    catobj = catobj.location;
-//                    if (catobj == nil) {
-//                        "Internal error while trying to find the
-//                        outermost container of <<sapphire.theName>>.";
-//                        return;
-//                    }
-//                }
-//                // Remove objects from Catacombs (if the player is there) 
-//                // and label their room number
-//                if (gActor.isIn(catacombs))catacombs.leaveroom;
-//                // Save the current Catacombs room number
-//                catacnum = catacombs.roomnumber;
-//                // Set the Catacombs room number and move the relevant objects
-//                // into the room.
-//                catacombs.roomnumber = catobj.catac_room_num;
-//                catacombs.enterroom;
-//                if (sapphloc == slsewhere) sapphloc = catacombs;
-//            }
-//            if (toploc.ofKind(OutsideRoom) && !toploc.ofKind(IndoorRoom))
-//                "You gaze into the crystal ball.  An image begins to form,
-//                but the bright daylight prevents you from seeing any detail.
-//                Maybe if you went somewhere a little darker ...";
-//            else 
-//            {
-//                "You feel rather disembodied, as if you were suddenly somewhere
-//                else entirely.<.p>";
-//                // Move the player out of the way if he's in the Catacombs and
-//                // the sapphire is in a different Catacomb, so the player's lamp
-//                // won't illuminate the location.
-//                if (catacnum && gActor.isIn(catacombs)) gActor.actionMoveInto(elsewhere);
-//                if (!sapphire.islighted) 
-//                {
-//                    "You sense that you are in a dark place. The only thing in
-//                    sight appears to be a companion to the crystal ball which
-//                    holds your gaze. It seems to be searching the gloom for
-//                    something to show you, but all it can see is itself: a
-//                    brilliant blue six-pointed star suspended in space.";
-//                    if (gActor.isIn(AtY2) || gActor.isIn(Fake_2))                         
-//                        "A hollow voice says \"Plugh\". ";
-//                    
-//                    gActor.actionMoveInto(myloc);
-//                    goto withdraw;
-//                }
-//                else
-//                    gActor.actionMoveInto(myloc);
-//                
-//                if (toplocation(actor) == toplocation(sapphloc) and
-//                    isclass(sapphloc,room) and catacnum = nil) {
-//                    "You then have a very strange and unnerving experience.
-//                    You see yourself staring into the crystal
-//                    ball, to which you somehow feel irresistibly drawn - and
-//                    inside the ball, you see another image of yourself, and
-//                    another ball, and another image, and another ball, until
-//                    you realize that you can stop the process by closing
-//                    your eyes. ";
-//                }
-//                else if(isclass(sapphloc,room)) {
-//                    actor.location := sapphloc;
-//                    global.view_artifact := self;
-//                    global.onlyviewing := true;
-//                    "\("; actor.location.sdesc; "\)";
-//                    actor.location.nrmLkAround(true);
-//                    global.onlyviewing := nil;
-//                    global.view_artifact := nil;
-//                    if(Dwarves.numberhere(actor) = 1) {
-//                        P();"You see a little dwarf here. ";
-//                    }
-//                    else if(Dwarves.numberhere(actor) > 1) {
-//                        P();
-//                        "You see <<say(Dwarves.numberhere(actor))>> little
-//                        dwarves here. ";
-//                    }
-//                    if(actor.location = Rise_Over_Bay) {
-//                        if (not Rise_Over_Bay.seenit or ((rand(100) <= 10)
-//                            and not gold_ring.seenspecial)) {
-//                            P();
-//                            "A large, stately elf walks up the rise, says the
-//                            word \"Saint-Michel\", and is instantly
-//                            transported to the castle. ";
-//                            Rise_Over_Bay.seenit := true;
-//                            if((gold_ring.location = actor) 
-//                               and gold_ring.isworn) {
-//                                gold_ring.seenspecial := true;
-//                                P();"You hear yourself repeat the word which the
-//                                    elf has just issued. Out of the corner of your
-//                                    eye, you then see your gold ring quiver - and
-//                                    you seem to be somewhere else again... "; P();
-//                                actor.location := Castle_Pinnacle;
-//                                sapphire.moveInto(Castle_Pinnacle);
-//                                "\("; actor.location.sdesc; "\)";
-//                                actor.location.nrmLkAround(true);
-//                                P();
-//                                "You see the elf walk down the steps. ";
-//                            }
-//                        }
-//                    }
-//                    else if(actor.location = Castle_Pinnacle) {
-//                        if (not Castle_Pinnacle.seenit or rand(100) <= 10) {
-//                            P();
-//                            "A large, stately elf appears and walks down
-//                            the steps.";
-//                            Castle_Pinnacle.seenit := true;
-//                        }
-//                    }
-//                    else if(actor.location = Outer_Courtyard) {
-//                        if (not Outer_Courtyard.seenit or ((rand(100) <= 10)
-//                            and not gold_ring.seenspecial)) {
-//                            P();
-//                            "A large, stately elf comes down the steps.  He
-//                            says \"Phleece\".  You notice that a bracelet,
-//                            which he wears on his wrist, begins to glow - then
-//                            he disappears in a flash of light. ";
-//                            Outer_Courtyard.seenit := true;
-//                            if((gold_ring.location = actor) 
-//                               and gold_ring.isworn) {
-//                                gold_ring.seenspecial := true;
-//                                if(global.game701p) {
-//                                    kataVerb.seenspecial := true;
-//                                    anaVerb.seenspecial := true;
-//                                }
-//                                P();"You hear yourself repeat the word which
-//                                    the elf has just used.  Out of the corner of 
-//                                    your eye, you see your gold ring quiver - and
-//                                    you seem to be somewhere else again... "; P();
-//                                sapphire.moveInto(Castle_Room);
-//                                actor.location := Castle_Room;
-//                                "\("; actor.location.sdesc; "\)";
-//                                actor.location.nrmLkAround(true);
-//                                P(); I(); 
-//                                if (global.game701p and not self.noelf) {
-//                                    "You see the elf enter the room to the east,
-//                                    and say \"Kata\".  The air around him seems to
-//                                    shimmer, and he disappears!  Fearing that you 
-//                                    may lose the emerald if you transport it again,
-//                                    you stop yourself from repeating the word. ";
-//                                    
-//                                } else if (not self.noelf) {
-//                                    "You see the elf enter the room to the east,
-//                                    and utter a magic word which you don't quite
-//                                    manage to hear.  The air around him seems to
-//                                    shimmer, and he disappears!  ";
-//                                }
-//                            }
-//                        }
-//                    }
-//                    if((actor.location = Castle_Room) and 
-//                       sapphire.isIn(Castle_Room) and not sapphire.plughed) {
-//                        P();
-//                        "You start to move your eyes away from the crystal
-//                        ball, but you notice movement in the sphere and
-//                        look again. Two elves come into the room from the 
-//                        southwest, deep in conversation.  Suddenly they notice the
-//                        sapphire, and immediately step back.  One of them
-//                        goes into a room to the north, and comes back
-//                        moments later, wearing a large glowing bracelet,
-//                        covered in knobs and buttons. He fiddles with the 
-//                        bracelet, then shouts a familiar word: \"Plugh!\"
-//                        You stop yourself from repeating the word, but
-//                        a hollow voice seems to say it anyway, 
-//                        and your gold ring quivers.  Once again, 
-//                        the elf and the sapphire are both transported. ";
-//                        P();
-//                        if (toplocation(myloc) = At_Y2)
-//                            sapphire.moveInto(Inside_Building);
-//                        else if (toplocation(myloc) = Fake_Y2)
-//                            sapphire.moveInto(Volcano_Platform);
-//                        else if (toplocation(myloc) = Volcano_Platform)
-//                            sapphire.moveInto(Fake_Y2);
-//                        else
-//                            sapphire.moveInto(At_Y2);
-//                        actor.location := sapphire.location;
-//                        "\("; actor.location.sdesc; "\)";
-//                        actor.location.nrmLkAround(true);
-//                        P();
-//                        "The elf picks up the sapphire and 
-//                        puts it down again, satisfied that it's now
-//                        out of harm's way.  Then he presses
-//                        another button on his glowing bracelet and 
-//                        disappears! ";
-//                        sapphire.plughed := true;
-//                    }
-//                    else if((actor.location = Castle_Room) and 
-//                            sapphire.isIn(Castle_Room)){
-//                        P();
-//                        "You start to move your eyes away from the crystal ball,
-//                        but you notice movement in the sphere and look again.
-//                        Three elves are standing in the room, conversing in Elvish
-//                        and looking at the sapphire as if it's an unexploded bomb!
-//                        Once again a bracelet is produced, and once again a
-//                        button is pushed... ";
-//                        P();
-//                        sapphire.moveInto(Troll_Treasure);
-//                        actor.location := sapphire.location;
-//                        "\("; actor.location.sdesc; "\)";
-//                        actor.location.nrmLkAround(true);
-//                    }
-//                    actor.location := myloc;
-//                }
-//                else {
-//                    if (isclass(sapphloc,surface))
-//                        myprep := 'on';
-//                    else
-//                        myprep := 'in';
-//                    "You're somehow <<myprep>> <<sapphloc.adesc>>! ";
-//                    if (length(sapphloc.contents) > 0) {
-//                        P();
-//                        "You can see ";listcont(sapphloc);
-//                        " here. ";
-//                    }
-//                    else {
-//                        P();"It appears to be empty. ";
-//                    }
-//                }
-//                withdraw: P();
-//                "Your gaze withdraws from the crystal ball, and you are
-//                now back in your normal senses. ";
-//            }
-//            // If catacnum is set, remove objects from the Catacombs location
-//            // and (if appropriate) move the right objects in.
-//            if (catacnum) {
-//                // Remove objects
-//                Catacombs.leaveroom;
-//                // Restore original room number
-//                Catacombs.roomnumber := catacnum;
-//                // If the player is in the Catacombs, move the right objects back.
-//                if(actor.isIn(Catacombs))Catacombs.enterroom;
-//            }
-//        }
-//    }
+    showRoom(loc)
+    {
+        local oldOpenTag = roomnameStyleTag.openText;
+        local oldCloseTag = roomnameStyleTag.closeText;
+        try
+        {  
+            roomnameStyleTag.openText = '\n<i>[';
+            roomnameStyleTag.closeText = ']</i>\n';
+            loc.lookAroundWithin();            
+        }
+        finally
+        {
+            roomnameStyleTag.openText = oldOpenTag;
+            roomnameStyleTag.closeText = oldCloseTag;
+        }       
+    }
 ;
 
 
-catacombs: Room;
 
-elsewhere: Room;
-
-mushroom: Thing;
+mushroom: Thing 'mushroom'
+  isEaten = nil
+;
 

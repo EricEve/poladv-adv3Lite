@@ -117,15 +117,16 @@ checkForEndGame(parm)
     if (global.fully_closed && global.newGame && ! global.game701) 
     {
         global.endgameclock++;
-        if(global.endgameclock == global.phonetime) {
+        if(global.endgameclock == global.phonetime) 
+        {
             
             "<.p>The phone starts to ring. ";
-//            Phone2.isringing = true; // add back when Phone2 is implemented
+            phone2.isringing = true; // add back when Phone2 is implemented
         }
         else if(global.endgameclock == global.phonewake) 
         {            
             "<.p>The constant ringing has awakened the dwarves! ";
-//            end_dwarves(''); // add back when dwarves are implememted.
+            end_dwarves(''); 
         } 
     }    
 }
@@ -339,7 +340,7 @@ endPuzzle()
     if(global.newGame)
         cond1 = (boothcount > 0) && (necount == 0) && (mecount == 0) && (swcount == 0);
 
-    cond2 = (swcount > 0) && (boothcount = 0) && (necount = 0) && (mecount = 0);
+    cond2 = (swcount > 0) && (boothcount == 0) && (necount == 0) && (mecount == 0);
     
     if (cond1 && gPlayerChar.isIn(meloc)) 
     {
@@ -365,7 +366,7 @@ endPuzzle()
 
         addToScore(global.almostpoints, 'almost winning');
 
-        win(); // shouldn't that be die() ?
+        win(); 
     }
     
     else  
@@ -386,6 +387,23 @@ endPuzzle()
     
 }
    
+
+/*
+ * The player falls foul of the booby-trapped phone.
+ */
+end_phone()
+{
+    "Whoops!  The floor has opened out from under you!  It seems you
+    have fallen into a bottomless pit.  As a matter of fact, you're
+    still falling!  Well, I have better things to do than wait around
+    for you to strike bottom, so let's just assume you're dead.
+    Sorry about that, Chief.<.p>";
+
+    addToScore(global.endkillpoints, 'falling foul of the booby-trapped phone'); 
+
+    win();
+}
+
 objCount(obj, loc)
 {   
     if(loc.ofKind(DispensingCollective))
@@ -398,7 +416,7 @@ objCount(obj, loc)
 /*
  * The player resolves the endgame by disturbing the dwarves.
  */
-end_dwarve(sentence = 'The resulting ruckus has awakened the dwarves.')
+end_dwarves(sentence = 'The resulting ruckus has awakened the dwarves.')
 {
     "<.p><<sentence>> There are now several threatening little dwarves in 
     the room with you! Most of them throw knives at you!  All of them get
@@ -668,22 +686,208 @@ cylindricalRoom: Room 'Cylindrical Room'
 //    noExits = 'none visible'
 ;
 
-phoneBooth2: Enterable 'phone booth'
+phonyBooth2: Distant 'phone booth; telephone' @atSWEnd
+    "You can't examine it closely from here. "    
+    newgame = true
     
+    listenDesc()
+    {
+        if(phone2.isringing)
+            "You can hear the phone ringing. ";
+    }
+;
+
+
+phoneBooth2: Enterable 'phone booth' @atNEEnd
+    "It contains a pay telephone like the one you found in
+           the Rotunda. "
     
     game551 = true
     connector = phoneBooth2Door
+    listenDesc()
+    {
+        if(phone2.isringing)
+            "You can hear the phone ringing. ";
+    }
 ;
 
-phoneBooth2Door: DSDoor 'phone booth door' @atSWEnd @inPhoneBooth2
+phoneBooth2Door: DSDoor 'phone booth door' @phoneBooth2 @inPhoneBooth2
     
     isConnectorApparent = (phoneBooth2.isIn(room1))
     game551 = true
 ;
 
 inPhoneBooth2: NoNPC, Room 'Inside the Phone Booth'
+    "{I} {am} standing in a telephone booth at the side of
+     the Repository.  Hung on the wall is an old pay telephone of
+      ancient design, like the one you found in the Rotunda but
+      in much better condition. "
+        
+    game551 = true
     south = phoneBooth2Door
     out asExit(south)
+    myphone = phone2
+    floorObj = pb2Floor
+;
+
++ phone2: Phone 'old payphone; ancient pay; phone telephone receiver handset'
+    desc()
+    {
+        "It's an old payphone of the same design as the one you
+        saw earlier in the Rotunda, but in much better condition.
+        A telephone cable runs down from the phone to the floor. ";
+        if(!boobyWire.isIn(location))
+            boobyWire.moveInto(location);
+    }
+    
+    isringing = nil
+    takemethod(actor) {  end_phone(); }
+    
+    // Don't do anything more after lifting receiver.
+    answermethod() {}
+    dialtonemethod() {}
+    
+    // If we attack the phone, it wakes the dwarves.
+    dobjFor(Attack)
+    {
+        verify() {}
+        action()
+        {            
+            "You've hit the jackpot!!  Hundreds of coins and slugs cascade from
+            the telephone's coin return slot and spill all over the floor of
+            the booth. ";
+            end_dwarves();
+        }
+    }
+    dobjFor(Break) asDobjFor(Attack)
+    
+    iobjFor(TakeFrom)
+    {
+        action()
+        {
+            if(gDobj == boobyWire)
+            {                
+                "{I} yank{s/ed} the cable out of the phone, and ... <.p>"; 
+                end_phone();}
+            else
+                inherited();
+        }
+    }
+;
+
+pb2Floor: Floor 'floor'
+    desc()
+    {
+        "It isn't quite as solid as the floor elsewhere in the
+        Repository. ";
+        if(!boobyCatch.isIn(inPhoneBooth2)) 
+        {
+            "You notice an odd-looking mechanism
+            on the floor. ";
+            boobyCatch.moveInto(inPhoneBooth2);
+        }
+        if(! boobyWire.isIn(inPhoneBooth2)) 
+        {
+            "A cable runs down from the telephone to the
+            mechanism, but something tells you that it isn't just an
+            ordinary telephone cable.  Something isn't right here! ";
+            boobyWire.moveInto(inPhoneBooth2);
+        }
+    }
+;
+
+boobyWire: Fixture 'odd-looking cable; strane unusual;wire' @inPhoneBooth2
+    desc()
+    {
+        "It looks rather odd, and you're not sure it's just a normal
+        telephone cable.  It runs down from the phone to a kind of
+        catch mechanism on the floor. ";
+        boobyCatch.moveInto(inPhoneBooth2);
+    }
+   
+    dobjFor(Pull) 
+    {
+        verify() {}
+        action()
+        {
+            "You <<gVerbWord>> the cable out of the phone, and ... <.p>"; 
+            end_phone();
+        }
+    }
+    
+    dobjFor(Yank) asDobjFor(Pull)
+    
+    dobjFor(Break)
+    {
+        verify() {}
+        action()
+        {
+            "You manage to break the cable, and ... <.p>"; 
+            end_phone();            
+        }        
+    }
+    
+    dobjFor(YankFrom)
+    {
+        verify()
+        {
+            if(gVerifyIobj not in (phone2, boobyCatch))
+               inherited();
+        }
+            
+        action() 
+        {
+            "{I} yank{s/ed} {the dobj} out of {the iobj} and...<.p>";
+            end_phone();
+        }           
+    }   
+;
+
+
+boobyCatch: Fixture 'mechanism;odd-looking strange ;catch'
+    "It's hard to say, but it appears to be some sort of catch
+        mechanism holding the floor in place!  You have a very
+        bad feeling about this.  I'd be very careful what you
+        do here, because it appears that the dwarves have booby-trapped
+        the booth! "
+    
+    newgame = true
+    
+    dobjFor(Kick)
+    {
+        verify() {}
+        action()
+        {
+            "You give the mechanism a mighty kick, and ...<.p>";
+            end_phone();
+        }        
+    }
+    
+    dobjFor(Attack)
+    {
+        verify() {}
+        action()
+        {
+            "You strike the mechanism with a resounding blow, and ...<.p>"; 
+            end_phone();           
+        }
+    }
+    
+    dobjFor(Break) asDobjFor(Attack)
+    
+    iobjFor(YankFrom)
+    {
+        action()
+        {
+            if(gDobj == boobyWire)
+            {
+                "You yank the cable out of the mechanism, and ... <.p>";
+                end_phone();
+            }
+            else
+                inherited();
+        }
+    }    
 ;
 
 win()

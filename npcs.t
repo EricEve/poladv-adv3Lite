@@ -832,4 +832,5 @@ wumpiRemnant: Fixture 'Wumpi'
     game701 = true
 ;
     
-   
+djinn: Actor 'djinn;;;him'
+;

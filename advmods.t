@@ -60,6 +60,7 @@ global: object
     endpoints = 0
     maxscore = 0
     maxhiked = 0
+    lamplist = []
     
     debug = nil
     
@@ -195,6 +196,15 @@ global: object
     fully_closed = nil
     
     startscore = 0
+    
+    view_artifact = nil
+    onlyviewing = nil
+    
+    numactwords = 0
+    numactwords580 = 0
+    numactwords701 = 0
+    numactwords701p = 0
+    
 ;
 
 
@@ -234,7 +244,42 @@ gamePreinit: PreinitObject
     {
         local i,j,o, vnumsav,gameprop,locprop,loclprop, condit;
         
-        // Code for list of light sources goes here.
+        global.lamplist = [];
+        o = firstObj(LightSource);
+        while (o != nil) {
+            global.lamplist = global.lamplist + o;
+            o = nextObj(o, LightSource);
+        }
+        o = firstObj(Flashlight);
+        while (o != nil) {
+            global.lamplist = global.lamplist + o;
+            o = nextObj(o, Flashlight);
+        }
+        
+
+        
+        global.numactwords = 0;
+        for(o = firstObj(MagicWord); o; o = nextObj(o, MagicWord)) {
+            if(o.omegapsical_order) 
+                if(o.omegapsical_order > 0) global.numactwords++;
+        }
+        global.numactwords580 = 0;
+        for(o =firstObj(MagicWord); o; o = nextObj(o, MagicWord)) {
+            if(o.omegaps580_order) 
+                if(o.omegaps580_order > 0)global.numactwords580++;
+        }
+        global.numactwords701 = 0;
+        for(o = firstObj(MagicWord); o; o = nextObj(o, MagicWord)) {
+            if(o.omegaps701_order) 
+                if(o.omegaps701_order > 0)global.numactwords701++;
+        }
+        global.numactwords701p = 0;
+        for(o = firstObj(MagicWord); o; o = nextObj(o, MagicWord)) {
+            if(o.omegaps701p_order) 
+                if(o.omegaps701p_order > 0) global.numactwords701p++;
+    }
+        
+        
         
         /* 
          *   Set an 'allversions' property on all rooms/objects for which no gamevvv properties are
@@ -418,13 +463,7 @@ versionSetup: InitObject
     {
         if(!gPlayerChar.isIn(atEndOfRoad))
             gPlayerChar.moveInto(atEndOfRoad);
-        /* 
-         *   Note that the TADS2 code below would not work in TADS 3. In both Adv3 and Adv3Lite you
-         *   can't move objects around by changing their location property. In adv3Lite you must use
-         *   moveInto(loc) or actionMoveInto(loc), the latter being more appropriate if used in
-         *   response to player input.
-         */
-//    parserGetMe().location := At_End_Of_Road;
+        
     }
     
     /* 
@@ -562,7 +601,8 @@ turnProcessing: InitObject
     
     /* Run the game-specific turn ending handling. */
     processTurn()
-    {        
+    {   
+        gPlayerChar.healthdaemon();
         updateScore();
         checkForClosing();
         checkForEndGame(true);
@@ -1083,6 +1123,65 @@ glob1: VerGlob
     
 ;
 
+/*   The glob2 and glob7 objects hold lists and values which are copied over to
+     the global object when a 550-point or 580-poing game is selected.  */
+
+class glob_550: VerGlob
+    maxresurrect = 3        // number of resurrections allowed
+    //
+    // Scoring values
+    //
+    // 9 points initially, 1 point for magazines, 390 (420) points for
+    // treasures, 20 points for getting far in, 30 points for reaching
+    // extended areas, 100 points for endgame.
+    // Total = 550 (580).
+    //
+    // Points for treasures are set to:
+    // takepoints = 2, depositpoints = 13.
+    //
+    score = 9               // start out with 9 points: (-1*quitpoints)
+                            // Thus, score can be negative in this version.
+    novicepoints = -5       // points for playing in easy mode (neg.)
+    quitpoints = -4         // points for quitting (neg.)
+    deathpoints = -10       // points gained each time player dies (neg.)
+    farinpoints = 20        // points for getting well into the cave
+    extenpoints = 10        // points for reaching extended areas.
+
+    closure = nil           // Has the endgame timer started yet?
+    closurepoints = 20      // point award when it does.
+    closingpoints = 20      // points for surviving until cave closing time
+    endpoints = 20          // points for getting to final puzzle
+    endkillpoints = 0       // points for getting killed in endgame
+    klutzpoints = 0         // points for getting klutzed (blown up)
+    almostpoints = 0        // points for *almost* getting final puzzle
+                            // (wrong part of room blown up)
+    winpoints = 0           // points for winning the final puzzle
+    escapepoints = 20       // points for leaving the cylindrical room
+    finalepoints = 20       // points for entering the treasure room in
+                            // the endgame.
+
+    sacklist = []           // containers for automatic inventory
+                            // management
+    //
+    // NPC stuff
+    //
+    dwarves = 5             // number of dwarves wandering about the cave
+                                // (Was 5 in original.)
+;
+glob2: glob_550
+    maxscore = 550
+    vnumber = 2
+    
+    scoreRanks = [0, 20, 130, 240, 350, 470, 510, 530, 549, 550]  
+;
+glob7: glob_550
+    maxscore = 580
+    vnumber = 7
+    
+    scoreRanks = [0, 20, 135, 250, 365, 485, 525, 545, 565, 580]  
+;
+
+
  die()
 {
     addToScore(global.deathpoints, 'for getting killed');
@@ -1358,21 +1457,8 @@ modify Player
     
     bulkCapacity = 7
     weightCapacity = 20
-    
-    
+        
     health = 100
-    
-//    ldesc = {
-//        if(mushroom.is_eaten) {
-//            I(); "Your muscles are bulging unbelievably.";
-//        }
-//        if(global.newgame and self.health < 95) {
-//            healthVerb.action(self);
-//        }
-//        else if (not mushroom.is_eaten) {
-//            I(); "You look much the same as always.";
-//        }
-//    }
     
     // This counts how many portions of blueberries have been eaten
     blueberriesEaten = 0
@@ -1527,6 +1613,47 @@ modify Player
         /* Carry out the travel */
         travelVia(room);
     }
+    
+    shielded = (glowingStone.isIn(canister) && !canister.isOpen)
+    
+    healthdaemon() 
+    {
+        local i, toproom = getOutermostRoom, msg = nil;
+        if (toproom.isoutside && !toproom.isindoor)
+            health += 3;
+        else health += 1;
+        if(health > 100) health = 100;
+        if (glowingStone.isIn(self) && !shielded) 
+        {
+            health -= 7; msg = true;
+        }
+        else if(glowingStone.isIn(toproom) && !shielded) 
+        {
+            health -= 5; msg = true;
+        }
+        if (msg) 
+        {
+            if (health < 60) 
+            {
+                i = 1 + (60 - self.health) / 10;
+                say(healthmess[i]);
+            }
+        }
+        if (health < 0) die();
+    }
+    
+    healthmess = [
+        'Is it hot in here?  You are flushed and sweating.',
+        'You are feeling definitely peculiar, weak....',
+        'You\'re dizzy, nauseous.  You can barely stand.',
+        'You are really ill.  If you don\'t find an antidote soon, it\'s curtains.',
+        'You are a walking wound.  You are very weak.  You\'d better find out 
+           what\'s wrong before it\'s too late.',
+        'Sheeesh!  What a mess!  Your hair has fallen out and your skin is
+        covered with blisters.  And not an aspirin in sight!',
+        'Well, you tried, but your strength is gone.  The agony is finally
+        over.'
+    ]
 ;
 
 dummyActor: Actor 'dummy actor'

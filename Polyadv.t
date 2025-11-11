@@ -91,8 +91,16 @@ class BodyPart: Component
 ;
 
 me: Player 'you' @atEndOfRoad 
-    "{I} hope{s} {i} look{s/ed} the part of an intrepid adventurer. "
-    
+    desc
+    {
+        if(mushroom.isEaten) 
+            "Your muscles are bulging unbelievably. ";            
+        if(global.newGame && health < 95) 
+            doNested(Health);        
+        else if (!mushroom.isEaten) 
+            "{I} hope{s} {i} look{s/ed} the part of an intrepid adventurer. ";        
+    }
+       
     itemcount = contents.countWhich({x:!x.isFixed})
     
     kickNoEffectMsg = '{I} {give} {myself} a good kicking, which {i} no doubt richly deserve{s/ed}. '

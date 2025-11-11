@@ -56,6 +56,38 @@ VerbRule(Deterministic)
     action = Deterministic
 ;
 
+DefineSystemAction(Health)
+    execAction(c)
+    {
+        local i;       
+        "{My} health rating is <<gActor.health>>, out of 100. So ";
+       
+        if(gActor.health >= 95) {
+            if (rand(100) <= 50) i = 2;
+            else i = 1;
+        }
+        else i = 3 + (100 - actor.health) / 20;
+        say(self.healthmess[i]);
+    }
+    
+    healthmess = [
+        '{i} {am} in perfect health.',
+        '{i} {am} as fit as a fiddle.',
+        '{i} {am} a bit off top form, but nothing to worry about.',
+        '{i} {am} weaker than usual.  Better avoid fights.',
+        '{i} really ought to take a break. {I}{\'m} in tough shape.',
+        '{i} {am} on the edge of collapse. Lots of sun and fresh air will speed {my} recovery.',
+        '{my} strength is nearly gone. Only a miracle can save you now.'
+    ]
+;
+
+VerbRule(Health)
+    'health' | 'diagnose'
+    : VerbProduction
+    action = Health
+    vernPhrase = 'diagnose/diagnosing health'
+;
+
 class VersionRestartAction: SystemAction
     points = 350
     vNumber = 0
@@ -723,6 +755,9 @@ DefSpecialTravel(Phleece, &phleece, 'phleece');
 DefSpecialTravel(Pray, &pray, 'pray');
 DefSpecialTravel(Bridge, &bridge, 'bridge');
 DefSpecialTravel(Altar, &altar, 'altar');
+DefSpecialTravel(Balcony, &balcony, 'balcony');
+DefSpecialTravel(Warm, &warm, 'warm');
+
 DefSpecialTravel(Click, &click, 'click' (|('my'|'your'|)'heels'))
     execAction(cmd)
 {
@@ -742,7 +777,9 @@ noGoodHereMsg = "{I} click{s/ed} {my} heels and feel a slight tug, but nothing e
 ;
                  
 
-
+// THESE WILL NEED FURTHER WORK
+DefSpecialTravel(AnaVerb, &ana, 'ana');
+DefSpecialTravel(KataVerb, &kata, 'kata');
 
 
 

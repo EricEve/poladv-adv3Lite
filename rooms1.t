@@ -3,10 +3,6 @@
 #include <tads.h>
 #include "advlite.h"
 
-
-
-
-
 /* Additional rooms for 551-point version */
 
 /* Mix-in class for rooms with a brassKey property */
@@ -184,7 +180,7 @@ trFloor: Floor 'floor; smooth clean; ground'
 ;
 
 /* 144 */
-throneRoomEast: DarkRoom 'At East Side ot Throne Room'
+throneRoomEast: DarkRoom 'At East Side of Throne Room'
     "{I} {am} on the east side of the throne room.  Very narrow
     passages go north and south, but are too small to enter.  "
     
@@ -215,9 +211,9 @@ throneRoomEast: DarkRoom 'At East Side ot Throne Room'
         
     }
     
-    floorObj = trFloor
-    
+    floorObj = trFloor    
 ;
+
 
 + throne: Fixture, Chair 'throne; elfin elvish intricate small'
     desc()
@@ -331,6 +327,14 @@ throneRoomEast: DarkRoom 'At East Side ot Throne Room'
         }
     }
     
+;
+
+/* 145 */
+dragged_down: object
+    msg = "{I} {am}  dragged down, down, into the depths of the
+    whirlpool. Just as {i} {can} no longer hold {my} breath, {i} {am} shot out
+    over a waterfall into the shallow end of a large reservoir. Gasping
+    and sputtering, {i} crawl{s/ed} weakly towards the shore....<.p>"
 ;
 
 vastChamber: NoNPC, DarkRoom 'In a Vast Chamber'
@@ -809,7 +813,7 @@ topOfSteps: KeyCheck, IndoorRoom 'At Top of steps (behind Thunder Hole)'
         check()
         {
             if((gDobj.isLarge || gDobj.isHuge) && !mushrooms.isEaten)
-                "{The subj dobj} [is} too large. ";
+                "{The subj dobj} {is} too large. ";
         }
         
         action()
@@ -2532,7 +2536,7 @@ bridgeMess: MultiLoc, Decoration 'message; warning'
 
 /* 191 */
 deadEndCrack: DeadEndRoom 'In Dead End Crack'
-    "{I]{'m} in a dead-end crack. "
+    "{I}{'m} in a dead-end crack. "
     
     game551 = true
     
@@ -3298,7 +3302,7 @@ gothicCathedral: DarkRoom 'In Gothic Cathedral'
     meters to culminate in a series of pointed arches directly over 
     {my} head.  There are also two low arches to either side, forming
     side portals.  The whole effect is that of a gothic cathedral. 
-    {I} [can] proceed north, south, east, or west. "
+    {I} {can} proceed north, south, east, or west. "
     
     game551 = true
     // Don't allow drinking unless the Walls of Jericho are down.
@@ -4039,8 +4043,3 @@ morion: Room 'Morion'
 ;
 
 
-warmRoom: DarkRoom
-;
-
-inBalcony: DarkRoom
-;

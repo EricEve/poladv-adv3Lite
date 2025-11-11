@@ -21,10 +21,12 @@
 -source adv3Lite/extensions/fueled
 -source adv3Lite/extensions/collective
 -source adv3Lite/extensions/weight
+-source adv3lite-tads3-checkroomdescr-main/checkdescr
 -source cc-hints
 -source Polyadv
 -source rooms
 -source rooms1
+-source rooms2
 -source map2
 -source items
 -source ccr-itm1
