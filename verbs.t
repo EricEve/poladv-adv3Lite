@@ -697,6 +697,183 @@ DefineTVerbS(Blow, 'blow' singleDobj, 'blow', 'blowing');
 DefineTVerbS(Play, 'play' singleDobj, 'play', 'playing');
 DefineTVerbS(Knock, 'knock' ('on'|) singleDobj, 'knock', 'knocking');
 
+class VaultKeyVerb: MagicWord
+    wordnum = nil
+    
+    execAction(c)
+    {
+        if(gActor.isIn(vault) || gActor.isIn(peelgrunt)) 
+            safeOpen();
+        else 
+            nothingHappens;
+    }
+    
+    
+    safeOpen()
+    {
+        if(inSafe.isOpen || inSafe.isFused) 
+            nothingHappens;
+        else 
+        {    if(self.wordnum == inSafe.password) 
+                inSafe.opens();            
+            else 
+                inSafe.melts();
+        }
+    }
+    
+    nothingHappens = "Nothing happens. "
+    verb = nil
+;
+
+blerbiVerb: VaultKeyVerb
+    omegapsical_order = 16
+    omegaps580_order = 18
+    omegaps701_order = 20
+    omegaps701p_order = 22
+    wordnum = 1
+    
+    verb = 'blerbi'
+;
+zortonVerb: VaultKeyVerb
+    omegapsical_order = 1
+    omegaps701_order = 1
+    omegaps580_order = 1
+    omegaps701p_order = 1
+    wordnum = 2
+    
+    verb = 'zorton'
+;
+klaetuVerb: VaultKeyVerb
+    omegapsical_order = 11
+    omegaps580_order = 13
+    omegaps701_order = 14
+    omegaps701p_order = 15
+    wordnum = 3
+    
+    verb = 'klaetu'
+;
+knerlVerb: VaultKeyVerb
+    omegapsical_order = 10
+    omegaps580_order = 12
+    omegaps701_order = 13
+    omegaps701p_order = 14
+    wordnum = 4
+    
+    verb = 'knerl'
+;
+
+snoezeVerb: VaultKeyVerb
+    omegapsical_order = 4
+    omegaps580_order = 5
+    omegaps701_order = 4
+    omegaps701p_order = 4
+    wordnum = 5
+    
+    verb = 'snoeze'
+;
+
+
+#define DefVKTVerbRule(name)\
+    VerbRule(name)\
+    #@name\
+    :VerbProduction\
+    action = name ## Verb
+
+DefVKTVerbRule(blerbi);
+DefVKTVerbRule(zorton);
+DefVKTVerbRule(klaetu);
+DefVKTVerbRule(knerl);
+DefVKTVerbRule(snoeze);
+
+nosideVerb: MagicWord
+    omegapsical_order = 8
+    omegaps580_order = 10
+    omegaps701_order = 11
+    omegaps701p_order = 12
+    said = nil
+
+    
+    verb = 'noside'
+    
+    execAction(c)
+    {   
+        if (said || !global.game550)
+            fail();
+        else 
+        {
+            "Ok!";
+            samohtVerb.tcount = gTurns + 1;
+            said = true;
+        }
+    }
+
+    fail() 
+    {
+        "Nothing happens.";
+        reset();
+    }
+
+    reset()
+    {
+        samohtVerb.tcount = -1;
+        said = nil;
+    }
+;
+
+DefVKTVerbRule(noside);
+
+
+samohtVerb: MagicWord
+    omegapsical_order = 5
+    omegaps580_order = 6
+    omegaps701_order = 5
+    omegaps701p_order = 5
+    tcount = -1
+   
+    verb = 'samoht'
+    
+    execAction(c)
+    {
+        /* No way that nosideVerb.said could be true in 350-point
+         * mode. */
+        if (nosideVerb.said && (tcount == gTurns)) 
+        {
+            brassLantern.magicRecharge();
+            nosideVerb.reset();
+        }
+        else nosideVerb.fail();
+    }
+;
+
+DefVKTVerbRule(samoht);
+
+
+// DJP - added a one-line version of noside samoht, because this is what
+// the original 550-point game seems to want (whereas the 660-point game
+// requires that the words be typed separately).
+nosidesamohtVerb: MagicWord
+    sdesc = "noside samoht"
+    verb = 'noside-samoht'
+    execAction(c) 
+    {
+        if (!global.game550) {
+            nosideVerb.fail;
+        }
+        else {
+            brassLantern.magicRecharge();
+            nosideVerb.reset;
+        }
+    }
+;
+
+VerbRule(NosideSamoht)
+    'noside' 'samoht'
+    : VerbProduction
+    action = nosidesamohtVerb
+;
+
+
+
 
 
 /* Define all the special travel actions */
@@ -756,7 +933,9 @@ DefSpecialTravel(Pray, &pray, 'pray');
 DefSpecialTravel(Bridge, &bridge, 'bridge');
 DefSpecialTravel(Altar, &altar, 'altar');
 DefSpecialTravel(Balcony, &balcony, 'balcony');
+DefSpecialTravel(Corridor, &corridor, 'corridor');
 DefSpecialTravel(Warm, &warm, 'warm');
+DefSpecialTravel(Thurb, &thurb, 'thurb');
 
 DefSpecialTravel(Click, &click, 'click' (|('my'|'your'|)'heels'))
     execAction(cmd)

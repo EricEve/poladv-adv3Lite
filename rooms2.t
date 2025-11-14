@@ -10,7 +10,7 @@
  * this game, they will become trapped upon entering the maze. Hence,
  * I've made them NoNPC, although they weren't in the original. -BJS
  */
-class IceTunnel: NoNPC 'Ice Tunnels'   
+class IceTunnel: NoNPC, DarkRoom 'Ice Tunnels'   
     desc()
     {  
         local xn = 0, xls = 0;
@@ -846,8 +846,1933 @@ tubeSlide: NoNPC, DarkRoom 'Steep Slide in Tube'
     tube = chimneyRoom
 ;
 
+southBasilisk: NoNPC, DarkRoom 'Rough, Narrow Passage'
+    "You are in a narrow and rough passage running
+        north and south.  A dull rumbling sound can be
+        heard from the south." 
+    
+    game550 = true
+    wino_wsbridge = true // can only exit via stone bridge
+    sdesc = ""
+    
+    south = byFigure
+    north: TravelConnector ->northBasilisk
+    {
+        travelDesc()
+        {
+            if(basilisk.isIn(self)) "The basilisk stirs restlessly
+                and grumbles in its sleep as you pass, but
+                it does not awaken.<.p>"; 
+        }
+    }
+  
+//    exithints = [ North_Basilisk, &north ]
+;
+
+northBasilisk: NoNPC, DarkRoom 'North of Basilisk'
+    "You're in a rough passage to the north of the basilisk's den."
+    
+    game550 = true
+    wino_wsbridge = true // can only exit via stone bridge
+    
+    south: TravelConnector -> southBasilisk
+    {
+        // Note that a dead player should not be moved, since
+          // it won't occur until after the resurrection.
+        canTravelerPass(actor, connector) { return !playerStoned; }
+        noteTraversal(actor)
+        {
+            if (basilisk.isIn(self)) { // Do neither if it's a statue.
+                if (metalPlate.location ==  actor) 
+                {
+                    basilisk.petrified;
+                    playerStoned = nil;
+                }
+                else 
+                {
+                    basilisk.petrifier;
+                    playerStoned = true;
+                }
+            } 
+            
+            inherited(actor);
+        }
+    }
+        
+    north = basiliskFork
+//    exithints = [ South_Basilisk, &south ]
+    
+    playerStoned = nil
+;
+
+basiliskFork:  NoNPC, DarkRoom 'Fork by Steps'
+    game550 = true
+    wino_wsbridge = true // can only exit via stone bridge
+    sdesc = "The passage here enters from the south and divides,
+        with a wide tunnel exiting to the north and a set of
+        steps leading downward. "
+    
+    north = peelgrunt
+    south = northBasilisk
+    down = bfSteps
+    steps = bfSteps
+    toPeelgrunt = peelgrunt
+;
+
++ bfSteps: StairwayDown 'spiral staircase;;steps;it them' 
+    "The steps lead down a spiral staircaae. "
+    destination = onSteps
+;
+
+peelgrunt: NoNPC, DarkRoom  'Peelgrunt Room'
+    "You are in the Peelgrunt room. " 
+    
+    game550 = true
+    wino_wsbridge = true // can only exit via stone bridge
+    
+    west = safeDoorOutsideE    
+       
+    in asExit(west)
+    south: TravelConnector -> basiliskFork
+    {
+        canTravlerPass(actor) { return safeDoorOutsideE.isOpen; }
+        explainTravelBarrier(actor, connector)
+        {
+            "The safe's door is blocking the exit
+            passage - you'll have to close it to get out of here.";
+        }
+    }
+    
+    fork asExit(south)
+    out asExit(south)
+    
+    
+//    cantReachRoom(otherRoom) 
+//        if (toplocation(otherRoom) = In_Safe) {
+//            "You can't reach that from outside the safe. ";
+//        }
+//        else pass cantReachRoom;
+//    }
+//    exithints = [ Basilisk_Fork, &out,  In_Safe, &in ]
+;
+ 
++ safeExteriorE: SafeExterior    
+    connector = safeDoorOutsideE
+;
+
+++ safeDoorOutsideE: ExteriorSafeDoor 'safe door'
+    otherSide = innerSafeDoorE
+;
+
+
+onSteps: NoNPC, DarkRoom 'On the Steps'
+    "You are on a long, spiral set of steps leading
+        downwards into the earth. "
+    game550 = true
+    
+    up = basiliskFork
+    down = stepsExit
+    steps = stepsExit
+;
+
+stepsExit: NoNPC, DarkRoom 'Exit on Steps'
+    "A small tunnel exits from the steps and leads north.
+        The steps continue downwards. "
+    
+    game550 = true
+    wino_wsbridge = true // can only exit via stone bridge
+    
+    north: Passage 'small tunnel'
+    "The small tunnel leads north. "
+     -> fakeY2
+    {
+        location = lexicalParent
+    }
+        
+    up = onSteps
+    down = storage
+    steps = storage
+    // exit = Fake_Y2   (since "exit" clashes with the keyword.)
+;
+
+storage: NoNPC, DarkRoom 'Storage Room'
+    "You're in what was once a storage room.  A set of
+     steps leads up. "
+    game550 = true
+    wino_wsbridge = true // can only exit via stone bridge
+    
+    up: StairwayUp 'set of steps;;;it them' "The steps lead up. " ->stepsExit
+    {
+        location = lexicalParent
+    }
+    steps = up    
+;
 
 
 
-windingPass: Room;
-southBasilisk: Room;
+fakeY2: NoNPC, DarkRoom 'At <q>Y2</q>'
+    "You are in a large room, with a passage to the
+        south, a passage to the west, and a wall of broken
+        rock to the east. There is a large <q>Y2</q> on 
+    <<if gActor.isIn(fakeY2Rock)>>the rock you are sitting on<<else>>
+    a rock in the room's center<<end>>>. "
+      
+    
+    game550 = true
+    wino_wsbridge = true // can only exit via stone bridge
+    sdesc = "At \"Y2\"?"
+    
+    plugh = volcanoPlatform
+    south = stepsExit
+    
+    east = fakeJumbleOfRock
+    wall = fakeJumbleOfRock
+    
+    
+    broken = fakeJumbleOfRock
+    west: TravelConnector -> catacombs
+    {
+        travelDesc()
+        {
+            catacombs.roomnumber = 1;
+        }
+    }       
+       
+    plover = volcanoPlatform
+
+    roomDaemon()
+    {
+        if (rand(100) <= 25) 
+            "<p>A hollow voice says, <q>Plugh</q>. ";
+        
+    }
+;
+
++ fakeY2Rock: Fixture, Chair '<q>Y2</q> rock fake; y2'
+    "There is a large <q>Y2</q> painted on the rock. "
+    game550 = true
+    wino_wsbridge = true // can only exit via stone bridge
+    
+    dismabigName = 'fake Y2 rock'   
+;
+
+fakeJumbleOfRock: NoNPC, DarkRoom 'Jumble of Rock'
+    "You are in a jumble of rock, with cracks everywhere. "
+    game550 = true
+    wino_wsbridge = true // can only exit via stone bridge
+    
+    down = fakeY2
+    y2 = fakeY2
+    up: TravelConnector -> catacombs
+    {
+        travelDesc() { catacombs.roomnumber = 1; }
+    }    
+;
+
+// Note how the catacombs are implemented!  There is really only one room,
+// but it looks like 19 rooms to the player.  The relevant properties and
+// methods are:
+//
+// roomnumber: The catacomb number (which in the 550-point game goes up
+// if you choose the correct direction or down for the wrong direction.)
+// oldnumber: The old value of roomnumber (for the leaveroom method).
+//
+// leaveroom: This method is now called by the standard leaveRoom method, and
+// causes objects in the room are moved into Elsewhere.  They are 'tagged'
+// with the room number so they can be reinstated when the same .
+//
+// enterroom: This method is called by the standard enterRoom method.
+// It updates oldnumber and reinstates the correct room contents.
+
+catacombs: Room 'Catacombs'
+    desc()
+    {
+        "You are in the catacombs.  Enchanted tunnels lead in all directions. ";
+#ifdef __DEBUG        
+        "(You are in room number <<roomnumber>>.) ";
+#endif    
+    }
+    
+    oldnumber = 1
+    maxnumber = 0   // highest number seen by player        
+    roomnumber = 1
+    
+    leaveRoom()
+    { // called whenever the player leaves one room.
+        local i,o,c,l;
+        c = contents;
+        l = c.length;
+        for (i =1; i <= l; i++) 
+        {
+            o = c[i];
+            if (o.isFixed) continue; // DJP - exclude fixed items
+            // Move everything out so it doesn't show up
+            // in the next room. Only alters objects directly
+            // in the catacombs of course, not in the player.
+            //
+            o.moveInto(elsewhere);
+            o.catac_room_num = oldnumber;
+        }
+    }
+    
+    enterRoom() 
+    {
+        local i,o,c,l; // Update oldnumber and reinstate items
+        
+        /* 
+         *   In this version we obtain a list of items with the right roomnumber here rather than
+         *   checking for it in the loop below, as in the TADS 2 original.
+         */
+        c = elsewhere.contents.subset({o: o.catac_room_num == roomnumber});
+        l = c.length;
+        // DJP - make the room look 'unseen' if it should be.
+        if (roomnumber > maxnumber) 
+        {
+             seen = nil;
+            visited = nil;
+             maxnumber = roomnumber;
+        }
+        oldnumber = self.roomnumber;
+        
+        
+        // Move everything with the appropriate room
+        // number into the new room.        
+        // Note that in this implementation x is already the subset of
+        // objects with the relevant catac_room_num        
+        for (i =1; i <= l; i++) 
+        {            
+            o = c[i];
+            if (!o.isFixed) // DJP - exclude fixed items                
+                o.moveInto(self);
+        }
+    }    
+    
+    travelerLeaving(traveler, dest) 
+    { 
+        leaveRoom();
+        inherited(traveler, dest);
+    }
+    
+    
+    travelerEntering(traveler, origin) 
+    { 
+        enterRoom();
+        inherited(traveler, origin);
+    }
+    
+    // For the 550-point game, the directions through the Catacombs
+    // are fixed.  Note that this is not the case for the 660-point
+    // game, which will need rather different coding.  The 'correct'
+    // moves through the catacombs are chosen by the player on his
+    // first trip through them!
+
+    north
+    {  // Direction to next room varies with the room number
+        // in last room, leads out.
+        if(roomnumber == 20)
+            return fakeY2;           
+        if(roomnumber is in (0, 8, 10, 19))
+            roomnumber ++;
+        else if(roomnumber > 1)
+            roomnumber--;
+             
+        return self; // leads to previous room in catacombs        
+    }
+    
+    south
+    {
+        if(roomnumber is in (0, 1, 4, 9, 18))
+           roomnumber++;
+        else if(roomnumber > 0)
+            roomnumber--;
+        return self;
+    }
+    
+    east
+    {
+        if(roomnumber == 11)
+            return westAudience;
+        if(roomnumber is in (0, 12, 15))
+           roomnumber++;
+        else if (roomnumber > 1) 
+            roomnumber--;
+        return self;
+    }
+    
+    west
+    {
+        if(roomnumber is in (0, 6))
+            roomnumber++;
+        else if (roomnumber > 1) 
+            roomnumber--;   
+        return self;
+    }
+    
+    northwest
+    {
+        if(roomnumber is in (0, 3, 7))
+           roomnumber++;
+        else if(roomnumber > 1) 
+           roomnumber--;
+        return self;          
+    }
+    
+    northeast
+    {
+        if(roomnumber is in (0, 14))
+           roomnumber++;
+        else if(self.roomnumber > 1)
+            roomnumber--;
+        return self;
+    }
+    
+    southeast
+    {
+        if(roomnumber is in (0, 13, 16))
+            roomnumber++;
+        else if (roomnumber > 1) 
+            roomnumber--;
+        return self;
+    }
+    
+    southwest
+    {
+        if(roomnumber is in (0, 2, 11))
+            roomnumber++;
+        else if (roomnumber > 1) 
+            roomnumber--;
+        return self;
+    }
+    
+    down
+    {
+        if(roomnumber is in (0, 5, 17))
+            roomnumber++;
+        else if (roomnumber > 1) 
+            roomnumber--;
+        return self;
+    }
+    
+    
+    up
+    {
+        if (roomnumber > 1) 
+            roomnumber--;
+        return self;
+    }   // None of the rooms use up as the passage to the next room!
+    
+    /* 
+     *   The TADS 2 port (and presumably that original) offers no easy way for the player to
+     *   navigate this maze, which modern players may find quite taxing and tedious, but since the
+     *   tunnels are described as enchanyted we'll take that as a hint to use some magic words here,
+     *   XYZZY to go forward through the maze and  PLUGH get out again at fake Y2.
+     */
+    xyzzy()
+    {
+        "Nothing obvious happens, but you feel your attention mysteriously drawn to the exit leading
+        <<['south', 'southwest', 'northwest', 'south', 'down', 'west', 'northwest', 'north',
+        'south', 'north', 'east', 'north', 'north','north', 'north', 'north', 'north', 'north',
+            'south', 'south', 'south'].element(roomnumber)>>. ";
+    }
+    
+    plugh()
+    {
+        "Nothing obvious happens, but you feel your attention inexorably drawn to the exit leading
+        <<['south', 'southwest', 'northwest', 'south', 'down', 'west', 'northwest', 'north',
+        'south', 'north', 'southwest', 'east', 'southeast', 'northeast', 'east', 'southeast',
+            'down', 'south', 'north', 'north'].element(roomnumber)>>. ";
+    }
+    
+    
+    
+//    back = {
+//        "The directions are particularly confusing in here, and
+//        the rooms all look alike.  You'll have to tell me how to go
+//        back. ";
+//        return nil;
+//    }    
+;
+
++ Decoration 'tunnels;enchanted confusing bewildering ;tunnel direction;them'
+    "The tunnels run off bewilderingly in every conceivable direction. "
+    notImportantMsg = 'You\'ll have to say which way you want to go. '
+;
+    
+
+
+westAudience: NoNPC, Room 'West Audience Hall'
+        "You are standing at the west end of the royal
+        Audience Hall.  The walls here are composed
+        of the finest marble, and the floor is built
+        of slabs of rare onyx and bloodstone.  The
+        ceiling is high and vaulted, and is supported
+        by pillars of rare Egyptian red granite; it
+        gives off a nacreous glow that fills the
+        entire chamber with a light like moon-light
+        shining off of polished silver. "
+
+    game550 = true
+    wino_wsbridge = true // can only exit via stone bridge
+    
+    west = catacombs  // roomnumber should still be 11.
+    east = eastAudience
+;
+
+eastAudience: NoNPC, Room 'East Audience Hall'
+    "You are at the eastern end of the Audience Hall.
+    There is a large dais rising out of the floor
+    here;  resting upon the dais is a strange-looking
+    throne made out of interlocking bars and rods of
+    metal. "
+    game550 = true
+    wino_wsbridge = true // can only exit via stone bridge
+    
+    west = westAudience
+;
+
++ serpentThrone: Fixture 'throne; (serpent) strange strange-looking metal;bars rods'
+    "The throne is composed of several interlocking bars and rods,
+        as though its owner had a serpentine body. "
+    
+    cannotBoardMsg = 'It\'s not built for humans. '
+    cannotEnterMsg = cannotBoardMsg    
+    cannotSitOnMsg = cannotBoardMsg
+    cannotLieOnMsg = cannotBoardMsg
+    cannotStandOnMsg = cannotBoardMsg
+;
+
++ skeleton: Fixture 'skeleton; giant incredible strange six-armed skeletal; waist arms python'
+    "Below the waist, the skeleton resembles that of a giant
+        python, and is wrapped carefully through the throne.  Above
+        the waist, it resembles the skeleton of a giant human with
+        six arms.  In one of these arms is <<sceptre.mention>>! "
+    game550 = true
+    
+    cannotPutInMsg = 'I don\'t know how to put anything into {the iobj}. '
+    
+   initSpecialDesc = "Resting on the throne (<q>sitting</q> isn't really the
+            right word) is an incredible skeleton.  It
+            is fairly humanoid from the waist up (except
+            for its incredible size and four extra arms);
+            below that, it resembles the body of a giant
+            python, and is wrapped in and around the bars
+            and rods of the throne.  Clutched in one bony
+            hand is <<sceptre.mention>>!! "
+;
+
+
+
+
+
+
+
+windingPass: NoNPC, DarkRoom 'Winding Passage'
+    "You are in a winding passage which enters from
+        the northwest, loops around several times, and
+        exits to the north. "
+    game550 = true
+    wino_wsbridge = true // can only exit via stone bridge
+    
+    north = golden
+    toGolden = golden
+    northwest = byFigure
+;
+
+golden: NPC, DarkRoom 'Golden Chamber'
+     "You are in a chamber with golden walls and a high
+        ceiling.  Passages lead south, northeast, and
+        northwest. "
+    game550 = true
+    wino_wsbridge = true // can only exit via stone bridge
+    
+    passage = "Passages lead south, northeast, and northwest. You'll have to
+         say which way you want to go. "
+
+    south = windingPass
+    northwest = translucent
+    northeast = arabesque
+    toArabesque = arabesque
+    toTranslucent = translucent
+;
+
++ Decoration 'golden walls;;;them'
+;
++ Distant 'high ceiling'
+;
+
+translucent: NoNPC, Room 'Translucent Room'
+    "You are in a large room whose walls are composed of
+        some translucent whitish material.  The room is
+        illuminated by a flickering reddish glow shining
+        through the southern wall.  A passage leads east."
+    game550 = true
+    wino_wsbridge = true // can only exit via stone bridge
+    
+    east:TravelConnector -> golden
+    {
+        travelDesc()
+        {
+            if(!gobs_called && bracelet.isIn(gActor)) 
+            {
+                gobs_called = true; // Don't summon them twice.
+                goblins.summon(golden);
+            }
+        }
+        
+        gobs_called = nil
+    }
+        
+    out asExit(east)
+    toGolden = east
+    passage = east
+//    exithints = [ Golden, &east ]   
+;
+    
++ Decoration 'translucent white walls; whitish southern s south; material wall; them it'
+    "The walls are composed of some translucent whitish material. <<redGlow.desc>>"
+;   
+
++ redGlow: Decoration 'flickering reddish glow; red'
+    "The glow is shining through the southern wall. "
+    notImportantMsg = 'The glow is too insubstantial for that. '
+;
+ 
+arabesque: NoNPC, DarkRoom 'Arabesque Room' 'arabesque room; small elaborate of[prep]; 
+    walls pattern figures; it them'
+    "You are in a small room whose walls are covered
+     with an elaborate pattern of arabesque figures and designs."
+    
+    game550 = true
+    
+    south = golden
+    out asExit(south)
+    toGolden = golden
+;
+
+volcanoPlatform: NoNPC, Room 'Platform above Volcano'  'platform above the volcano; tiny'
+    "You are precariously perched on a tiny platform
+    suspended in midair.  Two thousand feet below
+    you is the mouth of a very active volcano,
+    spewing out a river of hot lava. "
+    
+    game550 = true
+    wino_wsbridge = true // can only exit via stone bridge
+    sdesc = ""
+    
+    plugh = fakeY2
+    plover = fakeY2    
+    
+    north: TravelConnector ->volcanoPlatform
+    { 
+        isConnectorListed = nil
+        
+        travelDesc()
+        {
+            "EEEEEEEEAAAAAAAAAAAaaaaahhhhhhhh........... <i><b>sizzle</b></i>";
+            die();
+        }
+    }
+    
+    south asExit(north)
+    east asExit(north)
+    west asExit(north)
+    northwest asExit(north)
+    southwest asExit(north)
+    southeat asExit(north)
+    northeast asExit(north)
+    jumnp asExit(north)
+    climb asExit(north)
+    down asExit(north)
+    noExits = 'none immediately apparent'
+;
+
+
++ Distant 'active volcano; hot very of[prep];lava river mouth'
+    "Two thousand feet below you is the mouth of a very
+        active volcano, spewing out a river of hot lava. "
+;
+
+sandstoneChamber: DarkRoom 'Sandstone Chamber' 'sandstone chamber room; small'
+    "You are in a small chamber to the east of the Hall
+        of Mists.  The walls are composed of rough red
+        sandstone.  There is a large, cubical chunk of rock
+        in the center of the room. "
+    game550 = true
+    
+    west = inHallOfMists
+    out asExit(west)
+    mists = inHallOfMists
+//    ana2 = Blue_Sandstone_Chamber // ADD FOT 701p game if and when
+;
+
++ Decoration 'walls; rough red sandstone;;them'
+     "The walls are composed of rough red sandstone. "    
+;
+
++ ProxyRoom ->inHallOfMists;
+
++ stone: StoneClass     
+    stateDesc()
+    {
+        if(singingSword.isStuck)
+            singingSword.initSpecialDesc();
+    }
+    
+    dobjFor(Search)
+    {
+        action()
+        {
+            if(singingSword.isStuck)                
+            {               
+                singingSword.initSpecialDesc();
+                if(contents.length > 0)
+                    inherited();
+            }
+            else
+                inherited();
+        }
+    }
+    
+;
+
+class StoneClass: Fixture, Surface 'chunk of rock;large cubical;stone block'
+    "It's a large, cubical chunk of rock sitting in the center of the room. "
+;
+
+
+morion: DarkRoom 'Morion Room'   
+    desc 
+    { 
+        "You are in a small room.  The walls are composed of
+        a dark, almost black form of smoky quartz; they
+        glisten like teeth in the lamp-light. ";
+        if (global.game701)
+            "The exits are the passage to the south through
+            which you entered, and a narrow passage leading northeast. ";
+        else
+            "The only exit is the passage to the south through which you
+            entered. ";
+    }
+    south = inHallOfMtKing
+    out asExit(south)
+    northeast: TravelConnector -> throneRoom
+    {
+        isConnectorApparent = global.game701
+    }
+    
+    
+    
+
+    NPCexit1 
+    {
+        if (global.game701) return throneRoom;
+        else return nil;
+    }
+
+//    exithints = {
+//        if (global.game701) return [Throne_Room, &ne];
+//        else pass exithints;
+//    }
+;
+
+
+
+
+/* 
+ *   The TADS 2 port makes this object both a room representing the inside of the safe and a
+ *   floating_decoration (MultiLoc) representing its exterior in two different location. The TADS
+ *   3/adv3Lite implementation will need to be rather different. Here we use inSafe to represent the
+ *   inside of the safe and, provisionally, safeExterior to represent its outside, but this may need
+ *   dividing into safeExterior1 and safeExterior2.
+ */
+
+class SafeExterior: Enterable 'large metal safe; walk-in'
+    desc()
+    {
+        if (connector.isOpen) 
+            "It's a large metal safe, only one wall of which is visible.  ";
+        else 
+            "It's a large metal walk-in safe, the door of which has been swung open.  "; 
+    }
+    
+    specialDesc 
+    {
+        "A massive walk-in safe takes up one entire wall.  ";
+        if (connector.isOpen)
+            "Its door has been swung open and blocks the exit passage.";
+        else if(inSafe.isFused) 
+            "It is closed, and there are signs of melting around the edges of its door.";
+        else 
+            "It is tightly closed, and has no handle, lock, or keyhole. ";
+    }   
+    
+    game550 = true
+    
+    dobjFor(Open) { remap = connector }
+    dobjFor(Close) { remap = connector }
+;
+
+vault: DarkRoom 'Vaulted Room'
+    "You are in a room with a high, vaulted ceiling.  A
+        tunnel leads upwards and to the north. "
+    
+    game550 = true
+    
+    north: TravelConnector -> inHallOfMtKing
+    {
+        canTravelerPass(actor) { return !safeDoorOutsideW.isOpen; }
+        explainTravelBarrier(actor, connector)
+        {
+            "The safe's door is blocking the exit
+            passage -- you'll have to close it to get out of here. ";
+        }
+    }
+    
+    up asExit(north)
+    east = safeDoorOutsideW
+    in asExit(east)
+    toSafe = safeDoorOutsideW
+    
+      
+//    myhints = [ Vaulthint ]
+
+    // Let NPCs out of here.
+    NPCexit1 = inHallOfMtKing 
+    // NPCs can enter the safe, but only if it opens to the Vault.
+    NPCexit2 
+    {
+        if(inSafe.out == self) return inSafe;
+        else return nil;
+    }
+      
+    
+;
+
++ safeExteriorW: SafeExterior    
+    connector = safeDoorOutsideW
+;
+
+++ safeDoorOutsideW: ExteriorSafeDoor 'safe door'
+    otherSide = innerSafeDoorW
+;
+
+class ExteriorSafeDoor: Door 'safe door'
+    "It's currently <<if isOpen>>open<<else>>closed<<end>>. "
+    
+    dobjFor(Open)
+    {
+        check()
+        {
+            if (inSafe.isFused) 
+                "The door to the safe seems to be fused shut -- I can't open it. ";
+            else 
+                "The door to the safe has no keyhole, dial,
+                or handle -- I can't figure out how to open it! ";
+        }        
+    }
+    
+    makeOpen(stat)
+    {
+        inherited(stat);
+        if(stat)
+            otherSide.discover();
+    }
+;
+
+
+class InteriorSafeDoor: Door 'door'
+    desc 
+    {
+        if (isOpen) 
+        {
+            "{The subj dobj} {is} open, but I don't think you'll be
+            able to close it from inside the safe. ";
+        }
+        else {
+            "{The subj door} {is} firmly closed, and I can't figure
+            out any way to open it. "; 
+        }    
+    }
+    
+    isHidden = true  
+    
+    dobjFor(Open)
+    {
+        check()
+        {
+            "I can't figure out any way to open {the dobj}. ";
+        }
+    }
+    
+    dobjFor(Close)
+    {
+        check()
+        {
+            "There is no handle on the inside of the safe door, nor any 
+            other way to get a firm enough grip on it.  You'll have to 
+            leave the safe before shutting it. ";
+        }
+    }
+    game550 = true
+    
+    dobjFor(Push)
+    {
+    }
+;
+
+
+inSafe: DarkRoom 'In the Safe'
+    desc()
+     {         
+        "You are inside the safe.  ";
+        switch (out) 
+        {
+            case nil:
+                if(bothdoors) "Both doors are firmly shut. ";
+                else "The door is firmly shut.  So firmly, in fact, that
+                     you can only just make out its outline in the 
+                     wall. ";
+                break;
+            case innerSafeDoorW:
+                if(bothdoors) "The west door is open. ";
+                else "The door is open and exits to the west. ";
+                break;
+            case innerSafeDoorE:
+                if(bothdoors) "The east door is open. ";
+                else "The door is open and exits to the east. ";
+                break;
+        }
+    }
+    
+    
+    game550 = true      // This safe is not to be confused with Safe in the building
+    isOpen = (out != nil)
+    bothdoors = nil
+    
+    password = nil  // Initially. When sceptre is taken, it changes to
+                    // the number for the appropriate word.
+    
+    
+    melts()
+    {
+        "<i>bong</i>\t\t\t\t\t\tThe very air quivers with sound as though\n";
+        "\ \ <i>bong</i>\t\t\t\t\tsomeone, somewhere in the distance, has struck\n";
+        "\t\ <i>>bong<i>\t\t\t\t\tthree powerful blows on an immense brass gong.\n";
+        "<.p>Smoke trickles out from around the edges of the
+        safe's door, and the door itself glows red with
+        heat for a moment.\b"; 
+        "A hollow voice says,  <q>This is a Class 1 security
+        alarm.  All cave security forces go to Orange Alert.
+        I repeat - Orange Alert.</q>";
+        self.isFused = true;
+        // Add flag so that we can test whether an alert has been issued,
+        // before the blob summoning code is executed.  This flag is reset
+        // in the die() routine.
+        global.triggered_alert = true;
+//        notify(Blob, &summon, 2); // Two turns before blob is
+                                  // actually summoned.
+    }
+    
+    
+    
+    isFused = nil
+    
+    out = [innerSafeDoorW, innerSafeDoorE].valWhich({d: d.isOpen})
+    east = innerSafeDoorE
+    west = innerSafeDoorW
+    
+    wino_wsbridge
+    {
+        if(out) {
+            if(out.destination.wino_wsbridge) return true;
+            else return nil;
+        }
+        else return nil;
+    }   
+    
+       
+    
+    opens()
+    { 
+        "<i>ker-THUNK<\t>screeeeeeeeeech</i>\b
+        The (somewhat rusty) safe is now open. ";
+        if(gActor.isIn(vault))
+            safeDoorOutsideW.makeOpen(true);
+        if(gActor.isIn(peelgrunt))
+            innerSafeDoorE.makeOpen(true);
+            
+        
+//        self.isopen := true;
+//        self.out := self.location;
+    }
+;
+
++ innerSafeDoorW: InteriorSafeDoor 'door; west w'
+    
+    disambigName = 'west door'
+    otherSide = safeDoorOutsideW
+;
+
++ innerSafeDoorE: InteriorSafeDoor 'door; east e'
+    
+    disambigName = 'east door'
+//    otherside = safeDoorOutsideW
+;
+
+// BJS: Added this object, to reveal the
+ // unused keywords./ BJS: Added this object, to reveal the
+ // unused keywords.
+
++ Fixture 'list of words;;word'
+    desc()
+    {
+        "It says: <q>zorton snoeze knerl klaetu blerbi</q>";
+        local i; 
+        if (inSafe.password) 
+        {
+            "\nThere is a marking next to <q>";
+            // Now print the vault keyword, using its sdesc.
+            for(i = firstObj(VaultKeyVerb); i;  i = nextObj(i, VaultKeyVerb))
+            {
+                if(i.wordnum == inSafe.password) 
+                    say(i.verb);
+            }
+            ".</q2>\n";
+        }
+    }
+    
+    game550 = true
+    
+    specialDesc = "A list of words hangs on one wall. "
+    // DJP - make 'x list' the same as 'read list'
+    
+    cannotTakeMsg = 'The list is attached so firmly to the wall that
+        it won\'t come off. '    
+;
+
++ Decoration 'walls; (north) (south) (east) (west) (n) (s) (w) (e) inner; wall; them'
+    desc
+    { 
+        "The inner walls of the safe are almost featureless";
+        if (inSafe.out == nil) // only when viewed with sapphire
+            ", but close examination reveals the outlines of doors in the 
+            east and west walls.  Both are firmly shut. ";
+        else 
+        {
+            ", but a large door has been opened in the ";
+            if (inSafe.out == innerSafeDoorE) "east"; else "west";
+            " wall.  At first glance the ";
+            if (inSafe.out == innerSafeDoorE) "west"; else "east";
+            " wall looks completely blank, but close examination reveals 
+            the outline of a second door, identical to the first - but firmly 
+            closed. ";
+        }
+        inSafe.bothdoors = true;
+        innerSafeDoorE.discover();
+        innerSafeDoorW.discover();        
+    }
+;
+
+corridor1: DarkRoom 'Wide, North-and-South Corridor'
+    "You are standing in a wide, north-and-south corridor."
+    
+    game550 = true
+   
+    north = corridor2
+    south = inHallOfMtKing
+;
+
+corridor2: DarkRoom 'Bend in Wide Corridor'
+    "You are standing at a bend in a wide corridor which
+        runs to the east and west.  To the east, the corridor
+        turns left and continues north; to the west, it turns
+        left and continues south."
+    
+    game550 = true
+    
+    north asExit(east)
+    south asExit(west)
+    west = corridor1
+    east = toolRoom
+    southwest asExit(west)  // BJS: Added.
+    northeast asExit(east)   //  "" "" ""
+;
+
+
+toolRoom: DarkRoom 'Tool Room'
+    "You are in a small, low-ceilinged room with the words,
+        <q>Witt Company Tool Room - Melenkurion division</q>
+        carved into one of the walls.  A wide corridor runs
+        south from here."
+    
+    game550 = true
+    
+    south = corridor2
+    out asExit(south)
+;
+
++ Fixture 'carving on the wall; carved;message words writing'
+    "The message carved into the wall reads, <q>Witt Company
+        Tool Room - Melenkurion division.</q> "
+    game550 = true
+    readDesc = desc
+;
+
+corrDivis: DarkRoom 'Division in Passage' 'division in passage; narrow main; spurs'
+    "You are at a division in a narrow passage.  Two spurs
+     run east and north;  the main passage exits to the south."
+    
+    game550 = true
+    
+    north = sphericalRoom
+    south = inHallOfMtKing
+    east = inCubicle
+;
+    
+inCubicle: DarkRoom 'Dank Cubicle' 'dank cubicle; small; rock'
+    "You are in a small, dank cubicle of rock.  A small
+        passage leads back out to the south;  there is no
+        other obvious exit."
+    game550 = true
+    
+    south = corrDivis
+    out asExit(south)
+    corridor = corrDivis
+    passage = corrDivis
+;
+
+sphericalRoom: DarkRoom 'Spherical Room'
+    "You're in a large, completely spherical room with
+    polished walls.  A narrow passage leads out to the north. "
+    game550 = true
+    
+    north = corrDivis
+    out asExit(north)
+    corridor = corrDivis
+    passage = corrDivis
+;
+
+glassyRoom: DarkRoom 'Large Room with Glassy Walls' 
+    "You're standing in a very large room (which however
+      is smaller than the Giant room) which has smooth,
+      glassy-looking walls.  A passage enters from the
+      south and exits to the north. "
+    game550 = true
+    
+    south = atRecentCaveIn
+    
+    north: TravelConnector -> sorcLair
+    {
+        canTravelerPass(actor) { return !ogre.exists; }
+        explainTravelBarrier(actor, connector)
+        {
+            "The ogre growls at you and refuses to let you pass. ";
+        }       
+    }
+    
+    lair = north
+        
+    
+    NPCexit1  { return sorcLair; } // As usual, NPCs get by with no trouble.
+//    exithints = [ Sorc_Lair, &north ]
+;
+
+
+sorcLair: Room 'Sorcerer\'s Lair'
+    "This is the Sorcerer's Lair.  The walls are covered
+    with exotic runes written in strange, indecipherable
+    scripts;  the only readable phrase reads <q>noside
+    samoht</q>.  Strange shadows flit about on the walls,
+    but there is nothing visible to cast them.
+    Iridescent blue light drips from a stalactite far
+    above, falls towards the floor, and evaporates before
+    touching the ground.  A deep, resonant chanting
+    sound vibrates from deep in the ground beneath your
+    feet, and a whispering sound composed of the echoes
+    of long-forgotten spells and cantrips seeps from the
+    walls and fills the air.  Passages exit to the east
+    and west. "
+    game550 = true
+    isbonus = true
+    
+    west = glassyRoom
+    east = brinkNorth
+;
+
++ Fixture 'exotic runes; indecipherable ;walls rune words; them'
+    "The walls are covered with exotic runes written in strange,
+    indecipherable scripts;  the only readable phrase reads
+    <q>noside samoht</q>."
+    game550 = true    
+;
+
+brinkNorth: DarkRoom 'Brink of Bottomless Pit'
+    "You are standing on the brink of what appears to
+    be a bottomless pit plunging down into the bowels
+    of the earth.  Ledges run around the pit to the
+    east and west, and a passage leads back to the
+    north. "
+    game550 = true
+    
+    north = sorcLair
+    west = brinkSouth
+    east = brinkEast
+    lair = sorcLair
+    jump { bottPit.plunge(gActor); }    
+;
+
+brinkSouth: DarkRoom 'South Edge of Bottomless Pit'
+    "You are standing at the south end of a ledge running
+    around the west side of a bottomless pit.  The ledge
+    once continued around to the east side of the pit,
+    but was apparently obliterated by a rock-slide years
+    ago.  A cold wind blows out of a tunnel leading to
+    the southeast. "
+    game550 = true
+        
+    north = brinkNorth
+    southeast = iceRoom
+    jump { bottPit.plunge(gActor); }       
+;
+
+brinkEast: DarkRoom 'East Side of Bottomless Pit'
+    "You are standing on the eastern side of a bottomless
+    pit.  A narrow ledge runs north towards a
+    dimly-visible passage;  the ledge once continued
+    south of this point but has been shattered by falling
+    rock.  A narrow crack in the rock leads northeast. "
+    game550 = true
+   
+    north = brinkNorth
+    northeast = crack1
+    crack = crack1
+    jump { bottPit.plunge(gActor); }    
+    
+;
+
+bottPit: MultiLoc, Fixture 'bottomless pit; deep looking deep-looking'
+    "It's a deep-looking pit. "
+    game550 = true
+    
+    locationList = [ brinkNorth, brinkEast, brinkSouth ]
+  
+    
+    dobjFor(Enter)
+    {
+        verify() {}
+        action() { plunge(gActor); }
+    }
+    
+    plunge(actor) 
+    {
+            local eaten;
+            "You have jumped into a bottomless pit.
+            You continue to fall for a very long time. ";
+            if(brassLantern.isLit && brassLantern.isIn(actor))
+            {
+                    "First, your lamp runs out of power and goes
+                    dead. ";
+            }
+
+
+            // Zap the lamp if it's lit (wherever it is)
+            if (brassLantern.isLit) brassLantern.setLife(0);
+            // Since we're mentioning hunger and thirst, consume
+            // any accessible food and drink.  The code to do this is a 
+            // little complex - in the 701-point game, the items may be
+            // in closed containers and we must open them first.
+
+            // Start by opening the sack if we have it (it might contain the
+            // keys to unlock the chest)
+            if (sack.isIn(actor)) {
+                sack.makeOpen(true);
+            }
+            // Open the chest if it is unlocked.
+            if (treasureChest.isIn(actor) && !treasureChest.isLocked) {
+                treasureChest.makeOpen(true);
+            }
+            // Unlock the chest if we can.
+            if (treasureChest.isIn(actor) && treasureChest.isLocked
+            && setOfKeys.isIn(actor) && !setOfKeys.isIn(treasureChest)) {
+                if(setOfKeys.location != actor) 
+                    setOfKeys.moveInto(actor);
+                treasureChest.makeOpen(true);
+                treasureChest.makeLocked(nil);
+            }
+            // Try opening the sack again (in case it was hidden inside
+            // the chest)
+            if (sack.isIn(actor) && !sack.isOpen) {
+                sack.makeOpen(true);
+            }
+            if (tastyFood.isIn(actor)){
+                tastyFood.moveInto(nil);
+                eaten = true;
+            }
+            if (honeycomb.isIn(actor)){
+                honeycomb.moveInto(nil);
+                eaten = true;
+            }
+            if (mushrooms.isIn(actor)){
+                mushrooms.moveInto(nil);
+                mushrooms.regrow(); // Regrow mushrooms straight away due to
+                                  // lapse of time.
+            }
+            if (mushroom.isIn(actor)){
+                mushroom.moveInto(nil);
+                mushroom.regrow();  // Regrow mushroom straight away due to
+                                  // lapse of time.
+            }
+            if (bottle.isIn(actor) && bottle.haswater)bottle.empty;
+            if (flask.isIn(actor) && flask.haswater)flask.empty;
+            if (cask.isIn(actor) && cask.haswater)cask.empty;
+            if (bottle.isIn(actor) && bottle.haswine)bottle.empty;
+            if (flask.isIn(actor) && flask.haswine)flask.empty;
+            if (cask.isIn(actor) && cask.haswine)cask.empty;
+
+            // Mention hunger only if we didn't manage to eat any
+            // substantial food items (mushrooms don't count).
+            "Later, you die of ";
+            if (!eaten) "hunger and ";
+            "thirst.\n";
+            die();
+    }
+;
+
+
+
+crack1: DarkRoom 'Narrow, Twisting Crack'
+    "You are following a narrow crack in the rock which
+    enters from the southwest, turns and twists somewhat,
+    and exits to the southeast. "
+    game550 = true
+   
+    southwest = brinkEast
+    southeast = crack2    
+;
+
+crack2: DarkRoom 'North End of Tight Passage'
+    "You are standing at the northern end of a rather
+    tight passage.  A narrow crack in the rock leads west. "
+    
+    game550 = true
+    
+    west = crack1
+    
+    south: TravelConnector -> crack3
+    {
+        canTravelerPass(actor) { return !slime.exists; }
+        explainTravelBarrier(actor, connector)
+        {
+            doInstead(Cross, slime);
+        }
+    }
+    
+    cross = south
+    across = south
+    
+
+    NPCexit1 
+    { 
+        if (slime.exists) return nil;
+        else return crack3;
+    }       // NPCs can't cross the slime.
+//    exithints = [ Crack_3, &south ]
+;
+
+crack3: DarkRoom 'South End of Tight Passage'
+    "You are at the southern end of a tight passage.
+    A hands-and-knees crawl continues to the south. "
+    game550 = true
+    
+    north = crack2   // The slime must be dead by now.
+    south = crack4
+    crawl = crack4
+;
+
+crack4: DarkRoom 'Very Small Chamber'
+    "You are in a very small chamber.  A narrow crawl leads north. "
+    game550 = true
+    
+    north = crack3
+    out asExit(north)
+    crawl = crack3
+;
+
+iceRoom: DarkRoom 'Ice Room'
+    "You are in the Ice room.  The walls and ceiling here
+    are composed of clear blue glacial ice;  the floor
+    is fortunately made of rock and is easy to walk
+    upon.  There is a passage leading to the northwest,
+    and a slide of polished ice leading downwards to the
+    east -- if you were to slide down it you probably
+    couldn't get back up. "
+    game550 = true
+    
+    northwest = brinkSouth
+    
+    down: TravelConnector -> slideBase
+    {
+        travelDesc = "Wheeeeee...... OOF! "
+    }
+    
+    east asExit(down) // Note that NPCs won't use these exits. If they
+    slide = down      // did, they would become trapped.
+    thurb = iceCaveExit // The exit was originally one-way, but I've
+;                               
+
+slideBase: NoNPC, DarkRoom 'Bottom of Icy Slide'
+    "You're at the entrance to an extensive and intricate
+    network of ice tunnels carved out of solid ice.  A
+    slippery slope leads upwards and north, but you
+    cannot possibly climb up it.  Other passages lead
+    south and northwest. "
+    
+    game550 = true
+    
+    north = "The icy slide is far too steep and slippery to climb. "
+    up asExit(north)
+    slide = north
+    climb = north
+    south = Ice_21
+    northwest = Ice_4             
+    
+//    exithints = [ Ice_Room, &north ]
+;
+
+Ice_1: IceTunnel 
+    north = Ice_1a
+    west = Ice_2
+;
+Ice_1a: IceTunnel
+    south = Ice_1
+;
+Ice_2: IceTunnel
+    east = Ice_1
+    west = Ice_3
+    north = Ice_2a
+;
+Ice_2a: IceTunnel
+    north = slideBase
+    south = Ice_2
+;
+Ice_3: IceTunnel
+    east = Ice_2
+    north = Ice_3a
+;
+Ice_3a: IceTunnel
+    south = Ice_3
+;
+Ice_4: IceTunnel
+    east = slideBase
+    west = Ice_5
+;
+Ice_5: IceTunnel
+    northeast = Ice_4
+    south = Ice_6
+;
+Ice_6: IceTunnel
+    north = Ice_5
+    south = Ice_7
+    west = Ice_9
+;
+Ice_7: IceTunnel
+    north = Ice_6
+;
+Ice_8: IceTunnel
+    north = Ice_9
+;
+Ice_9: IceTunnel
+    east = Ice_6
+    south = Ice_8
+    north = Ice_10
+;
+Ice_10: IceTunnel
+    south = Ice_9
+    northwest = Ice_11
+;
+Ice_11: IceTunnel
+    east = Ice_10
+    west = Ice_12
+;
+Ice_12: IceTunnel
+    northeast = Ice_11
+    south = Ice_12a
+    west = Ice_15
+;
+Ice_12a: IceTunnel
+    north = Ice_12
+    south = Ice_13
+;
+Ice_13: IceTunnel
+    north = Ice_12a
+;
+Ice_14: IceTunnel
+    north = Ice_15a
+;
++ sculptNiche: Fixture 'niche; melted icy; wall' // BJS: added this object,
+    game550 = true                    // put the sculpture in it.
+    
+    specialDesc = "There is a niche here, melted out of the icy wall of the tunnel. "
+    initSpecialDesc = "<<sculpture.mention()>> is resting in a niche melted out of the icy 
+        wall of the tunnel! "
+   
+    useInitSpecialDesc = sculpture.isIn(self)
+    
+    iobjFor(PutIn)
+    {
+        check()
+        {
+            if(gDobj.isLong || gDobj.isLarge || gDobj.isHuge)
+                "It won't fit! ";
+            else
+                inherited();
+        }
+    }  
+;
+
+Ice_15: IceTunnel
+    east = Ice_12
+    south = Ice_15a
+    nw = Ice_16
+;
+Ice_15a: IceTunnel
+    south = Ice_14
+    north = Ice_15
+;
+Ice_16: IceTunnel
+    east = Ice_15
+    west = Ice_17
+;
+Ice_17: IceTunnel
+    northeast = Ice_16
+    south = Ice_18
+;
+Ice_18:IceTunnel
+    north = Ice_17
+    south = Ice_19
+    west = Ice_21
+    nw = Ice_22
+;
+Ice_19: IceTunnel
+    north = Ice_18
+    west = Ice_20
+;
+Ice_20: IceTunnel
+    east = Ice_19
+    north = Ice_21
+;
+Ice_21: IceTunnel
+    east = Ice_18
+    south = Ice_20
+;
+Ice_22: IceTunnel
+    southeast = Ice_18
+    northwest = Ice_23
+;
+Ice_23: IceTunnel
+    east = Ice_22
+    west = Ice_24
+;
+Ice_24: IceTunnel
+    northeast = Ice_23
+    south = Ice_25
+    west = Ice_29
+;
+Ice_25: IceTunnel
+    north = Ice_24
+    south = Ice_26
+    west = Ice_28
+    northwest = Ice_28a
+;
+Ice_26: IceTunnel
+    north = Ice_25
+    northwest = Ice_27
+;
+Ice_27: IceTunnel
+    southeast = Ice_26
+    north = Ice_28
+;
+Ice_28: IceTunnel
+    east = Ice_25
+    south = Ice_27
+;
+Ice_28a:IceTunnel
+    southeast = Ice_25
+    north = Ice_29
+;
+Ice_29: IceTunnel
+    east = Ice_24
+    south = Ice_28a
+    northwest = iceCaveExit
+;
+
+// lit by the letters. BJS
+iceCaveExit: NoNPC, Room 'Small, Icy Chamber'
+     "You are in a small chamber melted out of ice.  Glowing
+        letters in midair spell out the words <q>This way out</q>. "
+    
+    east = Ice_29
+    thurb = iceRoom
+;
+
++ Fixture 'glowing letters; midair; words; them'
+    "Glowing letters in midair spell out the words <q>This way out</q>. "
+    readDesc = desc
+    
+    checkReach(actor)
+    {
+        "Your hand passes right through the letters. ";
+    }
+;
+
+coralPassage: DarkRoom 'Coral Passage'
+    "You are in an arched coral passage which enters from
+    the west, splits, and continues on to the east over
+    a smooth and damp-looking patch of sand.  The fork
+    in the passage once led to the south, but it is
+    now completely blocked by debris. "
+    
+    game550 = true
+    wino_quicksand = true // must cross quicksand to leave
+   
+    south = 'The passage south is blocked by the debris. '
+    
+    east = quicksand
+                                           
+    cross = quicksand            
+    west = inArchedHall
+;      
+
++ Decoration 'debris'
+    "The debris completely blocks the passage to the south, and it doesn't
+    look there's any way of clearing it. "
+    game550 = true
+;
+
+quicksand: DSPassage 'damp-looking sand;damp smooth wet wet-looking quick; sand quicksand' 
+    @coralPassage @coralPass2
+    "A smooth, damp-looking patch of sand. "
+    game550 = true
+    
+    dobjFor(Cross) asDobjFor(TravelVia)
+    
+    canTravelerPass(actor) { return isHard && !giantBivalve.isIn(actor) ; }
+    explainTravelBarrier(actor, connector)
+    {
+        if(sankBefore)
+            "You know, I've heard
+             of people who really fell in for the soft
+             sell, but <i>glub</i> this <i>glub</i> is <i>glub</i>
+             ridiculous! <i>blop!</i>";
+        else
+        {
+            "Hmmm... this sand is rather soft, and you're
+             sinking in a little....  In fact, you're
+             sinking in a lot!  Oh, no - it's
+             QUICKSAND!!  HELP!!  HELP!!!  HELP!!
+             <i>glub   glub    blurp</i>";
+             sankBefore = true;
+        }
+        die();
+    }
+    
+    noteTraversal(actor) { isHard = nil; }
+    
+    sankBefore = nil
+    isHard = nil
+    iswavetarget = true // magic can be worked by waving the rod at it ...
+;
+
+coralPass2: NoNPC, DarkRoom 'Bend in Arched Coral Corridor'
+    "You are at a bend in an arched coral passage;  the
+    passage enters from the west over a patch of damp
+    sand, turns, and continues north."
+    game550 = true
+    wino_quicksand = true // must cross quicksand to leave
+    
+    north = archFork
+    west = quicksand
+                                           
+    cross = quicksand           
+;
+
+archFork: NoNPC, DarkRoom 'Fork in Arched Coral Passage'
+    "You are at a fork in a high, arched coral passage.
+        The main portion of the passage enters from the south;
+        two smaller passages lead east and north. <<smellDesc>> "
+    game550 = true
+    wino_quicksand = true // must cross quicksand to leave
+    
+    south = coralPass2
+    north = Fourier
+    east = Jonah
+    jonah = Jonah
+    fourier = Fourier
+    
+    smellDesc = "The smell of salt water is very strong here. "
+;
+    
+Jonah: NoNPC, DarkRoom 'Entrance to Jonah Room'
+    "You are standing at the entrance of the Jonah room,
+     a cavernous hall with high ribbed walls.  The hall
+     extends far to the south;  a coral passage leads west."
+    game550 = true
+    wino_quicksand = true // must cross quicksand to leave
+    
+    west = archFork
+    south = inJonah
+;
+
++ ProxyRoom -> inJonah;
+    
+inJonah: NoNPC, DarkRoom 'South End of Jonah Room'
+    "You are at the south end of the Jonah room.  Ahead
+    of you, the way is barred by a large set of immense
+    stalactites and stalagmites which intermesh like
+    clenched teeth.  Nothing except blackness is visible
+    between the stone formations. "
+    
+    game550 = true
+    wino_quicksand = true // must cross quicksand to leave
+    
+    north = Jonah
+    out asExit(north)
+    south = 'The stalactites and stalagmites bar any progress in that direction. '
+;
+
++ Decoration 'set of stalactices and stalagmites; immense stone intermneshed clenched; 
+    formations teeth; it them'
+    "The intermeshed stalactites and stalagmites block the way south. "
+;
+
+
+Fourier: NPC, DarkRoom 'Fourier Passage'
+    "You are in the Fourier passage.  This is a long and
+    highly convoluted passage composed of coral, which
+    twists and turns like the path of an earthworm
+    tripping on LSD.  The passage here enters from the
+    northwest, convulses, and exits to the southwest
+    (from which direction can be felt a cool and
+    salty-smelling breeze). "
+    game550 = true
+    wino_quicksand = true // must cross quicksand to leave
+    Zarkalonroom = true
+    
+    northwest = archFork
+    sworthest = beachShelf
+//    ana = Blue_Fourier
+;
+
+
+beachShelf: NoNPC, Room 'Shelf of Rock Above Beach'
+    game550 = true
+    wino_quicksand = true // must cross quicksand to leave
+    Zarkalonroom = true // Zarkalonized pendant required for transindection
+    
+    //
+    // Note by D.J. Picton:
+    // This area is different in the 660-point game.  So different,
+    // in fact, that I've taken the liberty of coding it here, even
+    // though the 660-point game isn't implemented yet!
+    //
+    // (The 660 and 770-point games move the alien scene to the Pentagram 
+    // Room area.
+    //
+    // The 701-point game is based on the 550-point game so we keep the alien
+    // scene here, neatly solving the problem of differing sea levels.
+    //
+    // The 660 and 770-point games do have an apparent sea level problem,
+    // because the sea is said to be 1000ft below the surface and we don't
+    // have the feeling of having climbed down that far to reach this room
+    // (or the sewage outflow in the ante-room area). I say 'apparent',
+    // because there could still be hidden space portals in the cave.)
+    //
+    desc
+    { 
+        
+        if(global.game660) {   
+            "You are standing on a large shelf of sedimentary rock overlooking
+            a sandy beach. The shelf is an extension of sheer chalk cliff which
+            continues north and south for as far as the eye can see. Crudely
+            carved steps lead down from the shelf to the beach, and a twisting
+            coral passage exits to the west. "; 
+        }
+        // N.B. in the 770-point game this area lies at the foot of the
+        // 1000ft cliff below the giant's picnic site.  There are more rooms
+        // and the east and west directions are reversed!
+        else {
+            "You are standing on a large shelf of sedimentary rock
+            overlooking a lava beach.  The shelf is an extension
+            of an incredible cliff which extends north, south, and
+            upwards for as far as the eye can see.  Crudely carved
+            steps lead down from the shelf to the beach, and a
+            twisting coral passage exits to the west. ";
+            // special stuff for 701+ point game.
+            if(global.game701p) 
+            {
+                if (defined(blueBeachShelf) && blueBeachShelf.seen &&!
+                bluebeach.seen && !seen) 
+                {                    
+                    "<.p>In a flash of intuition, you notice something which
+                    previous adventurers may have missed.  There's a zig-zag
+                    pattern on the cliff which doesn't look like a natural
+                    feature.  Then you realize what it is -- the remains of
+                    a stone path which has now been almost obliterated by
+                    rockfalls. ";
+                }
+                else {
+                    "A stone path once led up the cliff, but much of 
+                    it has now been obliterated by rockfalls. ";
+                }
+            }
+        }
+    }
+    west = Fourier
+    down = beachSteps
+    steps = beachSteps
+//    ana = Blue_Beach_Shelf
+//    myhints = {
+//        if(global.game701p) 
+//            return [Beach_Shelfhint];
+//        else
+//            return nil;
+//    }
+   
+;
+
++ Fixture 'stone path'
+    "The rockfalls have destroyed most of the path.  The
+    lowest intact section starts about 20 feet above you. "
+    game701p = true  // 701+ point game only
+    wino_quicksand = true // must cross quicksand to leave    
+;
+
+beachSteps: DSStairway 'crudely carved steps;;;them' @beachShelf @beach   
+    "The steps are a little crude but are nevertheless readily usable. "
+;
+
+MultiLoc, Decoration 'cliff'    
+    desc 
+    {
+        "It extends north, south and upwards as far as the eye can see. ";
+        if (location.analevel == 1)
+            "The cliff looks exactly as it did at Red level - but now a timber
+            roadway has been built on the remains of the path, leading up the
+            cliff. ";
+        else if (global.game701p)
+            "A stone path once led up the cliff face, but most of it has now
+            been obliterated by rockfalls. ";
+    }    
+    locationList = [beachShelf, beach] // Blue_Beach_Shelf, Blue_Beach]
+;
+
+beach: NoNPC, Room 'Beach'
+    game550 = true
+    wino_quicksand = true // must cross quicksand to leave
+    Zarkalonroom = true // Zarkalonized pendant required for transindection
+    isbonus = true
+   
+    desc 
+    {         
+        if(global.game660) {
+            "You are standing on a short, rocky beach. To the west a sheer
+            white cliff rises into the sky. Rugged and unclimbable outcrops of
+            rock block out all view to the north and south. To the east, a
+            narrow inlet of sea water laps gently upon the beach. Steps lead up
+            the cliff to a shelf of rock. ";
+        }
+        else {
+            "You are standing on a short, barren beach composed of
+            hardened lava.  Rugged and unclimbable volcanic hills
+            block all view to the north and south, and a seemingly
+            infinite cliff fills the entire western hemisphere.
+            To the east, a narrow inlet of ocean water laps gently
+            upon the beach.  The scene is illuminated by the light
+            of three small moons shining through the shimmering
+            glow of an aurora that fills the entire sky with
+            golden splendor.  Steps lead up the cliff to a shelf
+            of rock. ";
+        }
+    }
+    
+    ttravelerLeaving(traveler, dest) { dinghy.seen_before = true; }
+    
+    west = beachSteps
+    
+//    { Dinghy.seen_before := true;
+//             return Beach_Shelf;
+//    }
+    up asExit(west)
+    steps = beachSteps
+    ledge = beachSteps
+//    exithints = [ Beach_Shelf, &west ]
+//    ana = Blue_Beach
+;
+
++ dinghy: Fixture 'shattered dinghy; of[prep];boat remains'  
+   "The remains consist of little more than a few broken boards,
+        upon one of which may be seen a crude sketch of a skull and
+        two crossed thighbones (perhaps this dinghy was once owned
+        by a cook?) "
+    
+    game550 = true
+    seen_before = nil  // The description appears only on the first visit.
+    specialDesc()
+    {
+     
+        if (!seen_before) 
+        {
+            "Lying upon the beach
+            are the shattered remains of what must once
+            have been a dinghy.  ";
+            desc;
+        }
+        else
+            "The shattered remains of a dinghy lie
+            forlornly on the beach.";
+    }
+    
+    dobjFor(Ride) { verify() {illogicalNow('The dinghy is too badly damaged to be seaworthy. '); } }
+    dobjFor(Enter) asDobjFor(Ride) 
+    dobjFor(Board) asDobjFor(Ride)     
+;
+
++ Decoration 'narrow inlet; ocean [of]; water'
+    "A narrow inlet of ocean water laps gently upon the beach. "    
+;
+
++ Distant 'volcanic hills; rugged unclimbable; view;them'
+    "The volcanic hills block all view to the north and south. "
+;
+
+SpecialVerb 'row|launch' @dinghy 'ride';
+
+moons: MultiLoc, Distant 'moons;red blue small;moon light;them'
+    "Yes -- three moons!  The largest one looks about half
+    the size of the Earth's moon and has a red tinge; the other
+    two are much smaller and look blue. It appears that you have passed 
+    through a space portal without realizing it ..."
+    
+    locationList = [beachShelf, beach]
+    
+//    
+//    loclist = [Beach_Shelf, Blue_Beach_Shelf, Beach, Blue_Beach,
+//              Zarkalon_Tunnel_Entrance, Blue_Zarkalon_Tunnel_Entrance,
+//              Zarkalon_Cliff_Top, Blue_Zarkalon_Cliff_Top,
+//              Zarkalon_Tower_Top, Blue_Zarkalon_Tower_Top]
+//    doCount(actor) = {
+//        "What planet do you think you're on?  I've already told you that
+//        there are three moons.  On second thoughts, that was a dumb
+//        question.  ";
+//        if(global.knowsgreenname)
+//            "You know that the Green-level elves call this planet 
+//            \"Ondralstir\" and the Blue-level humans call it \"Zarkalon\".
+//            I guess we'll stay with the Blue-level name. ";
+//        else if(BlueBoard1.isread)
+//            "I guess we'll stay with the Blue-level name for this planet:
+//            Zarkalon. ";
+//        else
+//            "I don't know the answer either... ";
+//    }
+;
+

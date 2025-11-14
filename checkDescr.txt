@@ -1,10 +1,8 @@
------------ on grassy knoll --------------
+----------- grassy knoll --------------
 You are at the high point of a wide grassy knoll, partially surrounded by
 dense forest. The land rises to the south and east, and drops off sharply
 to the north and west. The air smells of sea water.
 - - - - - - - - - - - -
-: wide grassy knoll : No extra description
-: dense forest : No extra description
 : sea : No extra description
 -----------------------------------------
 ----------- on east side of river styx --------------
@@ -42,6 +40,7 @@ head. Progress may be possible to the north, east or southwest.
 : large leaves : No extra description
 : tower : No extra description
 : head : No extra description
+: southwest : Exit not found
 -----------------------------------------
 ----------- in the rainbow room. --------------
 You are in a very tall chamber whose walls are comprised of many different
@@ -58,6 +57,8 @@ leads east and west.
 : gold : No extra description
 : head : No extra description
 : gigantic slab : No extra description
+: north : Exit not found
+: south : Exit not found
 : forms : No extra description
 : natural bridge : No extra description
 : chamber : No extra description
@@ -82,6 +83,7 @@ You are inside the building, a well house for a large spring.
 You are on the east side of the throne room. Very narrow passages go north
 and south, but are too small to enter.
 - - - - - - - - - - - -
+: east : Exit not found
 : very narrow passages : No extra description
 -----------------------------------------
 ----------- in outer courtyard --------------
@@ -96,6 +98,16 @@ splendor.
 : living things : No extra description
 : multicolored splendor : No extra description
 -----------------------------------------
+----------- in giant room --------------
+You are in the giant room. The ceiling here is too high up for your lamp
+to show it. Cavernous passages lead east, north, and south. On the west
+wall is scrawled the inscription, "Fee, gie, foe, foo [sic]".
+- - - - - - - - - - - -
+: up : Exit not found
+: lamp : No extra description
+: cavernous passages : No extra description
+: west : Exit not found
+-----------------------------------------
 ----------- at ne end --------------
 You are at the northeast end of an immense room, even larger than the giant
 room. It appears to be a repository for the "Adventure" program. Massive
@@ -108,6 +120,7 @@ nearby reads: "Do not disturb the dwarves!" An immense mirror is hanging
 against one wall, and stretches to the other end of the room, where various
 other sundry objects can be glimpsed dimly in the distance.
 - - - - - - - - - - - -
+: northeast : Exit not found
 : immense room : No extra description
 : giant room : No extra description
 : program : No extra description
@@ -118,6 +131,58 @@ other sundry objects can be glimpsed dimly in the distance.
 : sign : No extra description
 : immense mirror : No extra description
 : sundry objects : No extra description
+-----------------------------------------
+----------- at sw end --------------
+You are at the southwest end of the repository. To one side is a pit full
+of fierce green snakes. On the other side is a row of small wicker cages,
+each of which contains a little sulking bird. In one corner is a bundle
+of black rods with rusty marks on their ends. In another corner is a large
+pile of velvet pillows. A vast mirror stretches off to the northeast. At
+your feet is a large steel grate, next to which is a sign which reads, "TREASURE
+VAULT. Keys in main office."
+- - - - - - - - - - - -
+: southwest : Exit not found
+: repository : No extra description
+: pit : No extra description
+: green snakes : No extra description
+: little sulking bird : No extra description
+: one corner : No extra description
+: rusty marks : No extra description
+: another corner : No extra description
+: vast mirror : No extra description
+: feet : No extra description
+: large steel : No extra description
+-----------------------------------------
+----------- troll's treasure room --------------
+You are in a large chamber, lit by a strange orange glow. It appears to be
+the room where the troll stores his treasures! Fixed to the walls are numerous
+shelves, stacked with gold, silver and platinum articles, musical instruments,
+vases, clocks and ornaments of all descriptions. Part of the room is stacked
+to the ceiling with treasure chests, all full to overflowing with precious
+stones. Another area is full of antique furniture which the troll has collected
+over the centuries - some of the items must be worth an absolute fortune!
+In the center of the room a table is piled high with valuable coins, and
+an open ledger records the tolls paid by adventurers over the years.
+- - - - - - - - - - - -
+: large chamber : No extra description
+: strange orange glow : No extra description
+: troll stores : No extra description
+: treasures : No extra description
+: numerous shelves : No extra description
+: gold : No extra description
+: silver : No extra description
+: clocks : No extra description
+: precious stones : No extra description
+: another area : No extra description
+: antique furniture : No extra description
+: troll : No extra description
+: centuries : No extra description
+: items : No extra description
+: absolute : No extra description
+: table : No extra description
+: valuable coins : No extra description
+: ledger records : No extra description
+: adventurers : No extra description
 -----------------------------------------
 ----------- on ne side of chasm --------------
 You are on the far side of the chasm. A northeast path leads away from the
@@ -184,6 +249,7 @@ here says "Cave under construction beyond this point. Proceed at own risk.
 You're at Dante's Rest, on the north side of a yawning dark chasm. A passage
 continues west along the chasm's edge.
 - - - - - - - - - - - -
+: north : Exit not found
 : yawning dark chasm : No extra description
 : chasm's edge : No extra description
 -----------------------------------------
@@ -235,19 +301,12 @@ canyon 15 feet below. If you go down you may not be able to get back up.
 - - - - - - - - - - - -
 : it crosses : No extra description
 : canyon 15 feet : No extra description
+: up : Exit not found
 -----------------------------------------
 ----------- in ragged corridor --------------
 You are in a long sloping corridor with ragged sharp walls.
 - - - - - - - - - - - -
 : long sloping corridor : No extra description
------------------------------------------
------------ in giant room --------------
-You are in the giant room. The ceiling here is too high up for your lamp
-to show it. Cavernous passages lead east, north, and south. On the west
-wall is scrawled the inscription, "Fee, gie, foe, foo [sic]".
-- - - - - - - - - - - -
-: lamp : No extra description
-: cavernous passages : No extra description
 -----------------------------------------
 ----------- in shell room --------------
 You're in a large room carved out of sedimentary rock. The floor and walls
@@ -279,6 +338,7 @@ to the uncertainty of the light.
 : volcanic gorge : No extra description
 : incredible : No extra description
 : stone : No extra description
+: down : Exit not found
 : saint : No extra description
 : others : No extra description
 : malice : No extra description
@@ -332,6 +392,7 @@ goes back toward the south.
 - - - - - - - - - - - -
 : large underground reservoir : No extra description
 : room : No extra description
+: up : Exit not found
 : hole : No extra description
 : 10 feet : No extra description
 : only passage : No extra description
@@ -369,6 +430,7 @@ You are on the brink of a thirty foot pit with a massive orange column down
 one wall. You could climb down here but you could not get back up. The maze
 continues at this level.
 - - - - - - - - - - - -
+: up : Exit not found
 : maze : No extra description
 : this level : No extra description
 -----------------------------------------
@@ -528,6 +590,8 @@ Another leads sharply upward along the river's north side.
 : feet : No extra description
 : large sinkhole : No extra description
 : gentle path : No extra description
+: south : Exit not found
+: north : Exit not found
 -----------------------------------------
 ----------- at breath-taking view --------------
 You are on the edge of a breath-taking view. Far below you is an active volcano,
@@ -548,6 +612,7 @@ lake, which bubbles ominously. The far right wall is aflame with an incandescenc
 of its own, which lends an additional infernal splendor to the already hellish
 scene. A dark, forboding passage exits to the south.
 - - - - - - - - - - - -
+: down : Exit not found
 : depths : No extra description
 : cavern : No extra description
 : blood-red glare : No extra description
@@ -573,7 +638,9 @@ south and west.
 You are at the west end of a very long featureless hall. The hall joins up
 with a narrow north/south passage.
 - - - - - - - - - - - -
+: west : Exit not found
 : very long featureless hall : No extra description
+: up : Exit not found
 -----------------------------------------
 ----------- at junction with warm walls --------------
 The walls are quite warm here. From the north can be heard a steady roar,
@@ -607,6 +674,7 @@ recently. Directly across the pit from you and 25 feet away there is a similar
 window looking into a lighted room. A shadowy figure can be seen there peering
 back at you.
 - - - - - - - - - - - -
+: up : Exit not found
 : 50 feet : No extra description
 : 25 feet : No extra description
 : similar window : No extra description
@@ -618,6 +686,7 @@ to open up.
 - - - - - - - - - - - -
 : tall e : No extra description
 : crawl goes 3 feet : No extra description
+: up : Exit not found
 -----------------------------------------
 ----------- at window on pit --------------
 You're at a low window overlooking a huge pit, which extends up out of sight.
@@ -628,6 +697,7 @@ Directly across the pit from you and 25 feet away there is a similar window
 looking into a lighted room. A shadowy figure can be seen there peering
 back at you.
 - - - - - - - - - - - -
+: up : Exit not found
 : 50 feet : No extra description
 : 25 feet : No extra description
 : similar window : No extra description
@@ -637,37 +707,6 @@ back at you.
 The passage here is blocked by a recent cave-in.
 - - - - - - - - - - - -
 : passage : No extra description
------------------------------------------
------------ troll's treasure room --------------
-You are in a large chamber, lit by a strange orange glow. It appears to be
-the room where the troll stores his treasures! Fixed to the walls are numerous
-shelves, stacked with gold, silver and platinum articles, musical instruments,
-vases, clocks and ornaments of all descriptions. Part of the room is stacked
-to the ceiling with treasure chests, all full to overflowing with precious
-stones. Another area is full of antique furniture which the troll has collected
-over the centuries - some of the items must be worth an absolute fortune!
-In the center of the room a table is piled high with valuable coins, and
-an open ledger records the tolls paid by adventurers over the years.
-- - - - - - - - - - - -
-: large chamber : No extra description
-: strange orange glow : No extra description
-: troll stores : No extra description
-: treasures : No extra description
-: numerous shelves : No extra description
-: gold : No extra description
-: silver : No extra description
-: clocks : No extra description
-: precious stones : No extra description
-: another area : No extra description
-: antique furniture : No extra description
-: troll : No extra description
-: centuries : No extra description
-: items : No extra description
-: absolute : No extra description
-: table : No extra description
-: valuable coins : No extra description
-: ledger records : No extra description
-: adventurers : No extra description
 -----------------------------------------
 ----------- in forest --------------
 You are in open forest, with a deep valley to one side.
@@ -746,6 +785,7 @@ across the chasm, vanishing into the mist. A sign posted on the bridge reads,
 "Stop! Pay troll!"
 - - - - - - - - - - - -
 : heavy white mist : No extra description
+: up : Exit not found
 : far : No extra description
 : winding corridor : No extra description
 : rickety wooden bridge : No extra description
@@ -770,6 +810,7 @@ know, are extremely vain. A small window can be seen in either wall, some
 fifty feet up.
 - - - - - - - - - - - -
 : about 25 feet : No extra description
+: up : Exit not found
 : well : No extra description
 : 100 feet : No extra description
 : enormous two-sided mirror : No extra description
@@ -784,6 +825,7 @@ You could climb down it, and jump from it to the floor, but having done
 so you would be unable to reach it to climb back up.
 - - - - - - - - - - - -
 : roof : No extra description
+: up : Exit not found
 -----------------------------------------
 ----------- at top of small pit --------------
 At your feet is a small pit breathing traces of white mist. A passage from
@@ -806,6 +848,8 @@ but they are now filled with boulders. Low small passages go north and south,
 and the south one quickly bends west around the boulders.
 - - - - - - - - - - - -
 : large low circular chamber : No extra description
+: east : Exit not found
+: west : Exit not found
 : large passages : No extra description
 : boulders : No extra description
 : low small passages : No extra description
@@ -823,6 +867,7 @@ go down the slide, you may not be able to climb back up.
 - - - - - - - - - - - -
 : narrow shelf : No extra description
 : very steep chimney : No extra description
+: up : Exit not found
 -----------------------------------------
 ----------- in a cul-de-sac --------------
 You are in a cul-de-sac about eight feet across.
@@ -975,6 +1020,7 @@ You're on a small gravel beach at the south wall of the Blue Grotto. A gravelly
 path leads east.
 - - - - - - - - - - - -
 : small gravel beach : No extra description
+: south : Exit not found
 : blue grotto : No extra description
 : gravelly path : No extra description
 -----------------------------------------
@@ -1008,6 +1054,7 @@ away from the abyss.
 ----------- at east end of lost river canyon --------------
 You are at the east end of a riverbank path in Lost River Canyon.
 - - - - - - - - - - - -
+: east : Exit not found
 : riverbank : No extra description
 -----------------------------------------
 ----------- on south side of lost river canyon --------------
@@ -1067,6 +1114,7 @@ the north and south walls of the chamber.
 : multi-colored rock : No extra description
 : bridge : No extra description
 : huge slab : No extra description
+: south : Exit not found
 : chamber : No extra description
 -----------------------------------------
 ----------- in old spillway --------------
@@ -1194,6 +1242,7 @@ west.
 You're at the north edge of a dark cove. To your south lies the Blue Grotto.
 A large lake almost fills the cavern floor.
 - - - - - - - - - - - -
+: north : Exit not found
 : blue grotto : No extra description
 : cavern floor : No extra description
 -----------------------------------------
@@ -1202,6 +1251,7 @@ You are in a dry granite basin, worn smooth eons ago by water swirling down
 from a now-dry spillway.
 - - - - - - - - - - - -
 : dry granite basin : No extra description
+: down : Exit not found
 : now-dry spillway : No extra description
 -----------------------------------------
 ----------- in the crystal palace --------------
@@ -1261,6 +1311,7 @@ back down.
 : room : No extra description
 : narrow ledge : No extra description
 : spires : No extra description
+: down : Exit not found
 -----------------------------------------
 ----------- on ledge above limestone pinnacles --------------
 You are on a ledge at the northern end of a long N/S crawl. The ledge is
@@ -1304,7 +1355,9 @@ dark tunnel leads out to the west.
 : rushing stream : No extra description
 : chamber : No extra description
 : two-foot slit : No extra description
+: east : Exit not found
 : large pool : No extra description
+: north : Exit not found
 : small plaque riveted : No extra description
 : dark tunnel : No extra description
 -----------------------------------------
@@ -1415,12 +1468,24 @@ sloping ledge narrows to the east. The path to the west is easier.
 : canyon wall : No extra description
 : raging river : No extra description
 : mist : No extra description
+: down : Exit not found
 : path : No extra description
 -----------------------------------------
 ----------- foggy plain --------------
 You are hunting your way through a shimmering magenta fog.
 - - - - - - - - - - - -
 : shimmering magenta fog : No extra description
+-----------------------------------------
+----------- at <q>y2</q> --------------
+You are in a large room, with a passage to the south, a passage to the west,
+and a wall of broken rock to the east. There is a large "Y2" on a rock in
+the room's center>.
+- - - - - - - - - - - -
+: large room : No extra description
+: passage : No extra description
+: broken rock : No extra description
+: rock : No extra description
+: room's center : No extra description
 -----------------------------------------
 ----------- lava tube at top of chimney --------------
 You're at the top of a narrow chimney in the rock. A cylindrical tube composed
@@ -1465,6 +1530,33 @@ south, and a wide but low crawl leads north.
 : dark passage : No extra description
 : wide but low crawl : No extra description
 -----------------------------------------
+----------- east audience hall --------------
+You are at the eastern end of the Audience Hall. There is a large dais rising
+out of the floor here; resting upon the dais is a strange-looking throne
+made out of interlocking bars and rods of metal.
+- - - - - - - - - - - -
+: dais : No extra description
+: interlocking bars : No extra description
+-----------------------------------------
+----------- west audience hall --------------
+You are standing at the west end of the royal Audience Hall. The walls here
+are composed of the finest marble, and the floor is built of slabs of rare
+onyx and bloodstone. The ceiling is high and vaulted, and is supported by
+pillars of rare Egyptian red granite; it gives off a nacreous glow that
+fills the entire chamber with a light like moon-light shining off of polished
+silver.
+- - - - - - - - - - - -
+: royal audience hall : No extra description
+: finest marble : No extra description
+: nacreous glow : No extra description
+: entire chamber : No extra description
+: silver : No extra description
+-----------------------------------------
+----------- on the steps --------------
+You are on a long, spiral set of steps leading downwards into the earth.
+- - - - - - - - - - - -
+: earth : No extra description
+-----------------------------------------
 ----------- north end of valley of faces --------------
 You are standing at the north end of the Valley of the Stone Faces. Above
 you, an incredible bas-relief statue of an immense minotaur has been carved
@@ -1477,6 +1569,7 @@ end of the valley.
 : immense minotaur : No extra description
 : rock : No extra description
 : least sixty feet : No extra description
+: down : Exit not found
 : feet : No extra description
 : about ten feet : No extra description
 -----------------------------------------
@@ -1496,31 +1589,30 @@ from the passage.
 : passage : No extra description
 : issues : No extra description
 -----------------------------------------
+----------- north of basilisk --------------
+You're in a rough passage to the north of the basilisk's den.
+- - - - - - - - - - - -
+: rough passage : No extra description
+: basilisk's den : No extra description
+-----------------------------------------
+----------- rough, narrow passage --------------
+You are in a narrow and rough passage running north and south. A dull rumbling
+sound can be heard from the south.
+- - - - - - - - - - - -
+: rough passage : No extra description
+-----------------------------------------
 ----------- steep slide in tube --------------
 The lava tube continues down and to the south, but it becomes very steep
 - if you go down it you probably won't be able to get back up.
 - - - - - - - - - - - -
 : lava tube : No extra description
+: up : Exit not found
 -----------------------------------------
------------ at sw end --------------
-You are at the southwest end of the repository. To one side is a pit full
-of fierce green snakes. On the other side is a row of small wicker cages,
-each of which contains a little sulking bird. In one corner is a bundle
-of black rods with rusty marks on their ends. In another corner is a large
-pile of velvet pillows. A vast mirror stretches off to the northeast. At
-your feet is a large steel grate, next to which is a sign which reads, "TREASURE
-VAULT. Keys in main office."
+----------- catacombs --------------
+You are in the catacombs. Enchanted tunnels lead in all directions. (You
+are in room number 0.)
 - - - - - - - - - - - -
-: repository : No extra description
-: pit : No extra description
-: green snakes : No extra description
-: little sulking bird : No extra description
-: one corner : No extra description
-: rusty marks : No extra description
-: another corner : No extra description
-: vast mirror : No extra description
-: feet : No extra description
-: large steel : No extra description
+: room : No extra description
 -----------------------------------------
 ----------- inside the phone booth --------------
 You are standing in a telephone booth at the side of the Repository. Hung

@@ -669,6 +669,100 @@ brassLantern: FueledLightSource, EndgameClone, Flashlight
     
     wandernote = nil
     destroyed = nil
+   
+    
+    // BJS: NOSIDE SAMOHT has been used to
+    // recharge the lamp:
+    magicRecharge()
+    {
+          
+//        local i, ultloc, d = nil;    // Find room that lamp is in.
+//        for (i = self; i != nil; i = i.location) 
+//            ultloc = i;
+        local ultloc = getOutermostRoom, d = nil;        
+        
+        if(gPlayerChar.isIn(ultloc) && ultloc.ofKind(DarkRoom)
+            && !isRelit) 
+        {
+            // self.is_relit flags that NOSIDE SAMOHT has been used to
+            // recharge the current set of batteries.  (In accordance with
+            // the original acode source, we now allow one recharge per set
+            // of batteries.  The acode source (but not the TADS port) also 
+            // checks that the Sorcerer's Lair has been visited.
+
+            // Note that the 660-point and 770-point games allow multiple
+            // recharges with NOSIDE SAMOHT.  However, the 701(+) point
+            // versions only allow one recharge per set of batteries.  There is
+            // a good reason - the player can obtain one set of batteries
+            // for free, using a set of non-treasure coins (lead slugs).
+
+            //
+            //  If player is in same room, which isn't lit, then:
+
+            // Electrocute player if lamp is held.
+            if (isIn(gPlayerChar)) 
+            { 
+                "With a sharp sizzling
+                sound, a large spark of electricity
+                jumps out of thin air and strikes
+                your lamp.  The immense electrical
+                charge flows to ground through your
+                body and fries you to a crisp.    ";
+                d = true;
+            }
+
+            // Blow up lamp if it's already charged.
+            if (fuelLevel > 40) 
+            {
+                if (rand(2) == 1 && !d) 
+                {
+                    "With a loud \"zap\" a bolt
+                    of lightning springs out of
+                    midair and strikes your lamp,
+                    which immediately and violently
+                    explodes.  You narrowly miss
+                    being torn to shreds by the
+                    flying metal.<.p>"; 
+                }
+
+                else if (!d) 
+                { 
+                     "In a loud crackle
+                    of electricity, a bolt of
+                    lightning jumps out of nowhere
+                    and strikes your lamp.    The
+                    lamp instantly explodes like
+                    a grenade, and you are mown
+                    down by a cloud of shrapnel.";
+                    d = true;
+                }
+                // Blow up the lamp.
+                moveInto(nil); 
+                makeLit(nil);
+                setLife(0);
+                destroyed = true;
+            }
+            // Otherwise recharge it. Give twice as many turns as in
+            // original...
+            else {
+                isRelit = true;
+                setLife(300); // But give more time in novice mode.
+                if(global.novicemode) setLife(500);
+                if(!d) makeLit(true);
+                if(!d) "The air fills with tension,
+                    and there is a subdued crackling sound.
+                    A blue aura forms about your lantern,
+                    and small sparks jump from the lantern
+                    to the ground.  The aura fades away after
+                    several seconds, and your lamp is once
+                    again shining brightly.";
+            }
+                // Kill player if d is true:
+            if (d) die();
+        }
+        else "Nothing happens."; // If lamp isn't in room, etc.
+    
+    }    
 ;
 
 /* 4 */
@@ -821,19 +915,19 @@ class WaveableRod: Thing
             }
             // This is only possible in the 550-point or 701-point game.  In the 
         // latter, we require that the rod be upgraded.
-        else if (isIn(coralPassage) || isIn(coralPass2)) 
+            else if (isIn(coralPassage) || isIn(coralPass2)) 
             {
-            if(global.closed && ! isupgraded)
-                "Peculiar. Nothing happens. ";
-            else if(global.game701 && ! isupgraded) 
-                "Flakes of rust fall off the rod, but nothing else happens. ";            
-            else {
-                // Don't soften the quicksand when the rod is waved again.
-                // That would be too difficult.
-                "Nothing obvious happens.";
-                quickSand.isHard = true;
+                if(global.closed && ! isupgraded)
+                    "Peculiar. Nothing happens. ";
+                else if(global.game701 && ! isupgraded) 
+                    "Flakes of rust fall off the rod, but nothing else happens. ";            
+                else {
+                    // Don't soften the quicksand when the rod is waved again.
+                    // That would be too difficult.
+                    "Nothing obvious happens.";
+                    quicksand.isHard = true;
+                }
             }
-        }
         else
             "Nothing happens.";
             
@@ -868,7 +962,7 @@ blackRod: EndgameClone, WaveableRod 'black rod;rusty star magic ;wand' @inDebris
     myHome = inDebrisRoom
     myHome2 = [inDebrisRoom]
     mass = 2
-    
+    disambigName = 'star rod'
     
 //    downgrade() {}
 ;
@@ -902,7 +996,7 @@ blackMarkRod: EndgameClone, WaveableRod 'marked rod;
     
     mass = 2
     
-    
+    disambigName = 'marked rod'
    
     // This rod scores points in the 551-point game, but not in the 
     // 550-point and 701-point versions which use the 'cylindrical room' 
@@ -1944,15 +2038,8 @@ greyRod:Thing 'gray rod'
 brokenPendant: Thing
 ;
 
-singingSword: Weapon
-;
-
 transindectionKey: Thing;
 
-quickSand: Fixture
-    isHard = nil
-;
 
 mithrilRing: Thing;
 
-sceptre: Thing;

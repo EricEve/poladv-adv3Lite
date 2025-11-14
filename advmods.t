@@ -40,6 +40,7 @@ global: object
     game580 = (vNumber == 7)
     game701 = ([11, 15].find(vNumber) != nil)
     game701p = (vNumber == 11)
+    game660 = nil
     
     listenAdd = nil
     vendingTreasures = 0
@@ -192,6 +193,8 @@ global: object
     phonewake = 0
     noAskWave = nil
     novicemode = nil
+    
+    triggered_alert = nil
     
     fully_closed = nil
     

@@ -404,7 +404,7 @@ inForest3: OutsideRoom 'In Forest'
 
 
 /* 147 */
-knoll: OutsideRoom 'On Grassy Knoll'
+knoll: OutsideRoom 'On Grassy Knoll' 'grassy knoll; wide'
     "{I} {am} at the high point of a wide grassy knoll, partially
     surrounded by dense forest.  The land rises to the south and east, and drops off
     sharply to the north and west.  The air smells of sea water. "
@@ -450,6 +450,9 @@ knoll: OutsideRoom 'On Grassy Knoll'
     }
 ;
 
++ Decoration 'dense forest;;trees'
+    "The forest partly surrounds the knoll. "
+;
 
 denseJungle: KeyCheck, OutsideRoom 'In a Dense Jungle'    
         "You're in a dense jungle, surrounded by large leaves which tower above
@@ -462,7 +465,7 @@ denseJungle: KeyCheck, OutsideRoom 'In a Dense Jungle'
     east = "You walk a few yards to the east, only to encounter a giant bird!
         Fearing for your life, you beat a rapid retreat. "
         
-    southweast =  "You travel a fair distance to the southwest, only to encounter a
+    southwest =  "You travel a fair distance to the southwest, only to encounter a
         giant grasshopper!   You retreat to your starting point and ask
         yourself whether this was the right place to use the \"Phuce\" spell.
         Most Elvish magic doesn't work for humans, but this particular
@@ -3607,12 +3610,6 @@ poling_messages: object
 ;
 
 
-beachShelf: OutsideRoom
-;
-
-beach: OutsideRoom
-;
-
 /* 235 */
 dantesRest: DarkRoom 'At Dante\'s Rest'
     "{I}{'m} at Dante's Rest, on the north side of a yawning dark chasm.
@@ -4035,11 +4032,5 @@ castleRoom: IndoorRoom 'Octagonal Castle Room'
         quite right here ... "
 ;
 
-
-
-
-
-morion: Room 'Morion'
-;
 
 

@@ -103,7 +103,7 @@ me: Player 'you' @atEndOfRoad
        
     itemcount = contents.countWhich({x:!x.isFixed})
     
-    kickNoEffectMsg = '{I} {give} {myself} a good kicking, which {i} no doubt richly deserve{s/ed}. '
+    kickNoEffectMsg = '{I} {give} {myself} a good kicking, which {i} no doubt richly deserve{s/ed}. '   
 ;
 
 + myHands: BodyPart '() your hands; bare my ;hand; them it'

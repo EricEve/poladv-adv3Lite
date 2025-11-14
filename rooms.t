@@ -5225,9 +5225,6 @@ brokenNeck: Room 'Bottom of Pit'
 westSideChamber: Room 'West Side Chamber'
 ;
 
-glassyRoom: DarkRoom
-;
-
 didnt_make_it: object
     death = "You didn't make it.\b <<finishGameMsg(ftDeath, [finishOptionUndo])>>"         
 ; 

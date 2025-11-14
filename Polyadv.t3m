@@ -22,6 +22,7 @@
 -source adv3Lite/extensions/collective
 -source adv3Lite/extensions/weight
 -source adv3lite-tads3-checkroomdescr-main/checkdescr
+-source verbs
 -source cc-hints
 -source Polyadv
 -source rooms
@@ -30,9 +31,10 @@
 -source map2
 -source items
 -source ccr-itm1
+-source cc-itm2
 -source endgame
 -source npcs
--source verbs
+-source npcs2
 
 -res
 GameInfo.txt

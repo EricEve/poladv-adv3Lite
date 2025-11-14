@@ -1500,10 +1500,10 @@ crystalBall: Treasure 'crystal ball; quartz;sphere palantir' @crystalPalace
                 // and label their room number
                 if (gActor.isIn(catacombs))catacombs.leaveRoom;
                 // Save the current Catacombs room number
-                catacnum = catacombs.roomNumber;
+                catacnum = catacombs.roomnumber;
                 // Set the Catacombs room number and move the relevant objects
                 // into the room.
-                catacombs.roomNumber = catobj.catac_room_num;
+                catacombs.roomnumber = catobj.catac_room_num;
                 catacombs.enterRoom;
                 if (sapphloc == elsewhere) sapphloc = catacombs;
             }
@@ -1711,7 +1711,7 @@ crystalBall: Treasure 'crystal ball; quartz;sphere palantir' @crystalPalace
                 // Remove objects
                 catacombs.leaveRoom;
                 // Restore original room number
-                catacombs.roomNumber = catacnum;
+                catacombs.roomnumber = catacnum;
                 // If the player is in the Catacombs, move the right objects back.
                 if(gActor.isIn(catacombs)) catacombs.enterRoom;
             }
