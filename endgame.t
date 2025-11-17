@@ -268,9 +268,11 @@ startEndgame()
     //
     // Get rid of anything chasing the player.
     //
-//    for(o = firstObj(Chaser); o != nil; o=nextObj(o, Chaser))
-//        if (o.ischasing) 
-//        o.banish;
+    for(o = firstObj(Chaser); o != nil; o=nextObj(o, Chaser))
+    {
+        if (o.isChasing) 
+        o.banish;
+    }
 
     brassLantern.makeOn(nil);
     brassLantern.setLife(2500); // stop unwanted messages about the lamp

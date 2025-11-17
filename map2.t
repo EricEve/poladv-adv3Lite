@@ -46,8 +46,6 @@ blueBirdChamber: Room 'Blue Bird Chamber'
 
  
 
-S_Of_Center: Room
-;
 
 tightCrack2: DarkRoom
 ;

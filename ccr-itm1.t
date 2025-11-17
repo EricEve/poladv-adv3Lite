@@ -1451,12 +1451,12 @@ crystalBall: Treasure 'crystal ball; quartz;sphere palantir' @crystalPalace
             if (wumpus.isChasing)
                 "You'd better do something about the Wumpus first - this
                 isn't going to help! ";
-//            if (Goblins.ischasing)
-//                "You'd better do something about the goblins first - this
-//                isn't going to help! ";
-//            else if (Blob.ischasing and Blob.chase >= 13)
-//                "You'd better do something about the strange blob first - this
-//                isn't going to help! ";
+            if (goblins.isChasing)
+                "You'd better do something about the goblins first - this
+                isn't going to help! ";
+            else if (blob.isChasing && blob.chase >= 13)
+                "You'd better do something about the strange blob first - this
+                isn't going to help! ";
             else if (Dwarves.numberhere(gActor) == 1) 
                 "You'd better do something about the dwarf first -
                 this isn't going to help! ";            
@@ -1738,7 +1738,4 @@ crystalBall: Treasure 'crystal ball; quartz;sphere palantir' @crystalPalace
 
 
 
-mushroom: Thing 'mushroom'
-  isEaten = nil
-;
 

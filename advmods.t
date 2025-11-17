@@ -1185,6 +1185,71 @@ glob7: glob_550
 ;
 
 
+/*   The glob15 and glob11 objects inherit the same set of values, and are
+     used in the 701 and 701+ point games.  The difference is that the
+     701+ game scores bonus points when the new extended area is reached. */
+
+class glob_701: VerGlob
+    maxresurrect = 3        // number of resurrections allowed
+    //
+    // Scoring values
+    //
+    // 44 points initially, 1 point for magazines, 504 points for
+    // treasures, 20 points for getting far in, 30 points for reaching
+    // extended areas from the 550-point game, 100 points for endgame.
+    // Total = 701
+    //
+    // Points for all treasures are set to:
+    // takepoints = 2, depositpoints = 10.
+    //
+    score = 46              // to round out the score
+    maxscore = 701          // maximum possible score
+    novicepoints = -5       // points for playing in easy mode (neg.)
+    quitpoints = -4         // points for quitting (neg.)
+    deathpoints = -10       // points gained each time player dies (neg.)
+    farinpoints = 20        // points for getting well into the cave
+    extenpoints = 10        // points for reaching extended areas.
+
+    closure = nil           // Has the endgame timer started yet?
+    closurepoints = 20      // point award when it does.
+    closingpoints = 20      // points for surviving until cave closing time
+    endpoints = 20          // points for getting to final puzzle
+    endkillpoints = 0       // points for getting killed in endgame
+    klutzpoints = 0         // points for getting klutzed (blown up)
+    almostpoints = 0        // points for *almost* getting final puzzle
+                            // (wrong part of room blown up)
+    winpoints = 0           // points for winning the final puzzle
+    escapepoints = 20       // points for leaving the cylindrical room
+    finalepoints = 20       // points for entering the treasure room in
+                            // the endgame.
+
+    sacklist = [sack,treasureChest] // containers for automatic inventory
+                                     // management
+    //
+    // NPC stuff
+    //
+    dwarves = 5             // number of dwarves wandering about the cave
+                            // (Was 5 in original.)
+    scoreRanks = [0, 20, 130, 350, 475, 601, 661, 681, {:700 + global.extras}, {:701 +
+        global.extras}]  
+
+//    copy {
+//        inherited glob1;
+//    }
+;
+
+glob15: glob_701
+    vnumber = 15
+     
+;
+
+glob11: glob_701
+    vnumber = 11     
+;
+
+
+
+
  die()
 {
     addToScore(global.deathpoints, 'for getting killed');
@@ -1253,6 +1318,7 @@ modify Room
     Zarkalonroom = nil
     analevel = 0
     brassKey = nil
+    smashdrop = nil
 ;
     
 modify Actor
@@ -1476,6 +1542,14 @@ modify Player
     actionMoveInto(loc)
     {
         local toproom;
+        local oldloc, newloc = getOutermostRoom;
+        
+        if(lastmoveloc == nil) 
+        {
+            lastmoveloc = location;
+            lasttoploc = lastmoveloc.getOutermostRoom;
+        }
+        oldloc = lasttoploc;
         if(loc.deleted)
         {
             "{I} {can't} go that way in this version of the game. ";
@@ -1507,9 +1581,44 @@ modify Player
             return;     // no travel 
         }
         
+        // Save the travel route and previous travel route
+        // (currently used only for the purpose of backtracking detection when
+        // the Wumpus is chasing the player).
+        if(oldloc != newloc) 
+        {
+            prevloc = oldloc;
+            if(nextRoute != nil) 
+            {
+                previousRoute = travelRoute;
+                travelRoute = nextRoute;
+            }
+        }
+        
+        // DJP - save previous topmost location.
+        // Moves within the same topmost room (e.g. when sitting on the
+        // Y2 rock) are ignored, but a move from a top-level room to the
+        // same top-level room (through a looping passage) is acknowledged.
+        if(lastmoveloc == loc && newloc == loc) 
+        {
+            prevloc = oldloc;
+            if(nextRoute == nil || nextRoute == 0) 
+            {
+                previousRoute = travelRoute;
+                travelRoute = 11;
+            }
+            else travelRoute = self.nextRoute;
+            // for use by Wumpus-chasing code, to detect that reflexive
+            // travel has just happened.  (The property is cleared by
+            // the code).
+            reflexmove = true;
+        }
+        
         inherited(loc);
         
         toproom = getOutermostRoom;
+        
+        lastmoveloc = location;
+        lasttoploc = getOutermostRoom;
         
         if(!toproom.notfarin && !awardedpointsforgettingfarin)
         {
@@ -1535,6 +1644,9 @@ modify Player
             lamplitwarn = nil;
         
     }
+    
+    lastmoveloc = nil
+    lasttoploc = nil
 
     lamplitwarn = nil
     closerestrict = true // check travel destination at closing time.
@@ -1657,6 +1769,10 @@ modify Player
         'Well, you tried, but your strength is gone.  The agony is finally
         over.'
     ]
+    
+    reflexmove = nil
+    previousRoute = 0
+    travelRoute = 0
 ;
 
 dummyActor: Actor 'dummy actor'

@@ -3,6 +3,12 @@
 #include <tads.h>
 #include "advlite.h"
 
+/* Enable MultiMethods for the ThrowAt action */
+MMTIAction(ThrowAt);
+MMTIAction(TakeWith);
+MMTIAction(MoveWith);
+MMTIAction(OpenWith);
+
 /* 
  *   This file contains various modifications to the Thing class corresponding to the those in the
  *   advmods.t and ccr-thx.t files
@@ -68,12 +74,36 @@ modify Thing
         
         verify()
         {
-            if(gVerifyIobj == self)
-                illogicalSelf('[I} {can\'t} open anything with itself. ');
-            
-            illogical('{I} {can\'t} open anything with {that iobj}. ');
+            if(gVerifyDobj == self)
+                illogicalSelf('{I} {can\'t} open anything with itself. ');
+            else if(!canOpenWithMe)
+                illogical('{I} {can\'t} open anything with {that iobj}. ');
         }
     }
+    
+    canOpenWithMe = nil
+    
+    dobjFor(TakeWith)
+    {
+        preCond = [touchObj]
+        verify() { verifyDobjTake(); }        
+    }
+    
+    iobjFor(TakeWith)
+    {
+        preCond = [objHeld]
+        verify()
+        {
+            if(gVerifyDobj == self)
+                illogicalSelf('{I} {can\'t} take {the dobj} with {itself dobj}. ');
+            if(!canTakeWithMe)
+                illogical(cannotTakeWithMsg);                    
+        }
+        
+    }
+    
+    canTakeWithMe = nil
+    cannotTakeWithMsg = '{I} {can\'t} take anything with {that iobj}. '
     
     isReplaceable = nil
     cannotReplaceMsg = '{I} {don\'t know} how to replace {that dobj}. '
@@ -149,11 +179,11 @@ modify Thing
         
         verify()
         {
-            illogical(cantFillMsg);
+            illogical(cannotFillMsg);
         }       
     }
     
-    cantFillMsg = '{I} {can\'t} fill {that dobj}. '
+    cannotFillMsg = '{I} {can\'t} fill {that dobj}. '
     
     dobjFor(FillWith)
     {
@@ -161,7 +191,7 @@ modify Thing
         
         verify()
         {
-            illogical(cantFillMsg);
+            illogical(cannotFillMsg);
         }       
     }
     

@@ -771,22 +771,6 @@ dragonCorpse: Fixture 'dragon;dead green huge;corpse'
     closeloc = nil
 ;
 
-dragonTeeth: Thing
-;
-
-wumpus: NPC 'wumpus'
-    isChasing = nil
-    isAsleep = true
-    
-    
-    
-;
-
-dog: NPC 'dog'
-    isAsleep = nil
-    sleepLie() {}
-    blockMessage = "The dog won't let you pass! " // temporary
-;
 
 /* Dwarves with a captital D because dwarves is already in use as an object property. */
 Dwarves: NPC 'dwarves;;;them'
@@ -796,6 +780,7 @@ Dwarves: NPC 'dwarves;;;them'
     move() { }
     place() {}
     numberhere(actor) { return 0; } // temporary - to be fixed.
+    scatter() {}
 ;
 
 pirates: NPC 'pirate;;;him'
@@ -803,10 +788,6 @@ pirates: NPC 'pirate;;;him'
     
 ;
 
-bees: Feedable, Fixture 'bees;;;them'
-    
-    arefed = nil
-;
 
 dwarfstart(parm)
 {
@@ -824,11 +805,4 @@ dwarfstart(parm)
     global.NPCstarted = true;
 }
 
-wumpi:Fixture 'Wumpi'
-    game701 = true
-;
-
-wumpiRemnant: Fixture 'Wumpi'
-    game701 = true
-;
     

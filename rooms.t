@@ -266,8 +266,9 @@ atEndOfRoad: OutsideRoom 'At End of Road'
     nolampwarn = true
 ;
 
-+ Decoration 'walls;;wall;them'
++ walls: Decoration 'walls;;wall;them'
     "The buiiding has four of them. "
+    decorationActions = inherited + ThrowAt
 ;
 
 MultiLoc, Enterable 'building; small brick well; house wellhouse'
@@ -4005,7 +4006,7 @@ atWittsEnd: DarkRoom 'At Witt\'s End' 'Witt\'s End; witts'
 wittConnector: VarDest, TravelConnector
     calcDest()   
     {
-        if (global.game580) return S_Of_Center;
+        if (global.game580) return sOfCenter;
             else return inAnteroom;
     }
      
@@ -5262,9 +5263,11 @@ class Backdrop: MultiLoc, Decoration
      */
       
     initialLocationClass = Room
+    
+    decorationActions = inherited + ThrowAt
 ;
 
-Backdrop 'walls; swiss cheese ragged sharp warm hot (north) (south) (east) (west)
+bWalls: Backdrop 'walls; swiss cheese ragged sharp warm hot (north) (south) (east) (west)
     (e) (n) (s) (w); wall;them it'
     "I've already told all I know about the walls. "
     
@@ -5272,7 +5275,7 @@ Backdrop 'walls; swiss cheese ragged sharp warm hot (north) (south) (east) (west
     exceptions = [outdoors]   
 ;
 
-Backdrop 'ceiling'
+bCeiling: Backdrop 'ceiling'
     desc()
     {
         {        
@@ -5351,7 +5354,7 @@ pdrop: Backdrop 'passage;
     
 ;
 
-Backdrop 'air'
+bAir: Backdrop 'air'
     decorationActions = [Examine, SmellSomething]
     
     smellDesc 

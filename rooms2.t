@@ -425,21 +425,21 @@ byFigure: NoNPC, Room 'North End of Valley of Faces'
     
     northwest: TravelConnector -> southFog
     {
-        isConectorApparent = (rockWall.has_crumbled)
+        isConnectorApparent = (rockWall.has_crumbled)
     }    
    
     left = northwest
     
     northeast: TravelConnector -> windingPass
     {
-        isConectorApparent = (rockWall.has_crumbled)
+        isConnectorApparent = (rockWall.has_crumbled)
     }  
         
     right = northeast
     
     north: TravelConnector -> southBasilisk
     {
-        isConectorApparent = (rockWall.has_crumbled)
+        isConnectorApparent = (rockWall.has_crumbled)
     }  
     
     middle = north
@@ -462,7 +462,7 @@ byFigure: NoNPC, Room 'North End of Valley of Faces'
     has_crumbled = nil
     
     
-    described { if(has_crumbled) "Dark tunnels lead northeast,north, and northwest."; }
+    described { if(has_crumbled) "Dark tunnels lead northeast, north, and northwest."; }
 ;
 
 + Decoration 'immense statue, bas-relief bas relief of[prep]; minotaur'
@@ -1345,7 +1345,7 @@ eastAudience: NoNPC, Room 'East Audience Hall'
     "Below the waist, the skeleton resembles that of a giant
         python, and is wrapped carefully through the throne.  Above
         the waist, it resembles the skeleton of a giant human with
-        six arms.  In one of these arms is <<sceptre.mention>>! "
+        six arms.  In one of these arms is <<mention name sceptre>>! "
     game550 = true
     
     cannotPutInMsg = 'I don\'t know how to put anything into {the iobj}. '
@@ -1357,13 +1357,8 @@ eastAudience: NoNPC, Room 'East Audience Hall'
             below that, it resembles the body of a giant
             python, and is wrapped in and around the bars
             and rods of the throne.  Clutched in one bony
-            hand is <<sceptre.mention>>!! "
+            hand is <<mention name sceptre>>!! "
 ;
-
-
-
-
-
 
 
 windingPass: NoNPC, DarkRoom 'Winding Passage'
@@ -1415,11 +1410,17 @@ translucent: NoNPC, Room 'Translucent Room'
             if(!gobs_called && bracelet.isIn(gActor)) 
             {
                 gobs_called = true; // Don't summon them twice.
-                goblins.summon(golden);
+                /* 
+                 *   Summon the goblins at the end of the turn, after we've completed the move to
+                 *   the new location.
+                 */
+                new Fuse(self, &summonGoblins, 0);
             }
         }
         
         gobs_called = nil
+        
+        summonGoblins() { goblins.summon(golden); }
     }
         
     out asExit(east)
@@ -1764,12 +1765,12 @@ inSafe: DarkRoom 'In the Safe'
         "A hollow voice says,  <q>This is a Class 1 security
         alarm.  All cave security forces go to Orange Alert.
         I repeat - Orange Alert.</q>";
-        self.isFused = true;
+        isFused = true;
         // Add flag so that we can test whether an alert has been issued,
         // before the blob summoning code is executed.  This flag is reset
         // in the die() routine.
         global.triggered_alert = true;
-//        notify(Blob, &summon, 2); // Two turns before blob is
+        new Fuse (blob, &summon, 2); // Two turns before blob is
                                   // actually summoned.
     }
     
@@ -1901,7 +1902,7 @@ corridor2: DarkRoom 'Bend in Wide Corridor'
 
 toolRoom: DarkRoom 'Tool Room'
     "You are in a small, low-ceilinged room with the words,
-        <q>Witt Company Tool Room - Melenkurion division</q>
+        <q>Witt Company Tool Room -- Melenkurion division</q>
         carved into one of the walls.  A wide corridor runs
         south from here."
     
@@ -1913,7 +1914,7 @@ toolRoom: DarkRoom 'Tool Room'
 
 + Fixture 'carving on the wall; carved;message words writing'
     "The message carved into the wall reads, <q>Witt Company
-        Tool Room - Melenkurion division.</q> "
+        Tool Room -- Melenkurion division.</q> "
     game550 = true
     readDesc = desc
 ;
@@ -2313,7 +2314,7 @@ Ice_14: IceTunnel
     game550 = true                    // put the sculpture in it.
     
     specialDesc = "There is a niche here, melted out of the icy wall of the tunnel. "
-    initSpecialDesc = "<<sculpture.mention()>> is resting in a niche melted out of the icy 
+    initSpecialDesc = "<<mention name sculpture>> is resting in a niche melted out of the icy 
         wall of the tunnel! "
    
     useInitSpecialDesc = sculpture.isIn(self)
@@ -2737,7 +2738,7 @@ beach: NoNPC, Room 'Beach'
     dobjFor(Board) asDobjFor(Ride)     
 ;
 
-+ Decoration 'narrow inlet; ocean [of]; water'
++ Decoration 'narrow inlet; ocean of[prep]; water'
     "A narrow inlet of ocean water laps gently upon the beach. "    
 ;
 

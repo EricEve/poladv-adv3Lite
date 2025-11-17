@@ -696,6 +696,7 @@ DefineTIVerb(DustWith, ('brush' | 'sweep' | 'dust') multiDobj 'with' singleIobj,
 DefineTVerbS(Blow, 'blow' singleDobj, 'blow', 'blowing');
 DefineTVerbS(Play, 'play' singleDobj, 'play', 'playing');
 DefineTVerbS(Knock, 'knock' ('on'|) singleDobj, 'knock', 'knocking');
+DefineTIVerbS(TakeWith, 'take' singleDobj 'with' singleIobj, 'take', 'taking', with);
 
 class VaultKeyVerb: MagicWord
     wordnum = nil
@@ -872,13 +873,425 @@ VerbRule(NosideSamoht)
     action = nosidesamohtVerb
 ;
 
+DefVKTVerbRule(thgirw);
+DefVKTVerbRule(rubliw);
+
+thgirwVerb: MagicWord
+    omegaps580_order = 4
+    said = nil
+
+    sdesc = "thgirw"
+    verb = 'thgirw'
+    execAction(c)
+    {
+        if (said || !game580)
+            fail();
+        else 
+        {
+            "Ok!";
+            rubliwVerb.tcount = gTurns + 1;
+            said = true;
+        }
+    }
+
+    fail 
+    {
+        "Nothing happens. ";
+        reset();
+    }
+
+    reset
+    {
+        rubliwVerb.tcount = -1;
+        said = nil;
+    }
+;
 
 
+rubliwVerb: MagicWord
+    omegaps580_order = 7
+    tcount = -1
+    sdesc = "rubliw"
+    verb = 'rubliw'
+    execAction(c) 
+    {
+        if (thgirwVerb.said && (self.tcount = gTurns)) 
+        {
+            activate_rug(actor);
+            thgirwVerb.reset();
+        }
+        else thgirwVerb.fail();
+    }
+    activate_rug(actor) 
+    {
+        local topl;
+        topl = gActor.getOutermostRoom;
+        if ((topl is in (eOfRift,  wOfRift))
+            && persianRug.isIn(topl)) 
+        {
+            if (persianRug.isActive) 
+            {
+                "The persian rug gently settles to the ground. ";
+                persianRug.isActive = nil;
+            }
+            else if (persianRug.isIn(actor)) 
+            "The rug ruffles in {my} hands
+                for a moment, and then subsides. ";
+            else
+            {
+                "The persian rug levitates itself off the ground! ";
+                persianRug.isActive = true;
+            }
+        }
+        else thgirwVerb.fail();
+    }
+;
 
 
-/* Define all the special travel actions */
-DefSpecialTravel(Xyzzy, &xyzzy, 'xyzzy') darkTravelAllowed = true;
-DefSpecialTravel(Plugh, &plugh, 'plugh') darkTravelAllowed  = true;
+// BJS - added a one-line version of rubliw thgirw, for consistency.
+thgirwrubliwVerb: MagicWord
+    sdesc = "thgirw rubliw"
+    verb = 'thgirw-rubliw'
+    execAction(c) 
+    {
+        if (!global.game580) 
+            thgirwVerb.fail();        
+        else 
+        {
+            rubliwVerb.activate_rug(gActor);
+            thgirwVerb.reset;
+        }
+    }
+;
+
+VerbRule(ThgirwRubliw)
+    'thgirw' 'rubliw'
+    :VerbProduction
+    action = thgirwrubliwVerb
+;
+
+melenkurionVerb: MagicWord
+    omegapsical_order = 9
+    omegaps580_order = 11
+    omegaps701_order = 12
+    omegaps701p_order = 13
+    sdesc = "melenkurion"
+    verb = 'melenkurion'
+    execAction(c)
+    {
+        if(gActor.location != byFigure || rockWall.has_crumbled)            
+            "Nothing happens. ";
+        else 
+        {
+            rockWall.has_crumbled = true;
+            "Rock silently crumbles off of the wall in
+            front of you, revealing dark passages leading        
+            northwest, north, and northeast.\n";
+        }
+    }
+;
+
+DefVKTVerbRule(melenkurion);
+
+/* 
+ *   Allow the player to fly the rug in a specified direction when the conditions are right for
+ *   doing so.
+ */
+VerbRule(FlyDir)
+    'fly' (| (|'persian') 'rug') singleDir
+    :VerbProduction
+    action = Travel
+    verbPhrase = 'fly/flying (where)'
+    isActive = (global.game580 && persianRug.isActive && gPlayerChar.isIn(persianRug))    
+;
+
+
+/* For completeness, provide graceful handling of FLY OBJ <DIR> under other circumstances. */
+VerbRule(NonFlyDir)
+    'fly' singleDobj singleDir
+    :VerbProduction
+    action = NoFly
+    verbPhrase = 'fly/flying (what) (where)'
+    isActive = (!(global.game580 && persianRug.isActive && gPlayerChar.isIn(persianRug)))    
+;
+    
+DefineTAction(NoFly)
+    execAction(c)
+    {
+        if(c.dobj == persianRug)
+        {
+            if(global.game580)
+                "The rug can't be flown right now. ";
+            else
+                "Only wizards can do that. ";
+        }
+        else
+            "How do you propose to do that? ";
+    }
+;
+
+class MagicTravelAction: MagicWord, SpecialTravelAction
+    execAction(c)
+    {
+//        local newtoploc;   
+        
+        // prevent the possibility of a Transindection movement straight
+        // after a security alert
+        if (global.triggered_alert) 
+        {
+             alert_message(gActor);
+             return;
+        }
+        
+        // The Wumpus is wearing his ring (but there aren't any
+        // magic words which would transport him while sleeping)
+        if (gActor.canSee(wumpus) && wumpus.isAsleep) 
+        {
+            if (self == Click)
+                "You see the Wumpus click his heels in his sleep.\n";
+            else
+                "You hear the Wumpus repeat the magic word in his sleep.\n";
+        }
+        
+        // modified to remove all the agonizing if the player has been through
+        // it before, then sat on the throne without a crown.
+
+        if(!global.game701) goto no_wumpi; // Skip if there are no Wumpi to check
+//        local toploc = gActor.getOutermostRoom;
+              
+//        local Wumpimove;
+//        if ((Wumpi.isVisible(actor) || Wumpi_remnant.isVisible(actor)) and 
+//        (Wumpi.phase < 4)) 
+//        {
+//            Wumpimove = true;
+//            if(gold_ring.seenspecial and not self.hesitated
+//            and not Green_Tight_Crack_2.isseen) {
+//                "You hesitate.  When you spied on an elf with the crystal
+//                ball, his teleportation spell took the sapphire with him.
+//                You feel sure that this has something to do with the gold
+//                ring which you found on the Wumpus.  These Wumpi are also
+//                wearing gold rings, so you ask yourself what will happen
+//                if you teleport yourself from here ... ";
+//
+//                "But then you question whether the Wumpi would be silly enough
+//                to wear rings which could transport them while sleeping.  In
+//                any case, you'll need to use magic to get out of here without
+//                waking the Wumpi, so ";
+//                if (self = clickVerb)
+//                    "you go ahead ... ";
+//                else
+//                    "you say the word ... ";
+//                P();
+//                self.hesitated := true;
+//            }
+//            else if(gold_ring.deducedmagic and not self.hesitated
+//            and not Green_Tight_Crack_2.isseen) {
+//                "You hesitate, remembering how the Wumpus managed to follow
+//                you when you tried to escape using the slippers.  You
+//                suspected that this had something to do with his ring.  These
+//                Wumpi 
+//                are also wearing gold rings, which look remarkably similar
+//                to the one you took from the Wumpus ... ";
+//                P();
+//                "But then you question whether the Wumpi would be silly enough
+//                to wear rings which would transport them while sleeping.
+//                In any case, you'll need to use magic to
+//                get out of here without waking the Wumpi, so ";
+//
+//                if (self = clickVerb)
+//                    "you go ahead ... ";
+//                else
+//                    "you say the word ... ";
+//                P();
+//                self.hesitated := true;
+//            }
+//
+//            if(toploc = Green_Large_Circular_Room) {
+//                if(not (pendant2.obtained or (self = kataVerb))) {
+//                    local proportion := 'most';
+//                    if(Wumpi_remnant.isVisible(actor)) 
+//                        proportion := 'about half';
+//                    if(self = clickVerb)
+//                        "You see <<proportion>> of the Wumpi click their heels
+//                        in their sleep. \n";
+//                    else
+//                        "You hear <<proportion>> of the Wumpi repeat the magic
+//                        word in their sleep. \n";
+//                }
+//            }
+//            else {
+//                if(self == clickVerb)
+//                    "All of the Wumpi click their heels in their sleep.\n";
+//                else
+//                    "All of the Wumpi repeat the magic word in their sleep.\n";
+//            }
+//        }
+        
+        no_wumpi: ; // Skip to here if Wumpi doen't exist.
+        
+        gActor.nextRoute = 10; // indicating that it was magic
+//        travelsave = global.travelActor;
+//        currentsave = gActor;
+        inherited(c);
+        gActor.nextRoute = 0; // return to default in case the travel method
+        
+        
+
+        travelActor = gActor;  // actor doing the travelling
+//        global.currentActor := actor; // reference actor for location method
+                                      // evaluation
+        
+
+//        global.travelActor = travelsave;
+//        global.currentActor := currentsave;
+
+        gActor.nextRoute = 0; // return to default in case the travel method
+                              // changed it.
+
+//        newtoploc = gActor.getOutermostRoom;
+    }
+    
+    alert_message(actor)
+    {
+        "Nothing happens. ";
+    }
+;
+
+#define DefMTA(action, prop) action : MagicTravelAction travelProp = prop allowDarkTravel = true
+#define DefMTAVR(name, voc) VerbRule(name) voc :VerbProduction action = name 
+#define DefMagicTravel(action, prop, voc) \
+    DefMTAVR(action, voc);\
+    DefMTA(action, prop)
+
+/* Define all the magic travel actions */
+DefMagicTravel(Xyzzy, &xyzzy, 'xyzzy');
+
+DefMagicTravel(Plugh, &plugh, 'plugh')
+    omegapsical_order = 6
+    omegaps580_order = 8
+    omegaps701_order = 8
+    omegaps701p_order = 8
+    verb = 'plugh'
+;
+
+DefMagicTravel(Plover, &plover, 'plover')
+    omegapsical_order = -7
+    omegaps580_order = -9
+    omegaps701_order = -9
+    omegaps701p_order = -9
+    verb = 'plover'
+;
+
+DefMagicTravel(Phuce, &phuce, 'phuce')
+    verb = 'phuce'
+    omegaps701_order = 10
+    omegaps701p_order = 10
+    execAction(c)
+    {
+        if (!global.newgame)
+            "Nothing happens. ";
+        else if (!knoll.seenit) {
+            "Nothing happens.  If that's an attempt at Elvish magic, 
+            it won't work at all until you've heard how to pronounce the word
+            correctly. ";
+        }
+        else
+            inherited();
+    }
+
+;
+
+DefMagicTravel(Smichel, &smichel, 'smichel'|'saint-michel')
+    verb = 'saint-michel'
+    omegaps701_order = 6
+    omegaps701p_order = 6
+    execAction(c)
+    {
+        if (!global.newgame) 
+            "Nothing happens. ";        
+        else if (!riseOverBay.seenit) 
+            "Nothing happens.  If that's an attempt at Elvish magic, 
+            it won't work at all until you've heard the correct intonation
+            for the words. ";        
+        else 
+            inherited();
+    }
+;
+
+
+DefMagicTravel(Thurb, &thurb, 'thurb')
+    omegapsical_order = 3
+    omegaps580_order = 3
+    omegaps701_order = 3
+    omegaps701p_order = 3
+    verb = 'thurb'
+;
+
+DefMagicTravel(Click, &click, 'click' (|('my'|'your'|)'heels'))
+    execAction(cmd)
+{
+    if(slippers.wornBy != gActor)
+    {  
+        "{I} click{s/ed} {my} heels but nothing happens. ";                 
+    }
+    else
+    {
+        slippers.clicked = true;
+        inherited(cmd);
+    }
+} 
+
+    noGoodHereMsg = "{I} click{s/ed} {my} heels and feel a slight tug, but nothing else happens. "
+    omegaps701_order = 19
+    omegaps701p_order = 21
+;
+
+
+DefMagicTravel(Pray, &pray, 'pray')
+    omegaps701_order = 7
+    omegaps701p_order = 7
+    verb = 'pray'
+;
+
+DefMagicTravel(Phleece, &phleece, 'phleece')
+    verb = 'phleece'
+    // we give this verb an 'omegapsical' order only in the 701+ point
+    // version.
+    omegaps701p_order = -12 //optional after 11
+    execAction(c)
+    {
+        if(!outerCourtyard.seenit) 
+            "Nothing happens.  If that's an attempt at Elvish magic, 
+            it won't work at all until you've heard how to pronounce the word
+            correctly. ";
+        
+        /* This will allow this code to compile before we've added this game701p object */
+        else if(defined(copperBracelet) && copperBracelet.wornBy == gActor)
+                inherited();           
+        
+        else if(gActor.isIn(outerCourtyard))
+        {
+            "Nothing happens.  It looks to me as if this word works
+            only if you're wearing a special bracelet!
+            I don't believe for a moment that the elves would
+            be careless enough to leave one lying around";
+            if(goldRing.seenspecial) 
+            {
+                ", or to let you follow them using the gold ring you found
+                on the Wumpus - they're wise to that trick. ";
+            }
+            else ". ";
+            "You'd be well advised to concentrate on exploring the 
+            garden. ";
+        }
+        else 
+            "Nothing happens. ";        
+    }
+
+;
+
+
+/* Define all the other special travel actions */
 DefSpecialTravel(Road, &road, 'road');    
 DefSpecialTravel(PantryVerb, &to_pantry, 'pantry');  
 DefSpecialTravel(Building, &building, 'building' | 'house');    
@@ -910,10 +1323,10 @@ DefSpecialTravel(Hole, &hole, 'hole');
 DefSpecialTravel(Depression, &depression, 'depression' | 'grate');
 DefSpecialTravel(Entrance, &entrance, 'entrance');
 DefSpecialTravel(CaveAction, &cave, 'cave');
-DefSpecialTravel(Y2Action, &y2, 'y2' |'at' 'y2' |'at_y2');
+
 DefSpecialTravel(Slab, &slab, 'slab');
 DefSpecialTravel(Bedquilt, &bedquilt, 'bedquilt');
-DefSpecialTravel(Plover, &plover, 'plover');
+
 DefSpecialTravel(Oriental, &oriental, 'oriental');
 DefSpecialTravel(Cavern, &cavern, 'cavern');
 DefSpecialTravel(Shell, &shell, 'shell');
@@ -924,43 +1337,29 @@ DefSpecialTravel(Secret, &secret, 'secret');
 DefSpecialTravel(Dark, &dark, 'dark');
 DefSpecialTravel(Slide, &slide, 'slide');
 DefSpecialTravel(Chimney, &chimney, 'chimney');
-DefSpecialTravel(Phuce, &phuce, 'phuce') darkTravelAllowed = true;
+
 DefSpecialTravel(Thunder, &thunder, 'thunder');
-DefSpecialTravel(Smichel, &smichel, 'smichel'|'saint-michel');
+
 DefSpecialTravel(GateAction, &gate, 'gate');
-DefSpecialTravel(Phleece, &phleece, 'phleece');
-DefSpecialTravel(Pray, &pray, 'pray');
+
+
 DefSpecialTravel(Bridge, &bridge, 'bridge');
 DefSpecialTravel(Altar, &altar, 'altar');
 DefSpecialTravel(Balcony, &balcony, 'balcony');
 DefSpecialTravel(Corridor, &corridor, 'corridor');
-DefSpecialTravel(Warm, &warm, 'warm');
-DefSpecialTravel(Thurb, &thurb, 'thurb');
 
-DefSpecialTravel(Click, &click, 'click' (|('my'|'your'|)'heels'))
-    execAction(cmd)
-{
-    if(slippers.wornBy != gActor)
-    {  
-        "{I} click{s/ed} {my} heels but nothing happens. ";                 
-    }
-    else
-    {
-        slippers.clicked = true;
-        inherited(cmd);
-    }
-}    
-noGoodHereMsg = "{I} click{s/ed} {my} heels and feel a slight tug, but nothing else happens. "
-    omegaps701_order = 19
-    omegaps701p_order = 21
-;
+DefSpecialTravel(Warm, &warm, 'warm') ;
+
                  
 
 // THESE WILL NEED FURTHER WORK
 DefSpecialTravel(AnaVerb, &ana, 'ana');
 DefSpecialTravel(KataVerb, &kata, 'kata');
 
-
+modify VerbRule(MoveWith)
+    ('move' | 'pull') singleDobj 'with' singleIobj
+    :
+;
 
 
 

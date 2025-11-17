@@ -1721,13 +1721,18 @@ persianRug:Treasure, Platform 'Persian rug; fine finest' @inSecretCanyon
     initSpecialDesc = "The dragon is sprawled out on the Persian rug. "
     useInitSpecialDesc = dragon.isIn(self)
     
+    specialDesc = "The Persian rug is floating in mid-air. "
+    useSpecialDesc = isActive
+    
     isFixed = nil
     isActive = nil
     mass = 3
     basis = 3
     olddepositpoints = 14
     targloc = insideBuilding
-    
+    isVehicle = isActive
+    isHuge = true
+    isdroploc = true
     
     softfloor = location && location.softfloor
     
@@ -1737,7 +1742,7 @@ persianRug:Treasure, Platform 'Persian rug; fine finest' @inSecretCanyon
         {
             if(dragon.isIn(self))                
                 "{I}'ll need to get the dragon to move first! ";
-            else if(self.isActive)
+            else if(isActive)
                 "The rug floats away from {me} every time {i} try to grab it.";
             else if(listableContents.length == 1)
             {
@@ -1749,7 +1754,76 @@ persianRug:Treasure, Platform 'Persian rug; fine finest' @inSecretCanyon
         }
     }
     
+    /* If we purloin for testing purpoases, we presumably don't want the dragon with it. */
+    dobjFor(Purloin)
+    {
+        action()
+        {
+            if(dragon.isIn(self))
+                dragon.moveInto(location);
+            inherited();
+        }
+    }
+    
+    verifyDragon()
+    {
+        if(dragon.isIn(self))
+            illogicalNow('That would be unwise. {I}\'d better get the dragon to move first. ');
+    }
+    
+    verifyDobjBoard()
+    {
+        verifyDragon();
+        inherited();
+    }
+    verifyDobjStandOn()
+    {
+        verifyDragon();
+        inherited();
+    }
+    verifyDobjSitOn()
+    {
+        verifyDragon();
+        inherited();
+    }
+    verifyDobjLieOn()
+    {
+        verifyDragon();
+        inherited();
+    }
+    
+    verifyIobj(PutOn)
+    {
+        verifyDragon();
+        inherited();
+    }
+    
+    dobjFor(Ride) asDobjFor(Board)
+    
+    proper = nil    
 ;
+
+RemapCmd 'fly (|persian) rug'
+    execute()
+    {
+        if(!gActor.canSee(persianRug))
+            "I see no rug here. ";
+        else if(!global.game580)
+            "Only wizards can do that. ";
+        else if(!persianRug.isActive)
+            "It doesn't look ready to fly. ";
+        else if(!gActor.isIn(persianRug))
+        {
+            if(tryImplicitAction(Board, persianRug))
+                "(first getting on the rug)\nJust say which way you want to go. ";
+            else
+                "That doesn't seem possible right now. ";
+        }
+        else
+            "Just say which way you want to go. ";            
+    }
+;
+
 
 /* 63 */
 rareSpices: Treasure 'rare spices;exotic;spice;them' @inChamberOfBoulders
@@ -1849,14 +1923,6 @@ barsOfSilver: Treasure 'bars of silver;;;them' @lowNSPassage
 ;
 
 
-glassVial: Thing 'glass vial'
-;
-
-
-
-flask: Thing;
-
-
 turtle: Actor 'Darwin the Tortoise;large;turtle'
     "On the tortoise's back is inscribed, <q>I'm Darwin - ride me!</q> "
     
@@ -1883,8 +1949,6 @@ turtle: Actor 'Darwin the Tortoise;large;turtle'
 goldCoin: Coin 'gold coin'
 ;
 
-bag:Coin 'bag' 
-;
 
 class FreshBatteries: Thing 'sets of fresh batteries;;;them'
     "They look like ordinary batteries.  A sepulchral
@@ -2041,5 +2105,4 @@ brokenPendant: Thing
 transindectionKey: Thing;
 
 
-mithrilRing: Thing;
 
