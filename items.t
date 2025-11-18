@@ -63,6 +63,7 @@ class LightSource: object
 SpecialVerb 'pick' 'take' @CanPick;
 
 class PendantItem: Thing
+    classcount(actor) { return actor.allContents.countWhich({o: o.ofKind(PendantItem)}); }
 ;
 
 class LiquidContainer: Thing    

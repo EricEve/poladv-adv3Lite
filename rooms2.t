@@ -83,6 +83,8 @@ class IceTunnel: NoNPC, DarkRoom 'Ice Tunnels'
     }
      game550 = true
     
+    mazeskip = skipIceMaze
+    
 //    myhints = [ Icehint ]
 ;
 
@@ -1283,6 +1285,7 @@ catacombs: Room 'Catacombs'
             'down', 'south', 'north', 'north'].element(roomnumber)>>. ";
     }
     
+    mazeskip = catacombsMazeSkip
     
     
 //    back = {
@@ -1298,7 +1301,9 @@ catacombs: Room 'Catacombs'
     notImportantMsg = 'You\'ll have to say which way you want to go. '
 ;
     
-
+catacombsMazeSkip: MazeSkipConnector
+    destList = [westAudience, fakeY2]
+;
 
 westAudience: NoNPC, Room 'West Audience Hall'
         "You are standing at the west end of the royal
@@ -2238,6 +2243,10 @@ slideBase: NoNPC, DarkRoom 'Bottom of Icy Slide'
     northwest = Ice_4             
     
 //    exithints = [ Ice_Room, &north ]
+;
+
+skipIceMaze: MazeSkipConnector
+    desrList = [Ice_14, iceCaveExit, slideBase]
 ;
 
 Ice_1: IceTunnel 

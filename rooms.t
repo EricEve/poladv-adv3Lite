@@ -8,6 +8,7 @@
 
 class AlikeMazeRoom: DarkRoom 'Maze of Twisty Little Passages, All Alike'
     "{I} {am} in a maze of twisty little passages, all alike. "
+    mazeskip = alikeMazeSkip
 ;
 
 /*
@@ -15,6 +16,27 @@ class AlikeMazeRoom: DarkRoom 'Maze of Twisty Little Passages, All Alike'
  */
 class DeadEndRoom: DarkRoom 'At a Dead End'
     "{I} {have} reached a dead end. "
+    
+;
+
+/* A class to allow players who hate mazes to escape the tedium of having to navigate them. */
+class MazeSkipConnector: VarDest, TravelConnector
+    destList = []
+    destIdx = 1
+    calcDest()
+    {
+        if(destIdx > 0)
+            return destList.element(destIdx);
+        return nil;    
+    }
+    travelDesc()
+    {
+        "{I} {am} rapidly transported through the maze until {i} arrive{s/d} at...\b";
+        if(destIdx < destList.length)
+            destIdx++;
+        else
+            destIdx = 1;
+    }
     
 ;
 
@@ -810,14 +832,14 @@ atSlitInStreambed: OutsideRoom 'At Slit in Streambed'
     bed = outsideGrate
     
     
-    down: TravelConnector
+    down: TravelConnector -> edgeOfPool
     {
         canTravelerPass(traveler) { return global.closed; }
-        explainTravelBarrier(traveler) { "{I} {don't fit} through a two-inch slit!"; }
+        explainTravelBarrier(traveler, connector) { "{I} {don't fit} through a two-inch slit!"; }
         
         isConnectorListed = (global.closed)
         
-//        destination = outsideGrate
+        travelDesc() { plungeToPond(); } // see endgame.t
     }
 ;
 
@@ -2336,6 +2358,10 @@ atWestEndOfHallOfMists: DarkRoom 'At West End of the Hall of Mists'
     }
 ;
 
+alikeMazeSkip:MazeSkipConnector
+    destList = [atBrinkOfPit, deadEnd13, atWestEndOfHallOfMists]
+;
+
 alikeMaze1: AlikeMazeRoom
     up = atWestEndOfHallOfMists
     north = alikeMaze1
@@ -2465,6 +2491,7 @@ atBrinkOfPit: DarkRoom 'At Brink of Pit'
     south = deadEnd6
     north = alikeMaze12
     east = alikeMaze13
+    mazeskip = alikeMazeSkip
     
     climb = orangeColumn
     
@@ -2702,7 +2729,6 @@ atWestEndOfLongHall: DarkRoom 'At West End of Long Hall'
     east = atEastEndOfLongHall
     north = crossover
     south = differentMaze1
-;
 ;
 
 
@@ -3918,9 +3944,9 @@ inAnteroom: DarkRoom 'In Anteroom'
     "You are in an anteroom leading to a large
         passage to the east.  Small passages go west and up.
         The remnants of recent digging are evident.\b
-    A sign in midair here says \"Cave under
+    A sign in midair here says <q>Cave under
         construction beyond this point. Proceed at own risk.
-        [Witt Construction Company]\""
+        [Witt Construction Company]</q>"
     
     up = atComplexJunction
     west = inBedquilt
@@ -3936,14 +3962,19 @@ inAnteroom: DarkRoom 'In Anteroom'
 ;
 
 class DifferentMazeRoom: DarkRoom, NoNPC
-    desc = "{I} {am} in a <roomTitle.toLower()>>. "
+    desc = "{I} {am} in a <<roomTitle.toLower()>>. "
+    mazeskip = differentMazeSkip
+;
+
+differentMazeSkip: MazeSkipConnector
+    destList = [deadEnd14, atWestEndOfLongHall]
 ;
 
 DifferentMazeRoom template 'roomTitle';
 
 /*
- * This maze is off limits to NPC's again, in keeping with the 551-point
- * version.  (And because it's hard for NPC's to get out of this maze once
+ * This maze is off limits to NPCs again, in keeping with the 551-point
+ * version.  (And because it's hard for NPCs to get out of this maze once
  * they've entered it.)
  */
 /* 107 */
@@ -4256,6 +4287,7 @@ deadEnd13: DeadEndRoom
 
     southeast = alikeMaze13
     out asExit(southeast)
+    mazeskip = alikeMazeSkip
     
     travelerEntering(actor, origin)
     {
@@ -5163,6 +5195,7 @@ deadEnd14: DeadEndRoom, NoNPC 'At a Dead End, in Front of a Massive Vending Mach
 
     north = differentMaze2
     out asExit(north)
+    mazeskip = differentMazeSkip
 ;
 
 + vendingMachine:Fixture 'vending machine; massive slot'
@@ -5206,12 +5239,12 @@ deadEnd14: DeadEndRoom, NoNPC 'At a Dead End, in Front of a Massive Vending Mach
 ;
 
 pirateMessage: Fixture 'message in the dust;scrawled flowery;scrawl writing script'
-    "The message reads, \"This is not the maze where the
-        pirate leaves his treasure chest.\""
+    "The message reads, <q>This is not the maze where the
+        pirate leaves his treasure chest.</q>"
     
     readDesc = desc
     
-    location = nil  // moved to Dead_End_14 when pirate spotted
+    location = nil  // moved to deadEnd14 when pirate spotted
 ;
 
 

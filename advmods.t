@@ -208,6 +208,8 @@ global: object
     numactwords701 = 0
     numactwords701p = 0
     
+    mazeskip = nil // have we enable the mazeskip comamand?
+    
 ;
 
 
@@ -1856,3 +1858,6 @@ transient specialRestart: object
     OCseenit = nil
     blue1loc = nil   
 ;  
+
+P() { "<.p>";}
+I() {"\t"; }

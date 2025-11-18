@@ -17,16 +17,6 @@
  * of the award is stored in "global.closurepoints").
  */
 
-
-
-//endGameCheck: InitObject
-//    execute()
-//    {
-//        new PromptDaemon(self, &checkForClosing);
-//    }
-//     
-//    
-    
     
     
 checkForClosing()
@@ -215,7 +205,7 @@ startClosing(clos)
         // reappears with the Wumpus if cave closure is cancelled. 
 //        if((gold_ring.location = Wumpus.location) and not gold_ring.moved)
 //            gold_ring.moveInto(Wumpus);
-//        Wumpus.moveInto(nil);       // nuke the Wumpus (he must be
+        wumpus.moveInto(nil);       // nuke the Wumpus (he must be
                                     // dead at this stage because we've
                                     // found the gold ring.)
 //        Dog.closeloc = Dog.location;
@@ -505,23 +495,7 @@ atNEEnd: Room, NoNPC 'At NE End'
         }
     }
 
-    hasfloor = true // DJP
-//    
-//    
-//    {
-//        if(global.newgame) {
-//            Phone_Booth2.doEnter(global.travelActor);
-//            return nil;
-//        }
-//        else pass in;
-//    }
-//    north =  {
-//        if(global.newgame) {
-//            Phone_Booth2.doEnter(global.travelActor);
-//            return nil;
-//        }
-//        else pass north;
-//    }
+    
     southwest = atSWEnd
     
 ;
@@ -680,13 +654,6 @@ snakepit: Fixture 'pit of snakes; fierce green snake'
     lookInMsg = 'The pit is full of fierce green snakes. '
 ;
 
-cylindricalRoom: Room 'Cylindrical Room'
-    "You are in a small cylindrical room with very smooth
-        walls and a flat floor and ceiling.  There are no
-        exits visible anywhere." 
-    
-//    noExits = 'none visible'
-;
 
 phonyBooth2: Distant 'phone booth; telephone' @atSWEnd
     "You can't examine it closely from here. "    
@@ -895,4 +862,760 @@ boobyCatch: Fixture 'mechanism;odd-looking strange ;catch'
 win()
 {
     finishGameMsg(ftVictory, [finishOptionUndo, finishOptionFullScore]);
+}
+
+
+cylindricalRoom: Room 'Cylindrical Room'
+    "You are in a small cylindrical room with very smooth
+        walls and a flat floor and ceiling.  There are no
+        exits visible anywhere." 
+    
+    noExits = 'absolutely none whatsoever'
+    
+    wordcount = 0
+    
+    roomAfterAction()
+    {
+        if(gActionIs(SayAction))
+        {
+            "If you want to use a magic word, just type it in! ";
+            exit;
+        }
+        
+        if((gAction.ofKind(MagicWord) 
+#ifdef DEBUG
+            || (gActionIs(GoOut))
+#endif
+            )
+           && wordtest(gAction))
+            exit;    
+    }
+;
+
+/* Resets words in the cylindrical room. */
+resetwords()
+{   local i;
+    for(i = firstObj(MagicWord); i != nil; i = nextObj(i, MagicWord)) 
+    {
+        i.tused = -2;
+        i.endsaid = nil;
+    }
+    cylindricalRoom.wordcount = 0;
+}
+
+/*
+ *  wordtest(word);
+ *  Whenever a magic word is said in the Cylindrical Room, the code
+ *  checks the word's omegapsical_order.  If it is non-nil, it looks
+ *  at the preceding word's endsaid and tused properties to see if the
+ *  word was used in the proper sequence.  If so, it increments the
+ *  wordcount value. Otherwise, it resets everything.  If the wordcount
+ *  value is equal to the number of words in the game (global.numwords)
+ *  then exit!  Otherwise, continue.  This will need alteration in some
+ *  extensions of the 550-point version, such as the 580-point version.
+ */
+wordtest(word)
+{
+    local numprop,maxcount;
+    // Decide which properties to use for the word count.
+    // In the 701+ point mode, we use the 701+ numbering only if the
+    // steel door was unlocked.
+    if (defined(transRoomDoor) && global.game701p && transRoomDoor.isunlocked)     
+    {
+        numprop = &omegaps701p_order;
+        maxcount = &numactwords701p;
+    }
+    
+    else if (global.game701) 
+    {
+        numprop = &omegaps701_order;
+        maxcount = &numactwords701;
+    }
+    else if (global.game580) 
+    {
+        numprop = &omegaps580_order;
+        maxcount = &numactwords580;
+    }
+    else {
+        numprop = &omegapsical_order;
+        maxcount = &numactwords;
+    }
+    
+    if((word.(numprop) == nil) && (word != GoOut)) 
+    {
+        "(You don't need to use that word here - undoing one command.)\n";
+        
+        if (undo())
+        {
+            gRoom.lookAroundWithin();
+            //            scoreStatus(global.score, global.turnsofar);
+        }
+        else
+            "No more undo information is available. ";
+        
+        abort;
+    }
+    else if(word.(numprop) == 1) 
+    {
+        resetwords();  // Starting over.
+        word.endsaid = true;
+        word.tused = gTurns;
+        cylindricalRoom.wordcount = 1;
+        "Ok.\n";
+    }
+    // prevent optional words from being used more than once. 
+    else if(word.endsaid) 
+    {
+        "You've already used that word. You'd best start over. ";
+    }       
+    else if (word == GoOut)
+        cylindricalRoom.wordcount = global.(maxcount); 
+    else 
+   { 
+        local i, prwd; // Find the previous word in order and store
+                      // it in prwd.
+        for(i = firstObj(MagicWord); i != nil; i = nextObj(i, MagicWord)) 
+    {
+            if((i.(numprop) == word.(numprop)-1) && (word.(numprop) > 0)) 
+                prwd = i;
+            // cater for optional words, provided they have not been
+            // used previously
+            else if((i.(numprop) = -word.(numprop) -1) &&
+            (word.(numprop) < 0)) 
+                prwd = i;
+        }
+        if(prwd.endsaid && (prwd.tused == gTurns - 1)) {
+            word.endsaid = true;
+            word.tused = gTurns;
+            if(word.(numprop) > 0) cylindricalRoom.wordcount++;
+            // if word.(numprop) is negative, the word is optional and we
+            // pretend that the previous word was issued in this turn
+            else prwd.tused = gTurns;
+            "Ok.\n";
+        }
+        else resetwords(); // skipped prwd, or waited too long.
+    }
+    if(cylindricalRoom.wordcount == global.(maxcount)) { 
+        local i;
+        global.dont_rescind = true; // don't rescind deposit points.
+        // suppress all the extra moveInto code for efficiency
+        global.extendMoveInto = nil;
+
+        /* move every wrongly-deposited treasure into the Troll's treasure 
+         * room, and move all other items in the surface areas to the
+         * treasury (which is not a game location). */
+        global.wrongtreasloc = 0;
+        global.trolltolls = 0;
+        for(i = firstObj(Thing); i != nil; i = nextObj(i, Thing)) {
+            /* look for treasure items which aren't correctly deposited
+               (plus discharged pendants in non-nil locations other than
+               the player) 
+            */
+            if ((i.ofKind(Treasure) && !i.awardedpointsfordepositing) 
+                || (i == tarnishedPendant) || (i == dullPendant)) 
+            {
+                // exclude the charged pendants if the discharged pendants
+                // exist
+                if ((i == pendant) && (tarnishedPendant.location != nil))
+                    continue;
+                if ((i == pendant2) && (dullPendant.location != nil))
+                    continue; 
+                // exclude the discharged pendants if they don't exist,
+                // or if they're in the player's possession
+                if ((i == tarnishedPendant) || (i == dullPendant)) {
+                    if ((i.location == nil) || i.isIn(gPlayerChar))
+                        continue;
+                }
+
+                // exclude deleted treasures, or not-yet-found treasures
+                // in the 701+ point extensions.
+                if (i.deleted || (i.bonustreasure && !i.bonusFound))
+                    continue;
+                if (i.isIn(trollTreasure))
+                    global.trolltolls++;
+                else {
+                    i.moveInto(trollTreasure);
+                }
+                global.wrongtreasloc++; 
+            }
+            if (i.isFixed) continue;
+            if(i.location.ofKind(Outside) || (i.location == safe)) 
+                i.moveInto(nil);
+        }
+        // turn on the moveInto extensions in case we still need them
+        global.extendMoveInto = true;
+        /* In 701-point game, move keys into pantry (red herring) */
+        if(global.game701) {
+            smallKey.moveInto(pantry);
+            setOfKeys.moveInto(pantry);
+        }
+        P(); I(); "<i>Foof!</i>"; P();
+        gPlayerChar.travelVia(atEndOfRoad);
+        global.dont_rescind = nil; // in case pendants are dropped
+
+        addToScore(global.escapepoints, 'escaping from the cylinder room');
+    }
+    else if (cylindricalRoom.wordcount == 0) "Nothing happens.\n";
+    // This should only happen if something resets the count.
+
+    return true; // Don't finish the normal action routine, since it
+                 // will probably print "Nothing happens" again,
+                 // or do something even more inappropriate.
+}
+
+edgeOfPool: Room 'Edge of Pool'
+    desc()
+    {
+        "You find yourself sitting on the edge of a pool of water in
+         a vast chamber lit by dozens of flaring torches. ";
+        
+        if(wumpi.phase > 0 && greenUpperTransRoom.isdotroom)
+            horror();
+        else
+            hurrah();          
+        
+        win();
+    }
+    
+    noExits = 'None needed'
+;
+
+plungeToPond()
+{
+    local i;
+    // Look for any more treasures which should go to the Troll.
+    for(i = firstObj(Thing); i != nil; i = nextObj(i, Thing)) 
+    {
+        if ((i.ofKind(Treasure) && !i.awardedpointsfordepositing) ||         
+            (i is in (tarnishedPendant, dullPendant))) 
+        {
+            // exclude treasures already in the possession of the
+            // Troll
+            if (i.isIn(trollTreasure)) 
+                continue;
+            // exclude the charged pendants if the discharged pendants
+            // exist
+            if ((i == pendant) && (tarnishedPendant.location != nil))
+                continue;
+            if ((i == pendant2) && (dullPendant.location != nil))
+                continue; 
+            // exclude the discharged pendants if they don't exist,
+            // or if they're in the player's possession
+            if ((i == tarnishedPendant) || (i == dullPendant)) {
+                if ((i.location == nil) || i.isIn(gPlayerChar))
+                    continue;
+            }
+            // exclude deleted treasures, or not-yet-found treasures
+            // in the 701+ point game.
+            if (i.deleted || (i.bonustreasure && !i.bonusFound))
+                continue;
+            // special handling for discharged pendants
+            if (i == pendant) {
+                if (tarnishedPendant.isIn(gPlayerChar))
+                    continue;
+            }
+            else if (i == pendant2) {
+                if (dullPendant.isIn(gPlayerChar))
+                    continue;
+            }
+            else { 
+                global.wrongtreasloc++; 
+                i.moveInto(trollTreasure);
+            }
+        }
+    }
+    
+    
+    "You plunge into the stream and are carried down into total blackness.\n";
+    P();
+    "Deeper";
+    "\n    \tand";
+    "\n    \t\tdeeper";
+    "\n    \t\t\tyou";
+    "\n    \t\t\t\tgo,";
+    "\n    \t\t\t\t\ \ down";
+    "\n    \t\t\t\t\ \ \ into";
+    "\n    \t\t\t\t\ \ \ the";
+    "\n    \t\t\t\t\ \ very";
+    "\n    \t\t\t\tbowels";
+    "\n    \t\t\tof";
+    "\n    \t\tthe";
+    "\n    \tearth,";
+    "\n until";
+    "\n your";
+    "\n     \tlungs";
+    "\n     \t\tare";
+    "\n     \t\t\taching";
+    "\n     \t\t\t\twith";
+    "\n     \t\t\t\t\ \ the";
+    "\n     \t\t\t\t\tneed";
+    "\n     \t\t\t\t\t\ \ for";
+    "\n     \t\t\t\t\t\ \ \ fresh";
+    "\n     \t\t\t\t\t\ \ \ air.";
+    "\n     \t\t\t\t\t\ \ \ Suddenly,";
+    "\n     \t\t\t\t\t\ \ with";
+    "\n     \t\t\t\t\t\ a";
+    "\n     \t\t\t\t\t\ \ violent";
+    "\n     \t\t\t\t\t<i>splash!!</i>";
+    P();
+    
+}
+
+hurrah()
+{
+    addToScore(global.finalepoints, 'winning');
+    if (global.game701)
+        "Despite your dramatic entrance, your presence is not immediately
+        noticed - as if everyone is too preoccupied with what they are
+        doing.  You take advantage of this to have a good look round. ";
+    P();
+    "The floor is covered with thick layers of precious Persian rugs!";
+    P();
+    if(global.game701)
+        "Rare coins, bars of silver, lumps of gold and platinum and gold
+        rings are strewn carelessly about!";
+    else
+        "Rare coins, bars of silver, and lumps of gold and platinum are
+        strewn carelessly about!";
+    P();
+    "There are diamonds, rubies, sapphires, emeralds, opals, pearls, and
+    fabulous sculptures and ornaments carved out of jade and imperishable
+    crystal resting on display shelves, along with rare Ming vases and
+    ancient Indian turquoise beads!";
+    if(global.game580) {
+        P();
+        "Sitting on one display shelf are a collection of rare stamps, and 
+         a disk labelled \"Adventure Source Code\"!";
+    }
+    if (global.game701) {
+        P();
+        "A large pile of crystal balls is stacked against one wall.  You
+        look into a few of them, fascinated by the scenes they show.  In
+        one, you see the Troll's treasure chamber, lit by an orange glow
+        and stacked with priceless items of all descriptions";
+        if (global.wrongtreasloc > 0) {
+            ": "; P();
+            
+            P();
+        }
+        else
+           ". ";
+        if (global.wrongtreasloc == 1)
+            "(You notice that the treasure which
+            you failed to deposit correctly has gone there instead of
+            here, losing you points.";
+        else if (global.wrongtreasloc > 1)
+            "(You notice that the <<global.wrongtreasloc>> treasures which
+            you failed to deposit correctly have all gone there instead of
+            here, losing you points.";
+        if (global.wrongtreasloc > 0) {
+            local totalspend = global.trolltolls + global.vendingtreasures;
+            if (totalspend == 1) {
+                if(global.trolltolls)
+                    " This includes the treasure you paid to the Troll.) ";
+                else
+                    " This includes the coins you used in the Vending 
+                    Machine.) ";
+            }
+            else if (totalspend > 1) {
+                " This includes the <<totalspend>> treasures which were used
+                for payments. ";
+            }
+            else
+                ") ";
+        }
+        "Another ball shows a strange ruined city, illuminated
+        by three moons and the golden glow of an aurora which fills the 
+        entire sky!  A third ball shows a large circular room, lit by a
+        dim glow - and full of sleeping Wumpi. ";
+    }
+    P();
+    "A flotilla of ruby-encrusted toy boats is floating in the pool of
+    water beside you!";
+    P();
+    "A network of golden chains supports a fantastic Iridium crown!";
+    P();
+    "There is a display case on the wall filled with a fantastic selection
+    of magical swords, which are singing \"Hail to the Chief\" in perfect
+    pitch and rhythm!";
+    if (global.game701) {
+        P();
+        "A second case contains a collection of about ten elven swords, all
+        gleaming like the one you took from the anvil!
+        A third, much larger case holds over 130 elven crowns, all
+        made of gold or mithril silver and encrusted with valuable 
+        stones of all descriptions!  ";
+        if (global.game701p) {
+            "A plaque, affixed to the front of the cabinet, states that 114
+            of the crowns were found in a recently-discovered burial vault.
+            A further two vaults are believed to exist, but have not yet
+            been excavated. ";
+            P();
+        }
+        "The Mountain King is searching the case, muttering
+        to himself.  You hear him say: \"I hope he realizes that the
+        treasures go to the Troll when they're not left in a 'safe' 
+        place.\"  He then grabs one of the crystal balls and looks into it. ";
+        if (crown.awardedpointsfordepositing)
+            "\"Hmmm.  I can't see it in the Troll's treasure chamber.\"  He
+            looks in the case again and says: \"Ah yes! Here it is! \" He 
+            retrieves his rightful property from the case, puts it on and 
+            starts adjusting it in front of a mirror.  \"Hmmm.  A little 
+            further to the left, perhaps ... \" ";
+        else
+            "\"Oh no! The Troll has it.  No use asking for it - he'd want
+            ten crowns in return.\"  He then starts trying on different 
+            crowns.  \"Hmmm.  Too small.  No, too large ... \"  ";
+
+        P();
+        "Off to one side there is a large closet containing silken cloaks,
+        ruby slippers, and many other priceless articles of clothing! ";
+    }
+    P();
+    "There are a dozen friendly little dwarves in the room, displaying
+    their talents by deftly juggling hundreds of golden eggs!";
+    P();
+    "A large troll, a gigantic ogre, and a bearded pirate are tossing
+    knives, axes, and clubs back and forth in a friendly demonstration
+    of martial skill!";
+    P();
+    "A horde of cheerful little gooseberry goblins are performing
+    talented acrobatics to an appreciative audience composed of a dragon,
+    a large green snake, a cute little bird (which is sitting, unmolested,
+    on the snake's head), a peaceful basilisk, and a large Arabian Djinn.";
+    if(global.game701) {
+        // Deleted reference to the Wumpus - they don't belong at Red level.
+        P();
+        "A Gnome is playing ancient and valuable musical
+        instruments, filling the air with beautiful music.  Nearby a large
+        black dog is sleeping peacefully. ";
+    }
+    P();
+    "Everyone turns and sees you, and lets out a heart-warming cheer
+    of welcome! ";
+    if(PendantItem.classcount(gPlayerChar) > 0) {
+        local pendantword;
+        if(PendantItem.classcount(gPlayerChar) == 1) {
+            pendantword = 'pendant';
+//            pendantpronoun = 'it';
+        }
+        else {
+            pendantword = 'pendants';
+//            pendantpronoun = 'them';
+        }
+        "Then the Mountain King spots your Transindection <<pendantword>>,
+        and shouts <q>Where did you find the <<pendantword>>?</q>  You stutter
+        and stammer, but then manage to regain your composure and tell the King
+        what you found. ";
+    }
+    else if ((global.game701p && transRoomDoor.isunlocked) && 
+    (PendantItem.classcount(gPlayerChar) == 0)) {
+        "You see a flicker of consternation on the face of the Mountain
+        King, and once again he looks into the crystal ball to spy upon the
+        Troll's treasure chamber.  He turns to the Troll and shouts <q>How did 
+        you come by the Transindection pendants?</q>  The Troll points to 
+        you, and the King seems to know exactly what he means.  He asks you, 
+        more quietly this time:  <q>Where did you find the pendants?</q>  You 
+        tell him everything. ";
+    }
+    if (global.game701p && transRoomDoor.isunlocked) {
+        "When he learns that the Upper Transindection 
+        Chambers were working, he looks very worried indeed";
+        if(greenUpperTransRoom.isdotroom)
+            if(greenMaintenanceRoom.seen)
+                ", but when you tell him how you used the Topaz to enter the
+                Maintenance Rooms, he congratulates you and says
+                <q>Well done - Eldrand may have failed, but we can now complete
+                his mission in complete safety!</q> ";
+            // added because it is now possible to get here without
+            // entering the Maintenance Room.  However, the means to do so
+            // has been obtained...
+            else
+                ", but when you tell him how you got hold of the 
+                Eldrand-Fitzgerald Topaz, he congratulates you and says
+                <q>Well done!  I'm almost certain that we can get into the
+                Maintenance rooms now.  We'll be able to complete
+                Eldrand's mission in complete safety!</q> ";
+        else
+            ", but when you 
+            reassure him that you have disabled the Chambers, he congratulates 
+            you! ";
+        "Everyone lets out a loud <q>Hurrah!</q> ";
+
+        P();
+
+        "The rest of your day is occupied with discreet Transindection
+        tours, conducted with the aid of your pendants and gold rings
+        worn by your companions.  Rods are spun near various plaques,
+        the Zarkalon tower is visited and the transmutation of lead to 
+        platinum is demonstrated.  Blue-level display boards are read, and
+        plans are made for the excavation of the remaining burial chambers at 
+        Red level. But that's the start of a much longer story ... ";
+    }
+    P();if (global.game701)
+        "Despite your dramatic entrance, your presence is not immediately
+        noticed - as if everyone is too preoccupied with what they are
+        doing.  You take advantage of this to have a good look round. ";
+    P();
+    "The floor is covered with thick layers of precious Persian rugs!";
+    P();
+    if(global.game701)
+        "Rare coins, bars of silver, lumps of gold and platinum and gold
+        rings are strewn carelessly about!";
+    else
+        "Rare coins, bars of silver, and lumps of gold and platinum are
+        strewn carelessly about!";
+    P();
+    "There are diamonds, rubies, sapphires, emeralds, opals, pearls, and
+    fabulous sculptures and ornaments carved out of jade and imperishable
+    crystal resting on display shelves, along with rare Ming vases and
+    ancient Indian turquoise beads!";
+    if(global.game580) {
+        P();
+        "Sitting on one display shelf are a collection of rare stamps, and 
+         a disk labelled <q>Adventure Source Code</q>!";
+    }
+    if (global.game701) {
+        P();
+        "A large pile of crystal balls is stacked against one wall.  You
+        look into a few of them, fascinated by the scenes they show.  In
+        one, you see the Troll's treasure chamber, lit by an orange glow
+        and stacked with priceless items of all descriptions";
+        if (global.wrongtreasloc > 0) {
+            trollTreasure.lookAroundWithin();            
+            P();
+        }
+        else
+           ". ";
+        if (global.wrongtreasloc == 1)
+            "(You notice that the treasure which
+            you failed to deposit correctly has gone there instead of
+            here, losing you points.";
+        else if (global.wrongtreasloc > 1)
+            "(You notice that the <<global.wrongtreasloc>> treasures which
+            you failed to deposit correctly have all gone there instead of
+            here, losing you points.";
+        if (global.wrongtreasloc > 0) {
+            local totalspend = global.trolltolls + global.vendingtreasures;
+            if (totalspend == 1) {
+                if(global.trolltolls)
+                    " This includes the treasure you paid to the Troll.) ";
+                else
+                    " This includes the coins you used in the Vending 
+                    Machine.) ";
+            }
+            else if (totalspend > 1) {
+                " This includes the <<totalspend>> treasures which were used
+                for payments. ";
+            }
+            else
+                ") ";
+        }
+        "Another ball shows a strange ruined city, illuminated
+        by three moons and the golden glow of an aurora which fills the 
+        entire sky!  A third ball shows a large circular room, lit by a
+        dim glow - and full of sleeping Wumpi. ";
+    }
+    P();
+    "A flotilla of ruby-encrusted toy boats is floating in the pool of
+    water beside you!";
+    P();
+    "A network of golden chains supports a fantastic Iridium crown!";
+    P();
+    "There is a display case on the wall filled with a fantastic selection
+    of magical swords, which are singing \"Hail to the Chief\" in perfect
+    pitch and rhythm!";
+    if (global.game701) {
+        P();
+        "A second case contains a collection of about ten elven swords, all
+        gleaming like the one you took from the anvil!
+        A third, much larger case holds over 130 elven crowns, all
+        made of gold or mithril silver and encrusted with valuable 
+        stones of all descriptions!  ";
+        if (global.game701p) {
+            "A plaque, affixed to the front of the cabinet, states that 114
+            of the crowns were found in a recently-discovered burial vault.
+            A further two vaults are believed to exist, but have not yet
+            been excavated. ";
+            P();
+        }
+        "The Mountain King is searching the case, muttering
+        to himself.  You hear him say: \"I hope he realizes that the
+        treasures go to the Troll when they're not left in a 'safe' 
+        place.\"  He then grabs one of the crystal balls and looks into it. ";
+        if (crown.awardedpointsfordepositing)
+            "\"Hmmm.  I can't see it in the Troll's treasure chamber.\"  He
+            looks in the case again and says: \"Ah yes! Here it is! \" He 
+            retrieves his rightful property from the case, puts it on and 
+            starts adjusting it in front of a mirror.  \"Hmmm.  A little 
+            further to the left, perhaps ... \" ";
+        else
+            "\"Oh no! The Troll has it.  No use asking for it - he'd want
+            ten crowns in return.\"  He then starts trying on different 
+            crowns.  \"Hmmm.  Too small.  No, too large ... \"  ";
+
+        P();
+        "Off to one side there is a large closet containing silken cloaks,
+        ruby slippers, and many other priceless articles of clothing! ";
+    }
+    P();
+    "There are a dozen friendly little dwarves in the room, displaying
+    their talents by deftly juggling hundreds of golden eggs!";
+    P();
+    "A large troll, a gigantic ogre, and a bearded pirate are tossing
+    knives, axes, and clubs back and forth in a friendly demonstration
+    of martial skill!";
+    P();
+    "A horde of cheerful little gooseberry goblins are performing
+    talented acrobatics to an appreciative audience composed of a dragon,
+    a large green snake, a cute little bird (which is sitting, unmolested,
+    on the snake's head), a peaceful basilisk, and a large Arabian Djinn.";
+    if(global.game701) {
+        // Deleted reference to the Wumpus - they don't belong at Red level.
+        P();
+        "A Gnome is playing ancient and valuable musical
+        instruments, filling the air with beautiful music.  Nearby a large
+        black dog is sleeping peacefully. ";
+    }
+    P();
+    "Everyone turns and sees you, and lets out a heart-warming cheer
+    of welcome! ";
+    if(PendantItem.classcount(gPlayerChar) > 0) {
+        local pendantword;
+        if(PendantItem.classcount(gPlayerChar) == 1) {
+            pendantword = 'pendant';
+//            pendantpronoun = 'it';
+        }
+        else {
+            pendantword = 'pendants';
+//            pendantpronoun = 'them';
+        }
+        "Then the Mountain King spots your Transindection <<pendantword>>,
+        and shouts <q>Where did you find the <<pendantword>>?</q>  You stutter
+        and stammer, but then manage to regain your composure and tell the King
+        what you found. ";
+    }
+    else if ((global.game701p && transRoomDoor.isunlocked) && 
+    (PendantItem.classcount(gPlayerChar) == 0)) {
+        "You see a flicker of consternation on the face of the Mountain
+        King, and once again he looks into the crystal ball to spy upon the
+        Troll's treasure chamber.  He turns to the Troll and shouts <q>How did 
+        you come by the Transindection pendants?</q>  The Troll points to 
+        you, and the King seems to know exactly what he means.  He asks you, 
+        more quietly this time:  <q>Where did you find the pendants?</q>  You 
+        tell him everything. ";
+    }
+    if (global.game701p && transRoomDoor.isunlocked) {
+        "When he learns that the Upper Transindection 
+        Chambers were working, he looks very worried indeed";
+        if(greenUpperTransRoom.isdotroom)
+            if(greenMaintenanceRoom.seen)
+                ", but when you tell him how you used the Topaz to enter the
+                Maintenance Rooms, he congratulates you and says
+                <q>Well done - Eldrand may have failed, but we can now complete
+                his mission in complete safety!</q> ";
+            // added because it is now possible to get here without
+            // entering the Maintenance Room.  However, the means to do so
+            // has been obtained...
+            else
+                ", but when you tell him how you got hold of the 
+                Eldrand-Fitzgerald Topaz, he congratulates you and says
+                <q>Well done!  I'm almost certain that we can get into the
+                Maintenance rooms now.  We'll be able to complete
+                Eldrand's mission in complete safety!</q> ";
+        else
+            ", but when you 
+            reassure him that you have disabled the Chambers, he congratulates 
+            you! ";
+        "Everyone lets out a loud <q>Hurrah!</q> ";
+
+        P();
+
+        "The rest of your day is occupied with discreet Transindection
+        tours, conducted with the aid of your pendants and gold rings
+        worn by your companions.  Rods are spun near various plaques,
+        the Zarkalon tower is visited and the transmutation of lead to 
+        platinum is demonstrated.  Blue-level display boards are read, and
+        plans are made for the excavation of the remaining burial chambers at 
+        Red level. But that's the start of a much longer story ... ";
+    }
+    P();
+}
+
+horror()
+{
+   P();
+    "But something is wrong!  A battle is raging around you.  On one 
+    side you see a poorly armed band of dwarves, elves and Gnomes.  On the 
+    other side there is a large army of elves, all wearing uniforms made from a
+    silvery fabric.  Your attention is also drawn to the gleaming swords which 
+    they are all wielding, to the crowns atop their heads, and to the gold 
+    rings which many of them are wearing on their fingers.  It is also clear 
+    that all of them are winning easily - apparently without any 
+    casualties on their side!  Axes, knives and swords either bounce 
+    harmlessly off the uniforms, or veer away from the elves as if repelled
+    by a powerful force-field. ";
+
+    P();
+    "You try to hide, but it is to no avail.  A large elf strikes you down
+    with his sword, and you fall to the ground, mortally wounded. ";
+
+    P();
+    "As you lie dying, the remnants of the poorly armed band flee in terror.
+    The elf comes up to you, and 
+    exclaims, <q>A Cavernizer!  Well, the cave is now outbounded 
+    from ... </q>  He frowns, mutters something about language drift, then puts 
+    a red ring on his finger. ";
+    
+    P();
+    "<q>A Spelunker!  Well, the cave is now out of bounds for humans like you.
+    But it seems that we have to thank someone like you for showing us the
+    way in.</q> He observes your reaction";
+    if(PendantItem.classcount(gPlayerChar) == 1)
+    " and notices your pendant. ";
+    else if(PendantItem.classcount(gPlayerChar) > 1)
+    " and notices your pendants. ";
+    else ". ";
+    <q>"I do believe that <i>you</i> were our intruder!  Well, you caused us all a 
+    lot of trouble, but we were very interested to find out how the Wumpi
+    managed to come back from Red level.  So interested, in fact, that we
+    paid them to clear a path to the Upper Transindection Chamber.  And the 
+    rest is history.  Welcome to the New Order!\" ";
+    P();
+    "Before you lose consciousness, your mind is full of \"if only\"s. ";
+    P();
+    "If only ... I'd managed to complete at least part of Eldrand's mission. 
+    Disabling the Upper Transindection Chambers would have been enough to 
+    thwart the Elves. ";
+    //N.B. the following code sections are now accessible again, due to the
+    //provision of a second battery pack at White level.  It is no longer
+    //necessary for the maintenance rooms to be visited for this purpose.
+    if(!manual.moved) {
+        P();
+        "If only ... I'd searched the Control Room more thoroughly.  I'm sure 
+        I could have found something useful there. ";
+    }
+    else if(!manual.isread) {
+        P();
+        "If only ... I'd read the Control Room manual. ";
+    }
+    else if(!blueMaintenanceRoom.seen) {
+        P();
+        "If only ... I'd found a way to use that Topaz to get into the
+        Maintenance Rooms.  The damage looked very slight. ";
+    }
+    P();
+    "But \"if only\"s won't do.  Your foolish meddling has completely wrecked 
+    the balance of Colossal Cave.  The glass ball at Green level tried to warn
+    you, but you did nothing about it.  Now the Green-level elves have taken 
+    over one Level already, and others will likely fall in due course!   
+    There's nothing we can do about it now, and no hope that Adventurers will 
+    ever again be allowed into the cave.  So I'm rescinding all your game 
+    points!  Get out! Out!!!!!  OUT!!!!!!!!!!!  
+    OUT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!";
+    P();
+    local penalty = -libScore.totalPoints;
+    addToScore(penalty, 'for causing a total disaster');
+    
+    
 }

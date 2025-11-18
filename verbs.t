@@ -56,6 +56,33 @@ VerbRule(Deterministic)
     action = Deterministic
 ;
 
+DefineSystemAction(EnableMazeskip)
+    execAction(c)
+    {
+        if(global.mazeskip)
+        {
+            "The mazeskip command is already enabled. ";
+            return;
+        }
+        
+        "Enabling the mazeskip command will cost you two points. Do you want to go ahead?\n
+        >";
+        if(yesOrNo())
+        {
+            global.mazeskip = true;
+            addToScore(-2, 'using mazeskip');
+        }
+        "<.p>OK";
+    }
+;
+
+VerbRule(EnableMazeskip)
+    'enable' 'mazeskip'
+    : VerbProduction
+    action = EnableMazeskip
+    verbPhrase = 'enable/enabling mazeskip command'
+;
+
 DefineSystemAction(Health)
     execAction(c)
     {
@@ -1349,6 +1376,16 @@ DefSpecialTravel(Balcony, &balcony, 'balcony');
 DefSpecialTravel(Corridor, &corridor, 'corridor');
 
 DefSpecialTravel(Warm, &warm, 'warm') ;
+DefSpecialTravel(MazeSkip, &mazeskip, 'mazeskip' | 'skipmaze'| 'skip' 'maze')
+   execAction(c)
+{
+    if(global.mazeskip)
+        inherited(c);
+    else
+        "You haven't enabled that command. ";
+}
+
+;
 
                  
 

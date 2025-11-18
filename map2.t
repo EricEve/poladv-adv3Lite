@@ -43,16 +43,26 @@ atSwEnd: Room 'At SW End'
 blueBirdChamber: Room 'Blue Bird Chamber'
 ;    
 
-
+greenUpperTransRoom: Room
+    isdotroom = nil
+;
  
+
 
 
 tightCrack2: DarkRoom
 ;
-
-
-
-
-
-
 elsewhere: Room;
+
+tarnishedPendant: Thing;
+dullPendant: Thing;
+pendant2: Thing;
+pendant: Thing;
+manual: Thing
+    isread = nil
+;
+
+transRoomDoor: Thing
+    isunlocked = !isLocked
+;
+greenMaintenanceRoom: Room;

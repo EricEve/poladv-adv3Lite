@@ -3737,6 +3737,10 @@ class KaleidConnector: TravelConnector
     }
 ;
 
+livingMazeSkip: MazeSkipConnector
+    destList = [outerCourtyard, livingMaze6]
+;
+
 /* 242 */
 livingMaze1: OutsideRoom 'In Living Maze (red berries)'
     "From the inside the maze looks like a kaleidoscope, with
@@ -3760,7 +3764,9 @@ livingMaze1: OutsideRoom 'In Living Maze (red berries)'
     west: KaleidConnector -> livingMaze3 {}
         
     northwest: KaleidConnector -> livingMaze5 {}
+    mazeSkip = livingMazeSkip
 ;
+
 
 + redBerries: Fixture, CanPick 'red berries'
     "They look very attractive, but they're probably deadly
@@ -3785,6 +3791,7 @@ livingMaze2: OutsideRoom 'In Living Maze (orange flowers)'
     northeast = livingMaze1
     north = livingMaze3
     northwest: KaleidConnector -> livingMaze6 {}    
+    mazeSkip = livingMazeSkip
 ;
 
 /* 244 */
@@ -3801,6 +3808,7 @@ livingMaze3: OutsideRoom '"In Living Maze (yellow leaves)'
         
     west = livingMaze4
     north: KaleidConnector -> livingMaze5 {}
+    mazeSkip = livingMazeSkip
 ;
 
 /* 245 */
@@ -3820,6 +3828,7 @@ livingMaze4: OutsideRoom 'In Living Maze (green leaves)'
     north = livingMaze5
     
     west: KaleidConnector -> livingMaze6 {}    
+    mazeSkip = livingMazeSkip
 ;
     
 /* 246 */
@@ -3834,6 +3843,7 @@ livingMaze5: OutsideRoom 'Near Edge of Maze (blueberries)'
     south: KaleidConnector -> livingMaze4 {} 
     
     southwest = livingMaze6
+    mazeSkip = livingMazeSkip
 ;
 
 +blue2: Blueberries 
@@ -3892,6 +3902,7 @@ livingMaze6: OutsideRoom 'Western Edge of Maze (violets)'
     }
     gate asExit(west)
     in asExit(west)
+    mazeSkip = livingMazeSkip
 ;
 
 courtyardGate: DSDoor 'gate; small' @livingMaze6 @innerCourtyard 
@@ -3915,6 +3926,7 @@ innerCourtyard: OutsideRoom 'In Inner Courtyard'
     
     cross = "You can't cross the hedge of briars. "
     in = cross
+    mazeskip = outerCourtyard
 ;
 
 + briars: Fixture 'hedge of briars;;thorns;it them'

@@ -38,7 +38,7 @@
 -source npcs
 -source npcs1
 -source npcs2
--source npc11.
+-source npc11
 
 -res
 GameInfo.txt
