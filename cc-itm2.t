@@ -279,7 +279,7 @@ singingSword: Weapon 'singing sword; sharp shiny' @sandstoneChamber
 
 /* Liquids for this version follow here. */
 
-water_in_the_flask: ContLiquid 'water in the flask; ordinary in-flask'
+waterInTheFlask: ContLiquid 'water in the flask; ordinary in-flask'
     "It looks like ordinary water to me. "
     game550 = true
     mycont = flask
@@ -288,7 +288,7 @@ water_in_the_flask: ContLiquid 'water in the flask; ordinary in-flask'
     theName = 'the in-flask water'   
 ;
 
-oil_in_the_flask: ContLiquid 'oil in the flask; ordinary in-flask'
+oilInTheFlask: ContLiquid 'oil in the flask; ordinary in-flask'
     "It looks like ordinary oil to me. "
     game550 = true
     mycont = flask
@@ -297,7 +297,7 @@ oil_in_the_flask: ContLiquid 'oil in the flask; ordinary in-flask'
     theName = 'the in-flask oil'       
 ;
 
-wine_in_the_flask: ContLiquid 'wine in the flask'
+wineInTheFlask: ContLiquid 'wine in the flask'
     "It's a small quantity of sparkling vintage wine in a flask
      marked <q>London Dry</q>.  In a larger container, it might be
      valuable.  "

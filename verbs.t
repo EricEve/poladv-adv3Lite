@@ -1020,6 +1020,261 @@ melenkurionVerb: MagicWord
 
 DefVKTVerbRule(melenkurion);
 
+phugggVerb: MagicWord
+    omegapsical_order = 7
+    omegaps580_order = 9
+    omegaps701_order = 9
+    omegaps701p_order = 9
+    
+    execAction(c)
+    {
+    local toploc = gActor.getOutermostRoom;
+        // Don't have djinn mention the word in the future.
+        isused = true;
+        if(!global.game550 || toploc.ofKind(Outside))
+        {
+            nothingHappens();
+            return;
+        }
+            
+        if(StreamItem.classfind(toploc) ||
+            seaWater.isIn(toploc) ||
+            waterInTheBottle.isIn(toploc) ||
+            waterInTheFlask.isIn(toploc) ||
+            waterInTheCask.isIn(toploc)) 
+        { // Uh, oh!
+            if(rand(100) < 86) 
+                nothingHappens();
+            else if(rand(100) < 96) 
+            {
+                P(); "<i>splurch!<i>"; P();
+                "Oh, no!  You've turned yourself into
+                a jellyfish, and fallen to the ground
+                and been splattered far and wide!
+                Well, that certainly wasn't very
+                smart!!!  You were warned not to use
+                that word near water!\n"; die();
+            }
+            else 
+            {  "<.p>The ground begins to shudder ominously,
+                and the very cave walls around you begin
+                to creak and groan!  A sulphurious stench
+                fills the air!"; P();
+
+                "With an incredible lurch, the ground
+                begins to dance and ripple as though
+                it were liquid!  You are thrown off of
+                your feet and tossed violently up and
+                down!     The cave walls begin to crumble
+                and split from the stress! "; P();
+
+                "There is a terrible ROAR of rending
+                rock!!     The cave ceiling splits, and
+                rocks plunge down and smash your
+                lower body to a gooey paste!!"; P();
+
+                "There is a violent blast in the
+                distance!  Steam and smoke drift
+                into view through the rents in the
+                walls, and furiously-bubbling red-hot
+                lava flows in and surrounds you.
+                The cave ceiling disintegrates in
+                an incredible orgy of grinding
+                destruction, and the cave walls fall
+                and are pounded into fine dust."; P();
+
+                "You are lying, badly mangled, on a
+                small rock island in a sea of molten
+                lava.    Above you, the sky is faintly
+                visible through a thick pall of smoke
+                and steam.  A short distance to the
+                north, the remains of a well-house
+                are sinking slowly into the bubbling
+                ooze."; P();
+
+                "There is a distant, sourceless screech
+                of incredible anguish!     With a sharp
+                <i>poof<i> and a small puff of orange smoke,
+                a bent and bearded elf appears.  He
+                is dressed in working clothes, and
+                has a name-tag marked <q>Ralph</q> on
+                his shirt.  <q>You blithering idiot!</q>
+                he storms.  <q>You were warned quite
+                clearly not to use that word near
+                water!!  I hadn't gotten all of the
+                bugs out of it yet, and now your
+                incredible incompetence has totally
+                destroyed Colossal Cave!!  Do you
+                have the faintest scintilla of an
+                iota of an understanding of how much
+                work I'm going to have to do to get
+                the cave rebuilt?!?  I'll have to go
+                all the way to Peking for another
+                dragon, and I'll have to convince the
+                Goblin's Union to send me another team
+                of gooseberry goblins; I'll have to
+                sub-contract the building of the volcano
+                out to the local totrugs, and worst
+                of all I'll have to go through eight
+                months of paperwork and red tape to
+                file a new Environmental Impact
+                statement!!  All because you couldn't
+                follow directions, you purblind and
+                meatbrained moron!  I'm rescinding all
+                of your game points and throwing you
+                out!  Out!   OUT!   GET OUT!$!%#&'@%!!%%!</q>";
+                local penalty = -libScore.totalPoints;
+                addToScore(penalty, 'destroying Colossal Cave');
+                finishGameMsg(ftGameOver, [finishOptionUndo, finishOptionFullScore]);                
+            }
+        }
+            else 
+            {
+                local shp; // Did anything happen?
+                if (axe.isIn(gActor.location)) 
+                { // delete axe.
+                    "Your axe glows bright orange and fades into
+                    nothingness.\n"; 
+                    axe.moveInto(nil); 
+                    shp = true;
+                } // Note that as the code currently stands, the next
+                // dwarf to encounter the player after this will throw
+                // another axe!
+                if (singingSword.isIn(gActor.location)) { // delete it.
+                    "Your singing sword jumps into the air, chants several
+                    bars of the <q>Volga Boatman</q>, shoots off several
+                    fitful blue sparks, and disintegrates.\n";
+                    singingSword.moveInto(nil); 
+                    shp = true;
+                }
+                // Added the elfin sword for the 701-point game.
+                if (sword.isIn(gActor.location)) 
+                { // delete it.
+                    "Your gleaming sword jumps into the air, then disintegrates
+                    before your very eyes.   The fragments rust away to
+                    nothing. ";
+                    sword.moveInto(nil); //TADS 2 had singing_sword here - I assume that was an error
+                    shp = true;
+                }
+                {  // Zap dwarves, if any.
+                    local numd,i;
+                    // Find number of dwarves present and store in numd.
+                    numd = Dwarves.numberhere(actor);
+                    
+                    if(numd) 
+                    { // Kill off the dwarf(s) and/or the player.
+                        shp = true;
+                        if(rand(10) < 8) 
+                        { // it worked: kill dwarves.
+                            switch(rand(3)) {
+                                case 1: "A clear, liquid chime
+                                    sounds in midair.";
+                                if (numd > 1) "     A long green
+                                    tentacle covered with
+                                    sucker disks reaches out
+                                    from nowhere, grabs the
+                                    dwarves, and pulls them
+                                    back to wherever it came
+                                    from.";
+                                else "    A large, four-clawed
+                                    hand reaches out of the
+                                    ground, grabs the dwarf,
+                                    and pulls it down into
+                                    nothingness.";
+                                break;
+                                case 2: "There is a sharp sizzling
+                                    sound.";
+                                if(numd == 1) "    The dwarf explodes
+                                    into flame and vanishes.";
+                                else "    The dwarves are engulfed
+                                    in a wave of fire that
+                                    appears from nowhere, and
+                                    are completely incinerated;
+                                    the flames then vanish into
+                                    nothingness again.";
+                                break;
+                                case 3: "There is a sharp whistling
+                                    sound from nowhere.";
+                                if(numd > 1) "    The dwarves stiffen,
+                                    shudder, and melt down into a
+                                    large puddle of soggy goo that
+                                    quickly soaks into the ground
+                                    and vanishes.";
+                                else "    The dwarf shudders and
+                                    turns into a moth, which then
+                                    flies away.";
+                                break;
+                            }
+                            // Remove each of the dwarves.
+                            for (i =0; i<numd; i++)
+                                Dwarves.loclist -= Dwarves.location;
+                            "\n";
+                        }
+                        else 
+                        { // It failed: kill player.
+                            switch(rand(3)) {
+                                case 1: "A clear, liquid chime
+                                    sounds in midair.";
+                                if (numd > 1) "     A large and
+                                    very toothy mouth appears
+                                    in midair and chomps
+                                    ferociously.  The dwarves
+                                    manage to evade it, but
+                                    it bites you in half.";
+                                else "    A large, four-clawed
+                                    foot appears in midair
+                                    and stomps violently
+                                    downward, missing the
+                                    dwarf but thoroughly
+                                    squashing you.";
+                                break;
+                                case 2: "There is a sharp sizzling
+                                    sound.";
+                                if(numd == 1) "    A ball of fire
+                                    roars out of nowhere, misses
+                                    the dwarf, bounces off of a
+                                    wall, and incinerates you.";
+                                else "    A ball of fire appears
+                                    from nowhere, bounces off
+                                    the ground, and explodes
+                                    violently, incinerating
+                                    both you and the dwarves.";
+                                break;
+                                case 3: "There is a sharp crackling
+                                    sound from the air above you.";
+                                if(numd > 1) "    The dwarves stiffen,
+                                    fall to the ground, and melt
+                                    into a large puddle of soggy
+                                    goo.  The goo twitches a few
+                                    times and then flows at you
+                                    with incredible speed;  it
+                                    attacks and strangles you
+                                    with little difficulty.";
+                                else "    The dwarf shudders and
+                                    turns into a sabre-toothed
+                                    tiger, which attacks and kills
+                                    you in short order.";
+                                break;
+                            }
+                            "\n";
+                            // Remove each of the dwarves.
+                            for (i = 0; i<numd; i++)
+                                Dwarves.loclist -= Dwarves.location;
+                            
+                            die();
+                        }
+                    }
+                    if (!shp) nothingHappens;
+                }
+            }
+        }
+    
+    isused = nil
+    nothingHappens() { gActor.getOutermostRoom.nothingHappens; }
+;
+
+DefVKTVerbRule(phuggg);
+
 /* 
  *   Allow the player to fly the rug in a specified direction when the conditions are right for
  *   doing so.

@@ -731,9 +731,9 @@ byPentagram: NoNPC, DarkRoom 'Pentagram Room'
                 STRANGE HABITS, BUT YOU SHOULD REMEMBER THIS.  FAREWELL, AND GOOD
                 LUCK.<.q>  With that, the Djinn evaporates into a cloud of smoke and
                 drifts rapidly away.\n";
-                //        if(not phugggVerb.isused)
-                //             // Don't mention this if it's already been used.
-                //             notify(Djinn, &phugggtell, Djinn.phugggtime);
+                if(!phugggVerb.isused)
+                //Don't mention this if it's already been used.
+                new Fuse(djinn, &phugggtell, djinn.phugggtime);
                 
                 djinn.moveInto(nil);
             }

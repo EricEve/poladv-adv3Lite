@@ -119,6 +119,95 @@ class Chaser: Actor
     backtrackAct() {}
 ;
 
+wumpus: Feedable, Chaser 'Wumpus; large hairy huge sleeping ;monster creature' @cloakroom   
+    desc
+    {
+        if(isAsleep) 
+        {
+            "He's a huge, hairy creature, renowned for his appetite for
+            Adventurers.  Whatever you do, don't wake him!   He can
+            outrun the fastest humans, and despite his size can squeeze
+            through the narrowest passages!  Even magic words won't
+            help you to escape, because the Wumpus is good at imitating
+            them!";
+            if (cloakPit1.seen && cloakPit2.seen && cloakPit3.seen) 
+            {
+                P();
+                "Something occurs to you.  Two of the Featureless Pits
+                contained a ring, but someone seems to have visited
+                the south pit before you.  Someone with very large
+                feet.  Unfortunately the position in which the Wumpus
+                is lying prevents you from seeing whether he has the
+                missing ring. ";
+            }
+        }
+        else if (!isDead) 
+        {
+            "He's a huge, hairy creature, renowned for his appetite for
+            Adventurers like you.  You're in desperate trouble now that
+            you've woken him,  and no-one has found a way to outrun him,
+            even using magic words. ";
+        }
+        else 
+            "He's not a pretty sight now. ";        
+    }
+    
+    initSpecialDesc = "In the corner, a Wumpus is sleeping peacefully. "
+    useInitSpecialDesc = isAsleep
+    specialDesc = "Nearby is the smashed body of a defunct Wumpus. "
+    useSpecialDesc = isDead
+    
+    proper = nil
+    isAsleep = true   
+    isDead = nil
+    isChasing = nil
+    
+    moveinc = 1
+    stayinc = 1
+    
+    deadmess = 'For crying out loud, the poor thing is dead! '
+    ridicule = '''Don't be ridiculous! '''
+    
+     // ATTACKING
+    dobjFor(Attack)
+    {
+        verify()
+        {
+            if(isDead)
+                illogicalAlready(deadmess);
+            
+            else if(gActor.allContents.indexWhich({o: o.ofKind(Weapon) && gActor.canReach(o)}) == nil)
+                illogical(ridicule);
+        }
+        
+        action()
+        {
+            local weapon = gActor.allContents.valWhich({o: o.ofKind(Weapon) && gActor.canReach(o)});
+            "\n(with <<weapon.theName>>)\n";
+            doInstead(AttackWith, self, weapon);                
+        }
+    }
+    
+    dobjFor(AttackWith)
+    {
+        verify()
+        {
+             if(isDead)
+                illogicalAlready(deadmess);            
+        }
+        action()
+        {
+            
+        }
+        
+    }
+    
+    
+;
+
+
+
+
 
 bees: Feedable, Fixture 'bees;;;them'
     
@@ -126,14 +215,6 @@ bees: Feedable, Fixture 'bees;;;them'
 ;
 
 
-wumpus: Feedable, Chaser 'wumpus'    
-    
-    isAsleep = true   
-    isDead = nil
-    
-    moveinc = 1
-    stayinc = 1
-;
 
 
 

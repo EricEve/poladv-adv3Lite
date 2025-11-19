@@ -1321,6 +1321,7 @@ modify Room
     analevel = 0
     brassKey = nil
     smashdrop = nil
+    nothingHappens = "Nothing happens. "
 ;
     
 modify Actor

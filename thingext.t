@@ -28,6 +28,10 @@ modify Thing
     /* Handling of additional verbs - mainly correspondinng to ccc-thx.t */
     cannotEatMsg = 'I think I just lost my appetite. '
     
+    classfind(loc) { return loc.allContents.indexWhich({o: o.ofKind(self)}); }
+    numberhere(loc) { return loc.allContents.countWhich({o: o.ofKind(self)}); }
+    
+    
     dobjFor(Cross)
     {
         preCond = [touchObj]

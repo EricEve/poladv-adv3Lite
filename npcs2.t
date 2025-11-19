@@ -1,13 +1,7 @@
 #charset "us-ascii"
 #include "advlite.h"
 
-basilisk: NPC 'basilisk'
-    petrified() {}
-    petrifier() {}
-;
 
-djinn: Actor 'djinn;;;him'
-;
 
 goblins: Feedable, Chaser 'gooseberry goblins;silent giggling vicious little slavering of[prep]
     ;horde goblin;them'
@@ -82,12 +76,95 @@ goblins: Feedable, Chaser 'gooseberry goblins;silent giggling vicious little sla
         
     }
     backtrackAct = "\nYou leap over the goblins.\n"    
+    
+    dobjFor(Attack)
+    {
+        verify() {}
+        action()
+        {
+            "You attack the goblins and manage to squash
+            a few, but the others overwhelm you, forcing you to the ground
+            and ripping out your throat. "; 
+            die();
+        }
+    }
+    
+    dobjFor(AttackWith)
+    {
+        verify() {}
+        action()
+        {
+            if (gIobj.ofKind(Weapon))
+            {
+                "You kill several of
+                the gooseberry goblins with {the iobj},
+                but the others swarm at you, force you to the ground, and rip
+                out your throat."; 
+                die();
+            }
+            else if (gIobj == myHands) 
+                actionDobjAttack();
+            else 
+                "You'd be better off using your bare hands than that thing!";
+        }
+    }
+    
+    dobjFor(Kick) asDobjFor(Attack)
+    
+    iobjFor(GiveTo)
+    {
+        verify() {}
+        action()
+        {
+            if(gDobj.ofKind(ContLiquid) && gDobj.myflag is in (&hasWater, &hasWine))
+                doInstead(FeedWith, self, gDobj);
+            else if(gDobj.ofKind(Food))
+                doInstead(FeedWith, self, gDobj);
+            else
+                "The goblins show no interest in {the iobj}. ";
+                
+        }
+    }
+    
+    dobjFor(Feed)
+    {
+        verify() {}
+        action = "Goblins live exclusively on human flesh, and you
+        can't spare any of your own to placate them.  On the other
+        hand, I suspect that they're going to eat you pretty soon
+        whether you like it or not - you'd better find some way
+        of killing or driving them away!"
+    }
+    
+    
+    dobjFor(FeedWith)
+    {
+        verify() {}
+        action()
+        {
+            if(gDobj.ofKind(ContLiquid) && gDobj.myflag is in (&hasWater, &hasWine))
+                inherited();
+            else
+                actionDobjFeed();           
+        }
+    }
+    
+    
+    actionIobjThrowAt()
+    {
+        "{I} miss{es/ed}. ";
+        gDobj.actionMoveInto(gActor.location.dropLocation);
+    }
+    
+    cannotTakeMsg = 'Probably not a wise idea. '
+    cannotEatMag = 'Yeetttch!  I think I just lost my appetite. '
 ;
 
 actionThrowAt(Weapon dobj, goblins iobj)
 {
     dobj.doInstead(AttackWith, dobj, iobj);
 }
+
 
 actionThrowAt(dragonTeeth dobj, goblins iobj)
 {
@@ -105,9 +182,6 @@ actionThrowAt(dragonTeeth dobj, goblins iobj)
     skip;
 }
 
-ogre: NPC 'ogre'
-    exists = true
-;
 
 blob: Feedable, Chaser 'large white blob;translucent bouncing throbbbing roaring immense
     unfriendly looking unfriendly-looking ;rover'
@@ -290,11 +364,452 @@ blob: Feedable, Chaser 'large white blob;translucent bouncing throbbbing roaring
    
 ;
 
-slime: Feedable, Fixture 'slime; evil green of[prep]; sheet' @crack2
+turtle: Feedable, Actor 'Darwin the Tortoise;large;turtle'
+    "On the tortoise's back is inscribed, <q>I'm Darwin - ride me!</q> "
+    
+    specialDesc = "Darwin the tortoise is swimming in the reservoir nearby. "
+    
+    dobjFor(Board)
+    {
+        verify() {}
+        action()
+        {
+            doInstead(Cross, reservoir);
+        }
+    }
+    dobjFor(Enter) asDobjFor(Board)
+    dobjFor(Ride) asDobjFor(Board)
+    
+;
+
+
+basilisk: MultiLoc, Fixture 'basilisk'
+    desc 
+    {
+        "I wouldn't wake it up if I were you.  ";
+        if(gRoom == northBasilisk)
+            "It is asleep, but is twitching
+            and grumbling as if restless.";
+    }
+       
+    game550 = true
+    alive = true
+    specialDesc()
+    {
+         if (gRoom == southBasilisk)
+            "There is a basilisk lying
+            in the corridor to the north, snoring quietly. ";
+        else
+            "There is a basilisk
+            in the corridor to the south.  It is
+            asleep, but twitching and grumbling
+            as if restless.";
+    }
+    
+    locationList = [northBasilisk, southBasilisk]
+    
+    dobjFor(Attack)
+    {
+        verify() {}
+        action()
+        {
+            "You attack the basilisk mightily. It instantly
+            awakens and looks you dead in the eye, and
+            your body turns into solid rock. ";
+            die();
+        }
+    }
+    
+    dobjFor(AttackWith)
+    {
+        verify() {}
+        action()
+        {
+            if (gIobj.ofKind(Weapon)) 
+            {
+                "{The subj iobj} rebound{s/ed} harmlessly from the
+                basilisk's tough scales.  The basilisk awakens,
+                grunting in shock, and glares at you.  You are
+                instantly turned into a solid rock statue (and
+                not a particularly impressive one, at that).";
+                die();
+            }
+            else if (gIobj == myHands) 
+                actionDobjAttack();        
+            else 
+                "You'd probably be better off using your
+                bare hands than that thing!";        
+        }
+    }
+
+    dobjFor(Kick) asDobjFor(Attack)
+    
+     // For THROW AT see multimethod definitions below
+    // GIVING
+    iobjFor(GiveTo) {verify() {illogical(badIdeaMsg); }}    
+    
+    badIdeaMsg = '{I} couldn\'t do that without waking
+                the basilisk, which would be a very bad idea. '
+    // FEEDING 
+    
+    dobjFor(Feed) {verify() {illogical(badIdeaMsg); }}
+    
+    dobjFor(Wake)
+    {
+        verify() {}
+        action()
+        {
+            if (metalPlate.isIn(gActor)) petrified();
+            else petrifier();
+        }
+            
+    }
+    
+    petrified() 
+    {
+         "The basilisk stirs grumpily and awakens, peering sleepily
+        about.  It sees its reflection in the metal plate that
+        you are carrying, shudders, and turns into solid granite. <.p>";
+        
+        alive = nil;
+        basiliskStatue.moveInto(locationList);
+        moveInto(nil);
+    }
+    petrifier() 
+    {
+        "The basilisk stirs grumpily and awakens, peering sleepily
+        about.  It spies you, growls, and stares you straight in the
+        eye.  Your body is instantly petrified. ";
+        
+        die();
+    }
+    
+    verifyDobjRub() { illogical('Don\'t be ridiculous! '); }    
+;
+
+/* THROW AT handling for the Basilisk */
+actionThrowAt(Weapon dobj, basilisk iobj)
+{
+    dobj.doInstead(AttackWith, basilisk);
+    skip;
+}
+
+actionThrowAt(glassVial dobj, basilisk iobj)
+{
+    dobj.actionDobjThrowAt();
+    skip;
+}
+
+actionThrowAt(Thing dobj, basilisk iobj)
+{
+    dobj.doInstead(GiveTo, dobj, iobj);
+    skip;
+}
+
+basiliskStatue: MultiLoc, Fixture 'petrified basilisk; desd of[prep];statue'
+    "It looks just the same as it did before it was petrified. "
+    
+    specialDesc =  "There is a petrified basilisk in the corridor to the 
+        <<gRoom == southBasilisk ? 'north' : 'south'>>."
+        
+    
+    cannotAttackMsg = 'You\'ve already done enough damage! '
+    cannotBreakMsg = cannotAttackMsg
+;
+
+
+djinn: Actor 'twelve-foot tall djinn;twelve foot;genie;him'
+    "The djinn seems impatient for you to open the pentagram. "
+    specialDesc = "There is a twelve-foot djinn standing in the center
+            of the pentagram, glowering at you. "
+    
+    phugggtell 
+    { 
+        if(phugggVerb.isused) return;
+        
+        "<.p>A large phosphorescent cloud of smoke drifts into
+         view, and a large mouth and two dark eyes take shape
+         on the side.  One of the eyes winks at you, and the
+         djinn's deep voice says <q>GREETINGS AGAIN, MORTAL.  I
+         HAVE REMEMBERED A PIECE OF ANCIENT LORE THAT I LEARNED
+         FROM MY AUNT, AN AFREET OF GREAT KNOWLEDGE.  THERE
+         IS ANOTHER MAGIC WORD THAT YOU MIGHT FIND OF USE IF
+         YOU SHOULD EVER FIND YOURSELF BEING ATTACKED BY THOSE
+         PESTIFEROUS DWARVES.  YOU SHOULD USE IT ONLY AS A LAST
+         RESORT, THOUGH, SINCE IT IS A MOST POTENT WORD AND IS
+         PRONE TO BACKFIRE FOR NO OBVIOUS REASON;  ALSO, IT
+         SHOULD NEVER BE USED NEAR WATER OR NEAR ANY SHARP
+         WEAPON OR THE RESULTS MAY BE MOST UNFORTUNATE.  THE
+         WORD IS 'phuggg'</q>, whispers the djinn, <q>AND IT MUST
+         BE PRONOUNCED CAREFULLY IF IT IS TO HAVE THE PROPER
+         EFFECT.  FAREWELL AGAIN, AND GOOD LUCK!</q> With that,
+         the djinn-cloud drifts away out of sight.<.p>";       
+    }
+    
+    phugggtime = 5
+  
+;
+
+
+ogre: Feedable, Actor 'nasty ogre; large nasty-looking' @glassyRoom
+    "The ogre looks exceptionally large and nasty."
+    game550 = true
+    exists = true
+    
+    specialDesc = "There is a large, nasty-looking ogre blocking your path! "    
+
+    // ATTACKING
+    
+    dobjFor(Attack)
+    {
+        action()
+        {
+            "What, with your bare hands?\b> ";
+            if(yesOrNo())
+                nicetry();
+            else
+                "Probably wise. ";            
+        }
+    }
+        
+    nicetry()
+    {
+        if (rand(2) == 1)
+            "You attack the ogre, but he fends off
+            your attack easily and comes very close
+            to crushing your skull with *his* bare
+            (but extremely strong) hands.  You are
+            forced to retreat in disgrace. ";
+        else {
+            "You attack the ogre -- a brave but foolish action.
+            He quickly grabs you and with a heave of his
+            mighty arms rips your body limb from limb. ";
+            die();
+        }
+    }
+    
+    dobjFor(AttackWith)
+    {
+        verify() {}
+        action()
+        {
+            if (gIobj.ofKind(Weapon)) 
+            {
+                "The ogre contemptuously catches {the iobj}
+                in mid-swing, rips {him iobj} out of {my} hands, and
+                uses {him iobj} to chop off {my} head. ";
+                die();
+            }
+            else if (gIobj == myHands) { nicetry() ; }
+            else "You'd be better off using your bare hands than
+                that thing!";
+        }        
+    }
+    
+      
+    // KICKING
+    dobjFor(Kick)
+    {
+        verify() {}   
+        action()
+        {
+            if (rand(2) == 1)
+                "You attack the ogre, but he fends off
+                your attack easily and comes very close
+                to crushing your skull with his bare hands.
+                You are forced to retreat in disgrace. ";
+            else 
+            {
+                "You attack the ogre - a brave but foolish action.
+                He quickly grabs you and with a heave of his
+                mighty arms rips your body limb from limb. ";
+                die();
+            }
+        }
+    }
+
+    // THROWING
+    iobjFor(ThrowAt)
+    {
+        verify() {}
+        action() 
+        {
+            if(gDobj == singingSword)
+            {
+                "The sword halts in mid-air, twirls like a
+                dervish, and chants several bars of \"Dies
+                Ire\" in a rough tenor voice.  It then begins
+                to spin like a rip-saw blade and flies
+                directly at the ogre, who attempts to catch
+                it without success;  it strikes him full
+                on the chest.  There is a brilliant flash
+                of light, a deafening roar and a cloud of
+                oily grey smoke;  when the smoke clears
+                (and your eyes begin working properly again)
+                you see that the ogre has vanished.  The sword
+                is lying on the ground, sparking and flaming.
+                Before your eyes it softens and melts, writhes
+                as if in pain, and shrinks rapidly until all
+                that is left is a small silvery ring which
+                cools rapidly.";
+                singingSword.moveInto(nil);                
+                mithrilRing.moveInto(getOutermostRoom);
+                ogre.moveInto(nil);
+                ogre.exists = nil;
+            }            
+            else if (gDobj.ofKind(Weapon))
+            {
+                "The ogre casually catches {the dobj} in mid-air, ";
+                if(gDobj == sword) "and cries <q> Hah! I've nothing to fear
+                    from a rusty old sword like that!</q>  Before you have time
+                    to ponder his words (you can't see any rust on
+                    the sword) he ";
+                "braces his feet, winds up and throws {him dobj}
+                straight back at you with incredible force.
+                You are unable to dodge {him dobj} and {he dobj} chop{s/?ed} you
+                in half";
+                if (gDobj == sword) {
+                    swordshards.moveInto(location);
+                    gDobj.moveInto(nil);
+                    ", then shatters to pieces as it hits the wall of the room. ";
+                }           
+                else ". ";
+                die();
+            }            
+            else inherited();
+        }
+    }
+        
+    iobjFor(ThrowTo) asIobjFor(GiveTo)   
+
+    // GIVING uses defaults for class feedable
+
+    // FEEDING
+    dobjFor(FeedWith)
+    {
+        verify() {}
+        action()
+        {
+            if(gIobj.ofKind(ContLiquid) && gIobj.myflag is in (&haswater, &haswine))
+                inherited();           
+            else
+                "The ogre doesn't seem interested in {the iobj}<<if gIobj.ofKind(Food)>> -- maybe
+                he isn't hungry<<end>>. ";
+        }       
+    }
+    
+    dobjFor(Feed) 
+    {
+        verify() {}
+        action()
+        {
+            if(gActor.allContents.valWhich({o:o.isEdible}) != nil)        
+                "The ogre doesn't seem interested in your food -- maybe
+                he isn't hungry. ";
+            else 
+                "You have nothing the ogre wants to eat. "; 
+        }        
+    }
+
+    // OTHER
+    
+    cannotTalkToMsg  = 'The ogre doesn\'t seem to be very interested in making conversation. '
+    dobjFor(Rub) { verify() { illogical('Don\'t be ridiculous! '); }}
+;
+
+
+slime: Feedable, Fixture 'slime; evil green of[prep] acidic slimy; sheet' @crack2
     "A sheet of evil-looking green slime swathes the floor to
      the south.  It is twitching and flowing as though aware of
      your presence."
     exists = true
+       
+    specialDesc = "The passage to the south is swathed
+           with sheets of evil-looking green slime, which
+           twitch and flow as if aware of your presence. "
+    
+    // ATTACKING
+    dobjFor(Attack)
+    {
+        verify() {}
+        // DJP - attacking without a weapon now prompts the player; saying
+        // 'yes' to bare hands results in death.
+        action() 
+        {
+            "With what?  {My} bare hands?\b>";
+            if(yesOrNo())
+            {
+                doInstead(Feel, self);
+            }
+            else
+                "Probably wise. ";            
+        }        
+    }
+    
+    dobjFor(AttackWith)
+    {        
+        verify() {}
+        // attacking with objects has no effect, but bare hands are fatal.
+        action() 
+        {        
+            if (gIobj == myHands) actionDobjFeel();
+            else "The slime is unaffected by your attack. ";
+        }
+    }
+    
+    // KICKING
+    dobjFor(Kick) asDobjFor(Feel)
+    
+    // THROWING
+    iobjFor(ThrowTo) asIobjFor(ThrowAt)
+    
+    iobjFor(ThrowAt)
+    {
+        // DJP: Objects which are thrown get trapped in the slime.  This isn't
+        // true to the original game, but probably more logical!
+        action()
+        {            
+            local o = gDobj;
+            if(o.ofKind(ContLiquid)) o = gDobj.mycont;
+            if (o == glassVial) 
+                o.shatter_near(self);
+            else 
+            {
+                "{The subj dobj} {is} caught up in the slime, which flows down and
+                hides {him dobj} from view. ";               
+                o.moveInto(slimeRoom);                
+            }
+        }
+    }
+    
+    // GIVING
+    iobjFor(GiveTo) asIobjFor(ThrowAt)
+    
+    // FEEDING
+    actionDobjFeed = "There's nothing here it wants to eat (except perhaps you). "
+
+    /* DJP - 'feed slime with me' now does just that. */
+    actionDobjFeedWith
+    {        
+        if (gIobj == gPlayerChar) 
+        {
+            "Self-sacrifice is <i>not</i> the object of this game!
+            However, if you really want to become food to
+            repulsive slime ... "; P();
+            actionDobjFeel();
+        }
+        else 
+            doInstead(ThrowAt, self, gIobj);
+    }
+    
+    // OTHER
+    dobjFor(Rub) asDobjFor(Feel)
+    actionDobjFeel()
+    {
+        "As you touch the slime, it flows up your body
+        and rapidly digests away all of your flesh.<.p>";
+        die();
+    }
     
     dobjFor(Cross)
     {
@@ -308,14 +823,11 @@ slime: Feedable, Fixture 'slime; evil green of[prep]; sheet' @crack2
             die();
         }
     }
-    
-    specialDesc = "The passage to the south is swathed
-           with sheets of evil-looking green slime, which
-           twitch and flow as if aware of your presence. "
-    
-       
-    
+     
+    cannotTakeMsg = 'Surely, you\'re joking. '   
 ;
 
-slimeRoom: Room
+
+slimeRoom: NoNPC, Room 'In Slime'
+    "You are trapped in an opaque mass of green slime. "
 ;

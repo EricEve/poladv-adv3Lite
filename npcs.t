@@ -57,6 +57,8 @@ modify Actor
         }        
     }
     notCareForMsg = 'I {don\'t think} {the dobj} would care for that. '
+    
+    dobjFor(Attack) { check() {} }
 ;
 
 
@@ -779,8 +781,15 @@ Dwarves: NPC 'dwarves;;;them'
     /* Methods to be added: */
     move() { }
     place() {}
-    numberhere(actor) { return 0; } // temporary - to be fixed.
+    numberhere(actor) 
+    { 
+        // DJP - a convenient method to return the
+        // number of dwarves in the player's room.       
+        return 0;
+    } 
+    // temporary - to be fixed.
     scatter() {}
+    loclist = []
 ;
 
 pirates: NPC 'pirate;;;him'
