@@ -41,6 +41,8 @@ SpecialVerb 'answer' @Actor 'talk to';
 
 modify Actor
     locationHistoryLength = 2  
+    
+    
      handleCommand(action)
     {
         local obj = self;
@@ -59,6 +61,44 @@ modify Actor
     notCareForMsg = 'I {don\'t think} {the dobj} would care for that. '
     
     dobjFor(Attack) { check() {} }
+    
+    lastmoveloc = nil
+    lasttoploc = nil
+    prevloc = nil
+    
+    actionMoveInto( obj )
+    {
+        local oldloc, newloc = obj ? obj.getOutermostRoom : nil;
+        // reset posture variable if location is being changed
+        //        if (obj != self.location) {
+        //             if(obj) self.posture := obj.default_posture;
+        //             else self.posture := nil;
+        //        }
+        if(lastmoveloc == nil) 
+        {
+            lastmoveloc  = location;
+            lasttoploc = lastmoveloc.getOutermostRoom;
+        }
+        oldloc = lasttoploc;
+        
+        // DJP - save previous topmost location.
+        if(oldloc !=  newloc) 
+            prevloc = oldloc;
+        
+        // Moves into and out of nestedrooms are ignored, but a move from
+        // a top-level room to the same room is acknowledged.
+        if(lastmoveloc == obj && newloc == obj) {
+            prevloc = oldloc;
+        }
+        lastmoveloc = obj;
+        lasttoploc = lastmoveloc ? lastmoveloc.getOutermostRoom : nil;
+        // Pass control to the original movableActor.moveInto
+        // method in adv.t.
+        inherited(obj);
+    }
+    
+    
+    
 ;
 
 
@@ -149,7 +189,9 @@ bear: Feedable, Actor 'large bear; (cave) tame ferocious gentle; animal' @inBarr
     {
         if(getOutermostRoom != gRoom)
         {
-            gRoom.travelVia(self);
+            local conn = getConnectorTo(gRoom);            
+            conn = conn ?? gRoom;
+            conn.travelVia(self);
             
             specialDesc();
         }
@@ -247,7 +289,7 @@ bear: Feedable, Actor 'large bear; (cave) tame ferocious gentle; animal' @inBarr
                 illogicalNow(onlyfriend);
         }
         
-        eheck()
+        check()
         {
              "You obviously have not fully grasped the
             gravity of the situation.  Do get a grip onourself.";
@@ -364,8 +406,7 @@ bear: Feedable, Actor 'large bear; (cave) tame ferocious gentle; animal' @inBarr
             {
                 "OK, the bear is no longer following you around.";
                 stayloc = location;
-                prevloc = gPlayerChar.getPreviousLocation;
-                
+                prevloc = gPlayerChar.prevloc;                
             }
             
         }
@@ -414,6 +455,8 @@ bear: Feedable, Actor 'large bear; (cave) tame ferocious gentle; animal' @inBarr
             stopFollowing();
             replaceActorAction(self, Attack, troll);  
         }
+        else if(action == stayVerb)
+            stay();
         
         else
             "The bear isn't quite sure what you want it to do. ";
@@ -458,7 +501,7 @@ bear: Feedable, Actor 'large bear; (cave) tame ferocious gentle; animal' @inBarr
         else 
         {
             "OK, the bear is no longer following you around.";
-            stayloc = self.location;
+            stayloc = location;
             prevloc = gPlayerChar.getPreviousLocation();
             stopFollowing();
         }
@@ -507,7 +550,7 @@ troll: Actor 'burly troll;;;him' @onSWSideOfChasm
                 bear soon gives up the pursuit and wanders back. <.reveal bear-attack>";
                 moveInto(nil);
                 bear.stayloc = bear.location;
-                bear.prevloc = bear.getPreviousLocation();
+                bear.prevloc = gPlayerChar.prevloc;
                 bear.stopFollowing();
             }
             else

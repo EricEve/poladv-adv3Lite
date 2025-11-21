@@ -1653,6 +1653,15 @@ modify VerbRule(MoveWith)
     :
 ;
 
+DefineIVerb(stayVerb, 'stay', 'stay', 'staying')
+    execAction(c)
+    {
+        if(gActor == gPlayerChar)
+             "This command should be issued to someone else, e.g. \"dog, stay\".";
+        else
+            gActor.stay();
+    }
+;
 
 
 

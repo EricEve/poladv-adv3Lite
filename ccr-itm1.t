@@ -192,7 +192,7 @@ waterInTheCask: ContLiquid 'water in the cask; in-cask'
     "It looks like ordinary water to me. "
     game551 = true
     mycont = cask
-    myflag = &haswater    
+    myflag = &hasWater    
     aName = 'water'    
     theName = "the in-cask water"   
 ;
@@ -203,7 +203,7 @@ oilInTheCask: ContLiquid 'oil in the cask; in-cask'
     
     game551 = true
     mycont = cask
-    myflag = &hasoil    
+    myflag = &hasOil    
     aName = 'oil'   
     theName = "the in-cask oil"    
 ;
@@ -1201,6 +1201,7 @@ goldRing: ProtectRing, Wearable, Treasure 'small gold ring; plain'
     protection = 3
     taken = nil
     seenspecial = nil
+    deducedmagic = nil
     
     initSpecialDesc = "On the Wumpus' finger is a small gold ring! "
     fromloc = wumpus
@@ -1277,7 +1278,7 @@ wineInTheCask: ContLiquid, Treasure 'wine in the cask;in-cask'
     basis = 3
 
     mycont = cask
-    myflag = &haswine
+    myflag = &hasWine
 
     targloc = cask
     contloc = treasureChest

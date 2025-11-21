@@ -1406,7 +1406,7 @@ batCave: DarkRoom 'In Bat Cave'
                 swept2 = true;
             }
             "<.p>";
-            if(gActor.getPreviousLocation == windyTunnel)
+            if(gActor.prevloc == windyTunnel)
                 gActor.travelVia(tongueOfRock);
             else
                 gActor.travelVia(windyTunnel);        

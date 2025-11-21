@@ -1409,6 +1409,12 @@ crystalBridge: MultiLoc, Fixture, Surface 'crystal bridge; magic'
                     o.moveInto(wheretogo);
                 }
             }
+            if(wumpus.isChasing) {
+            if (wumpus.prevloc.isfissureroom &&
+            (gPlayerChar.location != wumpus.prevloc) &&
+            (wumpus.locstay == 1))
+                wumpus.demise();
+        }
         }
     }
     
@@ -4429,7 +4435,7 @@ ricketyBridge: DSPassage 'rickety bridge; unstable wobbly rope'
                 supports the weight of the bear, which was still
                 following you around.   Unfortunately the spell
                 seems to wear off at the instant you reach the
-                other side.   With a loud \"Crack!\" the bridge
+                other side.   With a loud <q>Crack!</q> the bridge
                 collapses under the weight of the bear, which
                 scrambles frantically
                 to reach your side but fails to make it. ";

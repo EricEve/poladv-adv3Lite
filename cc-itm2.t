@@ -304,7 +304,7 @@ wineInTheFlask: ContLiquid 'wine in the flask'
     game701 = true
     // This object should never show up in other versions.
     mycont = flask
-    myflag = &haswine    
+    myflag = &hasWine    
     theName = 'the in-flask wine'    
     aName = 'wine'
 ;

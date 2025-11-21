@@ -2128,12 +2128,12 @@ bottPit: MultiLoc, Fixture 'bottomless pit; deep looking deep-looking'
                 mushroom.regrow();  // Regrow mushroom straight away due to
                                   // lapse of time.
             }
-            if (bottle.isIn(actor) && bottle.haswater)bottle.empty;
-            if (flask.isIn(actor) && flask.haswater)flask.empty;
-            if (cask.isIn(actor) && cask.haswater)cask.empty;
-            if (bottle.isIn(actor) && bottle.haswine)bottle.empty;
-            if (flask.isIn(actor) && flask.haswine)flask.empty;
-            if (cask.isIn(actor) && cask.haswine)cask.empty;
+            if (bottle.isIn(actor) && bottle.hasWater)bottle.empty;
+            if (flask.isIn(actor) && flask.hasWater)flask.empty;
+            if (cask.isIn(actor) && cask.hasWater)cask.empty;
+            if (bottle.isIn(actor) && bottle.hasWine)bottle.empty;
+            if (flask.isIn(actor) && flask.hasWine)flask.empty;
+            if (cask.isIn(actor) && cask.hasWine)cask.empty;
 
             // Mention hunger only if we didn't manage to eat any
             // substantial food items (mushrooms don't count).

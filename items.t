@@ -1924,23 +1924,7 @@ barsOfSilver: Treasure 'bars of silver;;;them' @lowNSPassage
 ;
 
 
-turtle: Actor 'Darwin the Tortoise;large;turtle'
-    "On the tortoise's back is inscribed, <q>I'm Darwin - ride me!</q> "
-    
-    specialDesc = "Darwin the tortoise is swimming in the reservoir nearby. "
-    
-    dobjFor(Board)
-    {
-        verify() {}
-        action()
-        {
-            doInstead(Cross, reservoir);
-        }
-    }
-    dobjFor(Enter) asDobjFor(Board)
-    dobjFor(Ride) asDobjFor(Board)
-    
-;
+
 
 //pirates: MultiLoc, Thing
 //;
@@ -2079,7 +2063,7 @@ class ContLiquid: Fixture
 waterInTheBottle: ContLiquid 'water in the bottle; bottled'
     "It looks like ordinary water to me."
     mycont = bottle
-    myflag = &haswater
+    myflag = &hasWater
     aName = 'water'
     theName = 'the bottled water'    
 ;
@@ -2088,7 +2072,7 @@ waterInTheBottle: ContLiquid 'water in the bottle; bottled'
 oilInTheBottle: ContLiquid 'oil in the bottle; bottled'
    "It looks like ordinary oil to me. "
     myCont = bottle
-    myflag = &hasoil
+    myflag = &hasOil
     aName = 'oil'
     theName = 'the bottled oil'    
 ;

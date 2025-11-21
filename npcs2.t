@@ -61,7 +61,7 @@ goblins: Feedable, Chaser 'gooseberry goblins;silent giggling vicious little sla
                      // before the goblins kill him, there's no possibility of
                      // getting to Fake_Y2 soon enough.
     }
-    SlippMsg() {magicMsg();}
+    slippMsg() {magicMsg();}
     
     summon(loc) 
     {        
@@ -286,8 +286,8 @@ blob: Feedable, Chaser 'large white blob;translucent bouncing throbbbing roaring
             the basilisk.\n";     // BJS: added.
         if(chase > 14) die();
     }
-    MagicMsg = "Oops! Magic words aren't supposed to work when the blob is chasing you!"
-    SlippMsg = "Oops! The slippers and the blob cannot exist together!"
+    magicMsg = "Oops! Magic words aren't supposed to work when the blob is chasing you!"
+    slippMsg = "Oops! The slippers and the blob cannot exist together!"
 
     summon()
     {
@@ -690,7 +690,7 @@ ogre: Feedable, Actor 'nasty ogre; large nasty-looking' @glassyRoom
         verify() {}
         action()
         {
-            if(gIobj.ofKind(ContLiquid) && gIobj.myflag is in (&haswater, &haswine))
+            if(gIobj.ofKind(ContLiquid) && gIobj.myflag is in (&hasWater, &hasWine))
                 inherited();           
             else
                 "The ogre doesn't seem interested in {the iobj}<<if gIobj.ofKind(Food)>> -- maybe

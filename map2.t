@@ -66,3 +66,15 @@ transRoomDoor: Thing
     isunlocked = !isLocked
 ;
 greenMaintenanceRoom: Room;
+blueMaintenanceRoom: Room;
+onLadder: DarkRoom;
+
+rockfalls: Fixture
+    ismoved = nil
+;
+
+octagonalRoom: Room
+
+    NPCexits = []
+;
+

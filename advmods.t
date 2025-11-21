@@ -1254,6 +1254,8 @@ glob11: glob_701
 
  die()
 {
+    
+    
     addToScore(global.deathpoints, 'for getting killed');
     finishGameMsg(ftDeath, [finishOptionUndo, finishOptionResurrect, finishOptionFullScore]);
 }
@@ -1322,6 +1324,10 @@ modify Room
     brassKey = nil
     smashdrop = nil
     nothingHappens = "Nothing happens. "
+    
+    
+    
+    
 ;
     
 modify Actor
@@ -1461,7 +1467,7 @@ finishOptionResurrect: FinishOption
         if(resurrect)
         {
             local i,o,l,pcount = 0,savecont = gPlayerChar.contents;
-//            local doorlist = [grate];
+            //            local doorlist = [grate];
             
             //        local doorlist = [Grate, Small_door_1, Small_door_2, Iron_door_1, 
             //        Iron_door_2]; 
@@ -1474,8 +1480,8 @@ finishOptionResurrect: FinishOption
                 else
                     pcount++;
             }
-            //        room_move(Ledge_By_Door,Top_Of_Steps);
-            //        room_move(Underground_Sea,Grotto_West);
+            roomMove(ledgeByDoor, topOfSteps);
+            roomMove(undergroundSea, grottoWest);
             roomMove(denseJungle, knoll);
             roomMove(vastChamber, throneRoomEast);
             if(!brassLantern.destroyed) 
@@ -1484,11 +1490,36 @@ finishOptionResurrect: FinishOption
                 brassLantern.moveInto(atEndOfRoad);
             }
             
+            if(wumpus.isChasing && wumpus.upset && ! transRoomDoor.isunlocked) 
+            {
+                wumpus.upset = nil;
+                transRoomDoor.moveInto(nil);
+                octagonalRoom.east = nil;
+                octagonalRoom.NPCexits -= transRoomDoor;
+                rockfalls.ismoved = nil;
+            }            
+            
+            for(o = firstObj(Chaser); o != nil; o = nextObj(o, Chaser))
+                // DJP: banish chasers only if they're actually chasing.
+                if (o.isChasing) o.banish();
+            // Check for an in-between state, when the blob has been notified
+            // for summoning but this hasn't yet taken place.
+            if(global.triggered_alert && !global.security_alert)
+                eventManager.removeEvent(blob,&summon);
+            
+            // Nore stuff to be done here.
+            
+            "\b";
+            gPlayerChar.health = 100;
+            
+            
+            
             // There's a whole more here that can't be included
             // until the relevant items have been implemented.
             
             gPlayerChar.moveInto(insideBuilding);
-            gRoom.lookAroundWithin();              
+            gRoom.lookAroundWithin();     
+            gPlayerChar.prevloc = nil; // DJP - destroy info about previous location
             
             if(pcount >= 1) 
             {
@@ -1505,7 +1536,7 @@ finishOptionResurrect: FinishOption
             abort;
             
             /* tell finishGame not to ask for another option */
-//            return nil;
+            //            return nil;
         }
               
         
