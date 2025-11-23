@@ -2,7 +2,7 @@
 This project is for implementing a TADS3/adv3Lite (stictly speaking, adv3Liter) port of the TADS 2 polyadv port of Colossal Cave
 
 This is very much a work in progress at an early stage. At this point it is possible to play through to a winning ending in the original 350 point game, but even this version is not yet complete and there may well be many bugs. The commands for a successful playthrough are in the file walk.cmd, but this walkthrough will work only in a game compiled for debugging (due to randomization issues).
-In order to compile the code provided here you will need to obtain the latest version of adv3Lite (2.2.1.1.2 or later) from GitHub.
+In order to compile the code provided here you will need to obtain the latest version of adv3Lite (2.2.1.2.7 or later) from GitHub. Most of the code for the 550 and 551 point games is in place (which means most of the 701 point game as well) but still needs testing, denugging and polishing. I'll me leaving the 701p game alone for now, but may come back to it when all the rest it done. 
 
 This repo is provided to let anyone interested see how work on this port is progressing and maybe contribute to it.
 
