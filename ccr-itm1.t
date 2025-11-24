@@ -56,6 +56,10 @@ flowers: CanPick, Thing 'beautiful flowers; yellow blue wild attractive;;them' @
             "The hum of the bees rises to an angry buzz as {i}
             move{s/d} towards the flowers. ";
     }    
+    
+    actionDobjCount = "You have roughly 20 flowers. "
+    
+    canFeedWithMe = true
 ;
 
 
@@ -233,6 +237,7 @@ smallKey: Key 'small brass key' @shelf
     game551 = true
     mass = 1    
     getFacets = [tinyKey, largeKey]
+//    actualLockList = [smallDoor]
 ;
 
 /* seen when small */
@@ -400,6 +405,16 @@ cakes: Food 'tiny cakes; (cup);cupcakes cake cupcake ;them' @shelf
             gActor.roomMoveTravel(&transmove,topOfSteps);           
         }
     }
+    
+    actionDobjCount()
+    {
+        if (self.isEaten) inherited();
+        else 
+            "There's something strange about these cakes which makes it hard
+            to count them accurately, but there appear to be about a dozen
+            of them. ";
+    }
+    
 ;   
 
 /* 108 */
@@ -451,9 +466,9 @@ poster: Thing 'poster; faded' @insideBuilding
     and he is pointing a finger at you.  Below the picture are the words:
     <q>I want you!--To report all good ideas for extensions to this game
     to me without delay.  Remember: ask not what ADVENTURE can do to
-    you; ask what you can do for ADVENTURE.\ \n
-    -\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ *  *  * \n
-    A public service of the John Dillinger Died for You Society.</q>" 
+    you; ask what you can do for ADVENTURE.</q>\ \b
+    <center>*  *  *</center> \b
+    <q>A public service of the John Dillinger Died for You Society.</q>" 
     
     
     game551 = true
@@ -506,6 +521,7 @@ poster: Thing 'poster; faded' @insideBuilding
     }
  
     iobjFor(SweepWith) asIobjFor(CleanWith)    
+    iobjFor(DustWith) asIobjFor(CleanWith)
 ;
 
 /* 118 */
@@ -642,6 +658,16 @@ cloak: Wearable, Treasure 'silken cloak; lovely warm' @cloakroom
         }
     }
     
+    dobjFor(Yank)
+    {
+        check()
+        {
+            if(!yankObj)
+                inherited();
+        }
+        
+    }
+    
     icecheck(actor)
     {
         if(wornBy == actor && actor.isIn(hallOfIce))   
@@ -754,7 +780,7 @@ horn: Treasure 'silver horn; solid' @westSideOfFissure
             else if(gActor.isIn(dog.getOutermostRoom))                
             {
                 if(dog.isAsleep)
-                    dog.sleepLie();
+                    dog.sleeplie();
             }
             else if(gActor.isIn(wumpus.getOutermostRoom) && wumpus.isAsleep)
                 nestedAction(Wake, wumpus);
@@ -1065,9 +1091,9 @@ slippers: Wearable, Treasure 'pair of ruby slippers;;shoes;it them' @overRainbow
         action() { doInstead(Click); }
     }
 ;
-
-/* Enable the command CLICK SLIPPERS just for the slippers */
-SpecialVerb 'click' @slippers 'sp#act';
+//
+///* Enable the command CLICK SLIPPERS just for the slippers */
+//SpecialVerb 'click' @slippers 'sp#act';
 
 /* 68 */
 lyre: Treasure 'delicate lyre' @lowNSPassage
@@ -1113,7 +1139,7 @@ sapphire: Treasure 'star sapphire; six-pointed blue;starstone' @starChamber
    powers.
 */
 /* Actually it can't really hold liquids but we pretend that it does */
-    chalice: LiquidContainer, Treasure 'silver chalice; holy ornate cracked priceless antique; grail'
+    chalice: Treasure 'ornate silver chalice; holy cracked priceless antique; grail'
     @gothicChapel
     "It's a priceless antique.  However, it appears to be slightly
             cracked, and can't actually be used. "
@@ -1204,6 +1230,7 @@ goldRing: ProtectRing, Wearable, Treasure 'small gold ring; plain'
     deducedmagic = nil
     
     initSpecialDesc = "On the Wumpus' finger is a small gold ring! "
+    specialDescOrder = 150 // report ring after Wumpus
     fromloc = wumpus
     
     dobjFor(Take)
@@ -1275,8 +1302,8 @@ silverDroplet: Treasure 'silver droplet ; mithril little of[prep] metal; sphere'
 wineInTheCask: ContLiquid, Treasure 'wine in the cask;in-cask'
     "It's a large quantity of sparkling vintage wine.  It must be very valuable! "
     game551 = true
-    basis = 3
-
+    basis = 3   
+    
     mycont = cask
     myflag = &hasWine
 
@@ -1420,7 +1447,7 @@ glowingStone: LightSource, Treasure 'glowing stone; green greenish glowing stran
     mass = 1
     basis = 4
 
-    initdesc = "Nearby, a strange, greenish stone is glowing brightly! "
+    initSpecialDesc = "Nearby, a strange, greenish stone is glowing brightly! "
     
     mycont = canister  // used by troll code  
 ;
@@ -1579,8 +1606,8 @@ crystalBall: Treasure 'crystal ball; quartz;sphere palantir' @crystalPalace
                                 you seem to be somewhere else again...<.p>"; 
                                 gActor.actionMoveInto(castlePinnacle);
                                 sapphire.actionMoveInto(castlePinnacle);
-                                "\("; gActor.location.theName; "\)";
-                                gActor.location.lookAroundWithin();
+                                showRoom(gActor.location); 
+//                                gActor.location.lookAroundWithin();
                                 
                                 "<.p>You see the elf walk down the steps. ";
                             }

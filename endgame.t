@@ -451,6 +451,9 @@ class ObjPile: DispensingCollective
     }
     
     iobjFor(PutOn) asIobjFor(PutIn)
+    
+    checkDobjCount = "It would take {me} all day to count all
+        <<dispensedClass.pluralNameFrom(dispensedClass.theName)>> {here}. "
 ;
   
 
@@ -515,7 +518,7 @@ atNEEnd: Room, NoNPC 'At NE End'
     
 ;
     
-+ blackRodBundle: ObjPile 'bundle of rods, black another more; rod'
++ blackRodBundle: ObjPile 'bundle of rods; black another more; rod'
     "It's a bundle of black rods with stars on their ends, like
      the one you found in the Debris Room. "
     
@@ -531,7 +534,7 @@ atNEEnd: Room, NoNPC 'At NE End'
 mirror2: MultiLoc, Fixture 'enormous mirror'
     "It looks like an ordinary, albeit enormous, mirror. "
     
-    loclationList = [atNEEnd, atSWEnd]
+    locationList = [atNEEnd, atSWEnd]
 ;
 
 
@@ -652,6 +655,7 @@ snakepit: Fixture 'pit of snakes; fierce green snake'
     cannotEnterMsg = cannotTakeMsg
     cannotBoardMsg = cannotTakeMsg
     lookInMsg = 'The pit is full of fierce green snakes. '
+    checkDobjCount = "It would take you all day to count the snakes. ";
 ;
 
 
@@ -1576,11 +1580,11 @@ horror()
     else if(PendantItem.classcount(gPlayerChar) > 1)
     " and notices your pendants. ";
     else ". ";
-    <q>"I do believe that <i>you</i> were our intruder!  Well, you caused us all a 
+    "<q>I do believe that <i>you</i> were our intruder!  Well, you caused us all a 
     lot of trouble, but we were very interested to find out how the Wumpi
     managed to come back from Red level.  So interested, in fact, that we
     paid them to clear a path to the Upper Transindection Chamber.  And the 
-    rest is history.  Welcome to the New Order!\" ";
+    rest is history.  Welcome to the New Order!</q> ";
     P();
     "Before you lose consciousness, your mind is full of \"if only\"s. ";
     P();

@@ -126,7 +126,7 @@ global: object
         else "Please leave via main office.\"";
     }
     
-    
+    knowsgreenname = nil
     // game version selection
     removelist = []     // list of objects to be removed
     movelist = []       // list of objects to be moved to different
@@ -148,7 +148,7 @@ global: object
     checklist = []      // treasures etc. whose locations should be
                         // checked.
     
-    allpointslist = []
+    allpointlist = []
 
 //    travelActor = gPlayerChar    // actor doing the travelling, for use by travel
 //                        // methods.
@@ -345,6 +345,29 @@ gamePreinit: PreinitObject
                 }
                 o = nextObj(o, Treasure);
             }
+            
+            /* 
+             *   count coins (whether valuable or not) and all non-treasure objects which score
+             *   points
+             */
+            o = firstObj(Thing);
+            while (o != nil) {
+                condit = (o.allversions || o.(gameprop));
+                if(condit) {
+                    if(o.ofKind(Coin)) i.coinsets++;
+                }
+                if( ((o.takepoints != nil) || (o.depositpoints != nil))
+                   && (!o.ofKind(Treasure)) && condit) {
+                    if(!o.bonustreasure) {
+                        i.pointobjlist = i.pointobjlist + o;
+                        i.pointobjs = i.pointobjs + 1;
+                    }
+                    else
+                        i.bonuspointobjs += o;
+                }
+                o = nextObj(o, Thing);
+            }
+            
             
             // List of treasures still to find (for debugging)
             i.treasuresToFind = i.treasurelist;
@@ -915,7 +938,8 @@ class VerGlob: object
     // if extra copying or setup is to be done.
     copy {
         global.maxresurrect  = self.maxresurrect;
-        libScore.totalScore  = self.score;
+        silentIncscore(score, 'starting out');        
+//        libScore.totalScore  = self.score;
         global.maxscore      = self.maxscore;
         gameMain.maxScore = maxscore; // Added for adv3Lite sooring system
         global.novicepoints  = self.novicepoints;
@@ -1612,7 +1636,7 @@ modify Player
                 }
             }
             
-            return;     // no travel 
+            exit;     // no travel 
         }
         
         // Save the travel route and previous travel route
@@ -1893,3 +1917,32 @@ transient specialRestart: object
 
 P() { "<.p>";}
 I() {"\t"; }
+
+class VarLoc: PreinitObject
+    execute()
+    {
+        varlocMonitor.valLocItems += self;      
+    }
+    updateLocation()
+    {
+        local newLoc = calcLocation();
+        if(newLoc != location)
+            actionMoveInto(newLoc);
+    }
+    
+    calcLocation = location   
+;
+
+varlocMonitor: InitObject
+    valLocItems = []
+    execute()
+    {
+        local vardaemon = new Daemon(self, &updateLocations, 1);           
+        vardaemon.eventOrder = 50;
+    }
+    updateLocations()
+    {
+        foreach(local o in valLocItems)
+            o.updateLocation();
+    } 
+;

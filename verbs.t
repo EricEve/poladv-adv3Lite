@@ -83,6 +83,49 @@ VerbRule(EnableMazeskip)
     verbPhrase = 'enable/enabling mazeskip command'
 ;
 
+DefineSystemAction(NoviceMode)
+    execAction(c)
+    {
+        if(gTurns > 0)
+        {
+            "This verb is only valid in the first turn of the game. ";
+            abort;
+        }
+        if(global.novicemode)
+        {
+            "The game is already in novice mode. ";
+            abort;
+        }
+        
+        "By default, your lamp will
+        last for <<(brassLantern.fuelLevel)>> turns, but in novice
+        mode it will last for 1000 turns.  However, this will cost you 
+        <<(-1 * global.novicepoints)>> points.\n
+        Do you want a novice mode game? >";
+        
+        if (yesOrNo()) 
+        {
+            global.novicemode = true;
+            addToScore(global.novicepoints, 'for using novice mode');
+            brassLantern.fuelLevel = 1000;
+            "\bOK -- the game is now in novice mode. "; 
+        }
+        else
+            "\nVery well. ";
+        abort;
+        
+    }
+;
+
+VerbRule(NoviceMode)
+    'novice' (|'mode')
+    :VerbProduction
+    action = NoviceMode
+    verbPhrase = 'activate/activating novide mode'
+;
+
+
+
 DefineSystemAction(Health)
     execAction(c)
     {
@@ -205,7 +248,6 @@ DefVersionRestart(Restart701p, 'game701p', 701, 11);
 DefVersionRestart(Restart580, 'game580', 580, 7);
 
 
-
 DefineTAction(Cross)
 ;
 
@@ -298,6 +340,29 @@ VerbRule(SwimIn)
     action = Swim
     verbPhrase = 'swim/swimming (in what)'
 ;
+
+DefineTAction(HideBehind)
+;
+VerbRule(HideBehind)
+    ('hide'|'go'|'get') 'behind' singleDobj
+    : VerbProduction
+    action = HideBehind
+    verbPhrase = 'hide/hiding (behind what'
+    missingQ = 'what do you want to hide behind'
+    dobjReply = behindSingleNoun
+;
+
+DefineTAction(HideUnder)
+;
+VerbRule(HideUnder)
+    ('hide'|'go'|'get') 'under' singleDobj
+    : VerbProduction
+    action = HideUnder
+    verbPhrase = 'hide/hiding (behind what'
+    missingQ = 'what do you want to hide behind'
+    dobjReply = behindSingleNoun
+;
+
 
 DefineTAction(PoleDir)
     
@@ -534,6 +599,19 @@ VerbRule(FooBar)
     : VerbProduction
     action = FooBar
 ;
+
+DefineTVerb(Count, 'count' multiDobj, 'count', 'counting');
+
+modify VerbRule(Fasten)
+    ('fasten' | 'tie' | 'knot' | [badness 500] 'buckle' | 'buckle' 'up') multiDobj
+    :
+;
+
+modify VerbRule(Unfasten)
+    ('unfasten' | 'unbuckle' |'untie' | 'unknot' ) multiDobj
+    : 
+;
+
 
 DefineTAction(Rub)
 ;
@@ -1437,6 +1515,9 @@ class MagicTravelAction: MagicWord, SpecialTravelAction
     {
         "Nothing happens. ";
     }
+    
+    /* Presumably we don't need light to use a magic word. */
+    darkTravelAllowed = true
 ;
 
 #define DefMTA(action, prop) action : MagicTravelAction travelProp = prop allowDarkTravel = true
@@ -1446,7 +1527,13 @@ class MagicTravelAction: MagicWord, SpecialTravelAction
     DefMTA(action, prop)
 
 /* Define all the magic travel actions */
-DefMagicTravel(Xyzzy, &xyzzy, 'xyzzy');
+DefMagicTravel(Xyzzy, &xyzzy, 'xyzzy')
+    omegapsical_order = 2
+    omegaps580_order = 2
+    omegaps701_order = 2
+    omegaps701p_order = 2
+    verb = 'xyzzy'    
+;
 
 DefMagicTravel(Plugh, &plugh, 'plugh')
     omegapsical_order = 6
@@ -1470,7 +1557,7 @@ DefMagicTravel(Phuce, &phuce, 'phuce')
     omegaps701p_order = 10
     execAction(c)
     {
-        if (!global.newgame)
+        if (!global.newGame)
             "Nothing happens. ";
         else if (!knoll.seenit) {
             "Nothing happens.  If that's an attempt at Elvish magic, 
@@ -1478,7 +1565,7 @@ DefMagicTravel(Phuce, &phuce, 'phuce')
             correctly. ";
         }
         else
-            inherited();
+            inherited(c);
     }
 
 ;
@@ -1489,14 +1576,14 @@ DefMagicTravel(Smichel, &smichel, 'smichel'|'saint-michel')
     omegaps701p_order = 6
     execAction(c)
     {
-        if (!global.newgame) 
+        if (!global.newGame) 
             "Nothing happens. ";        
         else if (!riseOverBay.seenit) 
             "Nothing happens.  If that's an attempt at Elvish magic, 
             it won't work at all until you've heard the correct intonation
             for the words. ";        
         else 
-            inherited();
+            inherited(c);
     }
 ;
 
@@ -1509,7 +1596,7 @@ DefMagicTravel(Thurb, &thurb, 'thurb')
     verb = 'thurb'
 ;
 
-DefMagicTravel(Click, &click, 'click' (|('my'|'your'|)'heels'))
+DefMagicTravel(Click, &click, 'click' (|('my'|'your'|)('heels'|'slippers')))
     execAction(cmd)
 {
     if(slippers.wornBy != gActor)
@@ -1574,7 +1661,7 @@ DefMagicTravel(Phleece, &phleece, 'phleece')
 
 
 /* Define all the other special travel actions */
-DefSpecialTravel(Road, &road, 'road');    
+DefSpecialTravel(Road, &road, 'road' | 'hill');    
 DefSpecialTravel(PantryVerb, &to_pantry, 'pantry');  
 DefSpecialTravel(Building, &building, 'building' | 'house');    
 DefSpecialTravel(Valley, &valley, 'valley');  
@@ -1593,6 +1680,9 @@ DefSpecialTravel(BedAction, &bed, 'bed');
 DefSpecialTravel(Crawl, &crawl, 'crawl');
 DefSpecialTravel(Cobble, &cobble, 'cobble');
 DefSpecialTravel(PassageAction, &passage, (|'follow') ('passage' | 'tunnel' | 'opening'));
+DefSpecialTravel(SurfaceAction, &surface, 'surface');
+DefSpecialTravel(LowAction, &low, 'low');
+DefSpecialTravel(CanyonAction, &canyon, 'canyon');
 DefSpecialTravel(Left, &left, 'left');
 DefSpecialTravel(Right, &right, 'right');
 DefSpecialTravel(Middle, &middle, 'middle');
@@ -1605,8 +1695,15 @@ DefSpecialTravel(Hole, &hole, 'hole');
 DefSpecialTravel(Depression, &depression, 'depression' | 'grate');
 DefSpecialTravel(Entrance, &entrance, 'entrance');
 DefSpecialTravel(CaveAction, &cave, 'cave');
+DefSpecialTravel(Awkward, &awkward, 'awkward');
+DefSpecialTravel(Barren, &barren, 'barren');
+DefSpecialTravel(WallAction, &wall, 'wall');
+DefSpecialTravel(Broken, &broken, 'broken');
+DefSpecialTravel(FloorAction, &floor, 'floor');
+DefSpecialTravel(Slit, &slit, 'slit');
 
-DefSpecialTravel(Slab, &slab, 'slab');
+
+DefSpecialTravel(Slab, &slab, 'slab' | 'slabroom');
 DefSpecialTravel(Bedquilt, &bedquilt, 'bedquilt');
 
 DefSpecialTravel(Oriental, &oriental, 'oriental');
@@ -1615,31 +1712,54 @@ DefSpecialTravel(Shell, &shell, 'shell');
 DefSpecialTravel(Reservoir, &toReservoir, 'reservoir');
 DefSpecialTravel(Fork, &fork, 'fork');
 DefSpecialTravel(Crack, &crack, 'crack');
+DefSpecialTravel(Dome, &dome, 'dome');
+DefSpecialTravel(Steps, &steps, 'steps');
 DefSpecialTravel(Secret, &secret, 'secret');
 DefSpecialTravel(Dark, &dark, 'dark');
 DefSpecialTravel(Slide, &slide, 'slide');
 DefSpecialTravel(Chimney, &chimney, 'chimney');
+DefSpecialTravel(View, &view, 'view');
+DefSpecialTravel(Y2Action, &y2,'y2');
 
 DefSpecialTravel(Thunder, &thunder, 'thunder');
 
 DefSpecialTravel(GateAction, &gate, 'gate');
 
-
+DefSpecialTravel(Knoll, &toKnoll, 'knoll');
+DefSpecialTravel(Ledge, &ledge, 'ledge');
+DefSpecialTravel(Ice, &ice, 'ice');
+DefSpecialTravel(Grotto, &grotto, 'grotto');
+DefSpecialTravel(Gorge, &gorge, 'gorge');
+DefSpecialTravel(Lair, &lair, 'lair');
+DefSpecialTravel(FourierAction, &fourier, 'fourier');
+DefSpecialTravel(JonahAction, &jonah, 'jonah');
 DefSpecialTravel(Bridge, &bridge, 'bridge');
 DefSpecialTravel(Altar, &altar, 'altar');
 DefSpecialTravel(Balcony, &balcony, 'balcony');
 DefSpecialTravel(Corridor, &corridor, 'corridor');
+DefSpecialTravel(Pentagram, &pentagram, 'pentagram');
+DefSpecialTravel(Nondescript, &toNondescript, 'nondescript');
+DefSpecialTravel(Tube, &tube, 'tube');
+DefSpecialTravel(Peelgrunt, &toPeelgrunt, 'peelgrunt');
+DefSpecialTravel(SafeVerb, &toSafe, 'safe');
+DefSpecialTravel(Golden, &toGolden, 'golden');
+DefSpecialTravel(Arabasque, &toArabesque, 'arabesque');
+DefSpecialTravel(Translucent, &toTranslucent, 'translucent');
+
+    
+
+
+DefSpecialTravel(MainOffice, &mainOffice, 'main' | 'office' | 'main' 'office');
 
 DefSpecialTravel(Warm, &warm, 'warm') ;
 DefSpecialTravel(MazeSkip, &mazeskip, 'mazeskip' | 'skipmaze'| 'skip' 'maze')
-   execAction(c)
+    execAction(c)
 {
     if(global.mazeskip)
         inherited(c);
     else
         "You haven't enabled that command. ";
 }
-
 ;
 
                  
@@ -1647,6 +1767,29 @@ DefSpecialTravel(MazeSkip, &mazeskip, 'mazeskip' | 'skipmaze'| 'skip' 'maze')
 // THESE WILL NEED FURTHER WORK
 DefSpecialTravel(AnaVerb, &ana, 'ana');
 DefSpecialTravel(KataVerb, &kata, 'kata');
+
+osalVerb: MagicWord //not really
+   execAction(c)
+    {
+        "Nothing happens, and you have the distinct feeling that you're
+        missing something here ... ";
+    }
+;    
+DefVKTVerbRule(osal);
+
+phrosalVerb: MagicWord
+    execAction(c)
+    {
+        if(!game701p || gActor.getOutermostRoom == machineChamber)
+        {
+            "Nothing happens. ";
+            return;
+        }
+        /* To be added when we come to adding the 701p game. */
+        "Something should happen but it's not implemented yet. ";
+    }
+;
+
 
 modify VerbRule(MoveWith)
     ('move' | 'pull') singleDobj 'with' singleIobj

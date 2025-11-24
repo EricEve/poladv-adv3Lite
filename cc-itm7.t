@@ -9,6 +9,8 @@ card: Thing 'plastic ID card; white small rectangular of [prep]' @toolRoom
     and there is some kind of black strip running along the back. "
    
     initSpecialDesc =  "Over in one corner is a small rectangular piece of white plastic. "
+    
+    game580 = true
 ;
 
 disk: Treasure 'floppy disk; 8-inch;source adventure label' @computerRoom
@@ -18,6 +20,7 @@ disk: Treasure 'floppy disk; 8-inch;source adventure label' @computerRoom
     readDesc = "The disk label says <q>ADVENTURE SOURCE FILES<q>; the disk itself is
              unreadable without a floppy disk drive, and I don't see any of
              those here. "    
+    game580 = true
 ;
 
 poster_coll: MultiLoc, Thing 'poster'  
@@ -125,7 +128,7 @@ cups: Thing 'suction cups; of[prep];set;them' @toolRoom
 
 stamp: Treasure 'rare stamps; priceless of[prep];assortment; them' @desk
     "It is an assortment of rare stamps. " 
-    
+    game580 = true
      initSpecialDesc = "Resting on the desk are several priceless rare stamps! "
 //    location = Study
 ;

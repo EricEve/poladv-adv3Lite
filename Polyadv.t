@@ -207,9 +207,16 @@ me: Player 'you' @atEndOfRoad
         }
     }
     
+    actionDobjCount = "Oddly enough, {i} {have} two of those. "
+    
     mass = 0 // my hands shouldn't contribute to the weight I'm carrying!
 ;
 
++ myFeet: BodyPart '{} your feet; ;foot; them it'
+    "Frankly, your feet are nothing to write home about. "
+    actionDobjCount = "Let's see: you have one left foot and one right foot, so I 
+        guess that makes two feet in all. "
+;
 
 /* Suppress the notification of our initial points at game start */
 modify scoreNotifySettingsItem
@@ -277,14 +284,14 @@ aboutMenu: MenuItem 'About'
         P(); I(); "A word about magic.  In contrast to the Inform port,
         this game will allow you to use magic words which you've seen in
         previous games. ";  
-        if(global.newgame) {
+        if(global.newGame) {
             "But elvish magic only works for humans if you use it in the
             right place - where elves have used the same magic before.  And
             elvish magic words can only be used if you've heard the correct
             pronunciation. ";
         }
         if(global.game550) {
-            if(global.newgame)"Also, "; else "But take care: "; 
+            if(global.newGame)"Also, "; else "But take care: "; 
             "it can be dangerous to use certain words before
             you've seen them. ";
         }
@@ -367,7 +374,7 @@ aboutMenu: MenuItem 'About'
         there are other ways to determine whether you've been through
         some of the more harrowing sections.";
 
-        if(global.newgame) {
+        if(global.newGame) {
             P(); I();
             "In addition to getting yourself killed, you can also be wounded or
             injured in various (non-lethal) ways.  If you get burnt, poisoned,

@@ -7,7 +7,7 @@
 
 /* Mix-in class for rooms with a brassKey property */
 class KeyCheck: object    
-    brasskey = smallKey
+    brassKey = smallKey
     roomDaemon
     {
         local obj;
@@ -474,7 +474,7 @@ denseJungle: KeyCheck, OutsideRoom 'In a Dense Jungle'
     sober = true
     
 /* size of brass key as seen in this room */
-    brasskey = largeKey
+    brassKey = largeKey
 //    phuce = {
 //        local actor := getActor(&travelActor);
 //        phuce_messages.larger; 
@@ -505,7 +505,7 @@ saltMarshEdge: OutsideRoom 'At Edge of Salt Marsh'
     {
         calcDest
         {
-            if (rand(100) <= 50)
+            if (rand(100) <= 50 || nondeterministic == nil)
                 return knoll;
             else
                 return inForest3;
@@ -707,11 +707,9 @@ topOfSteps: KeyCheck, IndoorRoom 'At Top of steps (behind Thunder Hole)'
     "{I} {am} at the top of some arched steps.  On the east side there
     is a blank wall with a tiny door at the base and a shelf overhead.  On
     the other side a westward passage leads to the sea. "
-       
-    
+           
     game551 = true
     
-
     west = riverStyxE
     passage = riverStyxE
     steps = riverStyxE
@@ -735,6 +733,7 @@ topOfSteps: KeyCheck, IndoorRoom 'At Top of steps (behind Thunder Hole)'
     in asExit(east)
     east = smallDoor
     entrance asExit(east)
+    brassKey = smallKey
         
         
 //    myhints = [Elfindoorhint]
@@ -873,7 +872,7 @@ class ElfinDoor: DSDoor
     makeOpen(stat)
     {
         inherited(stat);
-        if(propType(&getFacets) == TypeList && getFacets.length > 0)
+        if(propType(&getFacets) == TypeList && getFacets.length > 0 && getFacets[1].isOpen != stat)
             getFacets[1].makeOpen(stat);
             
     }
@@ -881,13 +880,11 @@ class ElfinDoor: DSDoor
     makeLocked(stat)
     {
         inherited(stat);
-        if(propType(&getFacets) == TypeList && getFacets.length > 0)
+        if(propType(&getFacets) == TypeList && getFacets.length > 0 && getFacets[1].isLocked !=
+           stat)
             getFacets[1].makeLocked(stat);
             
-    }
-    
-    
-    
+    }   
 ;
 
 smallDoor: ElfinDoor 'tiny door' @topOfSteps @grottoWest
@@ -974,7 +971,7 @@ ledgeByDoor: KeyCheck, IndoorRoom 'On Ledge by Wrought Iron Door'
     
     east = ironDoor
     in asExit(east)
-    brasskey = largeKey
+    brassKey = largeKey
     
     phuce: TravelConnector -> topOfSteps
     {
@@ -1186,7 +1183,7 @@ undergroundSea: NoNPC, Room 'At Underground Sea'
     phuce
     {       
         phuce_messages.larger; 
-        actor.roomMoveTravel(&transmove,grottoWest);
+        gActor.roomMoveTravel(&transmove,grottoWest);
         
         // also move the objects on the other side of the door
         roomMove(ledgeByDoor, topOfSteps);        
@@ -1827,7 +1824,7 @@ starChamber: DarkRoom 'In Star Chamber '
     {
         calcDest
         {
-            if (rand(100) <= 50)
+            if (rand(100) <= 50 || !global.nondeterministic)
                 return elbowInPassage;
             else
                 return tunnelIntersection;
@@ -1844,7 +1841,7 @@ starChamber: DarkRoom 'In Star Chamber '
 ;
 /* 184 */
 elbowInPassage: DarkRoom 'At Elbow in Passage'
-    "{I} {am} at an elbow in a winding E/W passage.  {I(} {can} go SW or SE. "
+    "{I} {am} at an elbow in a winding E/W passage.  {I} {can} go SW or SE. "
     
     game551 = true   
 
@@ -2043,6 +2040,7 @@ inPhoneBooth1: Room 'In Phone Booth'
     isLit = rotunda.isLit
     myphone = phone1
     
+    out = rotunda    
 ;
 
 + phone1: Phone 'old banged-up payphone;ancient pay;phone receiver telephone handset payphone'
@@ -2068,8 +2066,7 @@ inPhoneBooth1: Room 'In Phone Booth'
             vandalize();
             slugs.moveInto(location);            
         }
-    }
-    
+    }    
 ;
 
 class Phone: Fixture 
@@ -2143,8 +2140,8 @@ class Phone: Fixture
         {
             takemethod();
             if (isanswering) answermethod();
-            else if (isbroken) brokenmethod(actor);
-            else dialtonemethod(actor);
+            else if (isbroken) brokenmethod();
+            else dialtonemethod();
             
             isanswering = nil;
         }            
@@ -2332,10 +2329,10 @@ class Phone: Fixture
 
 /* Make ANSWER PHONE equivalent to TAKE PHONE */
 SpecialVerb 'answer' 'take' [Phone, ProxyPhone]
-    objChecks(dobj, iobj, aobj)
-    {
-        dobj.isanswering = true;
-    }
+//    objChecks(dobj, iobj, aobj)
+//    {
+//        dobj.isanswering = true;
+//    }
 ;
 
 /* Make REPLACE PHONE equivalent to DROP PHONE */
@@ -2635,7 +2632,7 @@ flowerRoom: NoNPC, DarkRoom 'In Flower Room'
         }
         action
         {
-            doInstead(FeedWith, bees, gIobj);
+            doInstead(FeedWith, bees, gDobj);
         }
     }
            
@@ -2667,8 +2664,8 @@ EWCorridorE: DarkRoom 'At East End of Short E/W Corridor'
     {
         if(inArchedHall.jericho) 
             
-            "{I} {am{ looking west from the end of a short E/W corridor.
-            At %your% feet is a pile of loose rubble. On {my} left is
+            "{I} {am} looking west from the end of a short E/W corridor.
+            At {my} feet is a pile of loose rubble. On {my} left is
             a hole into another chamber. ";
         
         else 
@@ -2766,9 +2763,9 @@ fairyGrotto: Room 'In the Fairy Grotto'
     {
         canTravelerPass(actor)
         {
-            return !brassLantern.isIn(actor) && brassLantern.isLit;    
+            return !(brassLantern.isIn(actor) && brassLantern.isLit);    
         }
-        explainTravelerBarrier(actor, connector)
+        explainTravelBarrier(actor, connector)
         {
             "You go a short way down the bright passage, but the light
             grows to blinding intensity.  You can't continue. ";
@@ -3256,7 +3253,7 @@ winery: NoNPC, DarkRoom 'In Winery'
     pit = limestonePinnacles
 ;
 
-+ winefountain: RoomLiquid 'wine; of[prep];fountain'
++ wine: RoomLiquid 'wine; of[prep];fountain'
     "It appears to be expensive vintage wine!  It would be
         very valuable if you could find a suitable cask to carry it in.  "
     
@@ -3426,7 +3423,7 @@ rainbow_demise: Room 'Floor of the Rainbow Room'
 riverStyxApproach: OutsideRoom 'At Approach to River Styx'
     "{I} {am} in a dimly lit E/W passage behind Thunder Hole.
     Etched into the rock wall are the ominous words: \n
-    <i> \ \ \"You are approaching the River Styx.\ \ \ \ \ </i>n
+    <i> \ \ \"You are approaching the River Styx.\ \ \ \ \ </i>\n
     <i> \ \ Lasciate Ogni Speranza Voi Ch'Entrate.\"\ \ </i>"
     
     isIndoors = true
@@ -3466,7 +3463,7 @@ riverStyxApproach: OutsideRoom 'At Approach to River Styx'
 ;
 
 /* 228 */
-riverStyx: IndoorRoom '"At River Styx'
+riverStyx: IndoorRoom 'At River Styx'
     "{I} {am} at the River Styx, a narrow little stream cutting directly
     across the passageway.  The edge of the stream is littered with sticks
     and other debris washed in by a recent rainfall.  On the far side
@@ -3755,7 +3752,7 @@ livingMaze1: OutsideRoom 'In Living Maze (red berries)'
     // you make a wrong move.
     travelerEntering(traveler, origin)
     {
-        actor.kaleid = true;
+        traveler.kaleid = true;
         inherited(traveler, origin);
     }
    
@@ -3995,8 +3992,8 @@ castleWalls: MultiLoc, Decoration 'walls;stone stone-built (castle) built;wall;t
     adjective = 'castle'
     locationList = [castlePinnacle, outerCourtyard]    
     
-//    doCount(actor) = {"The walls form an octagonal shape - so there are
-//        eight of them. ";}
+    actionDobjCount = "The walls form an octagonal shape -- so there are
+        eight of them. ";
 ;
 
 hedges: MultiLoc, Decoration 'hedges and their leaves and flowers; multicolored multicoloured;
@@ -4006,8 +4003,8 @@ hedges: MultiLoc, Decoration 'hedges and their leaves and flowers; multicolored 
         outerCourtyard, livingMaze1, livingMaze2,
         livingMaze3, livingMaze4, livingMaze5, livingMaze6
     ]
-//    doCount(actor) = {"You quickly give up the attempt to count the
-//        multicolored hedges. ";}
+    checkDobjCount = "You quickly give up the attempt to count the
+        multicolored hedges. "
 ;
 
 castleRoom: IndoorRoom 'Octagonal Castle Room'

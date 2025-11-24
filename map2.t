@@ -4,9 +4,9 @@
 #include "advlite.h"
 
 /* 
- *   This file contains locations that aren't needed in the 300 point game but are referenced in
- *   other parts of the code. They may be moved and fully implemented once we come to implement
- *   other versions of the game.
+ *   This file contains locations that aren't needed in the 350, 550 or 551 point games but are
+ *   referenced in other parts of the code. They may be moved and fully implemented once we come to
+ *   implement other versions of the game, specifically the 701p game.
  */
 
 
@@ -68,6 +68,7 @@ transRoomDoor: Thing
 greenMaintenanceRoom: Room;
 blueMaintenanceRoom: Room;
 onLadder: DarkRoom;
+machineChamber: Room;
 
 rockfalls: Fixture
     ismoved = nil
@@ -78,3 +79,6 @@ octagonalRoom: Room
     NPCexits = []
 ;
 
+blueBoard: Fixture 'blue board'
+    isread = nil
+;

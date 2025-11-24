@@ -158,6 +158,9 @@ goblins: Feedable, Chaser 'gooseberry goblins;silent giggling vicious little sla
     
     cannotTakeMsg = 'Probably not a wise idea. '
     cannotEatMag = 'Yeetttch!  I think I just lost my appetite. '
+    
+    checkDobjCount = "You haven't got time to hang around counting the goblins - there
+        are far to many. ";
 ;
 
 actionThrowAt(Weapon dobj, goblins iobj)

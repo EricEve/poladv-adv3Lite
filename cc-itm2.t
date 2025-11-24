@@ -729,6 +729,7 @@ helmet: ProtectRing, Wearable, Treasure  'gem-encrusted visorless helmet; gem en
 sceptre: Treasure 'sapphire sceptre; long encrusted' @eastAudience
     "It's a long sceptre, ornately encrusted with sapphires!"
     
+    game550 = true
     mentionName = "a long, sapphire-encrusted sceptre"    
     
     dobjFor(Take)

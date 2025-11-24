@@ -397,6 +397,31 @@ modify Thing
         report() { "Knocking on <<gActionListStr>> achieves nothing. ";}
     }
     
+    dobjFor(Count)
+    {
+        preCond = [objVisible]
+        report()
+        {
+            if(gCommand.dobjs.length == gCommand.action.reportList.length)
+                "{I} {see} <<spellNumber(gCommand.action.reportList.length)>> of those {here}. ";
+        }        
+    }
+    
+    
+    dobjFor(HideBehind) 
+    { 
+        
+        preCond = [touchObj]
+        verify() { illogical(cannotHideBehindMsg); } 
+    }
+    dobjFor(HideUnder)     
+    { 
+        preCond = [touchObj]
+        verify() { illogical(cannotHideUnderMsg); } 
+    }
+    cannotHideBehindMsg = '{I} {can\'t} hide behind {that dobj}. '
+    cannotHideUnderMsg = '{I} {can\'t} hide under {that dobj}. '
+    
     /* Other mods roughly corresponding to mods to thing and item classes in TADS 2 advmods.t */
     
     actionMoveInto(loc)
@@ -430,8 +455,8 @@ modify Thing
             /* Shouldn't this bne implemented on the objects in questoion? */
             // Special case: check for wine in the cask (which is a floating
             // item)
-//            if ((self == cask || cask.isInside(self)) && cask.haswine)
-//                global.checklist += wine_in_the_cask;
+            if ((self == cask || cask.isIn(self)) && cask.hasWine)
+                global.checklist += wineInTheCask;
             
             if(bonusTreasure && !bonusFound)
             {
@@ -481,16 +506,12 @@ modify Thing
                 }
                 if(addpoints)
                 {
-                    global.allpointslist += self;
+                    global.allpointlist += self;
                     global.extras += addpoints;
                     global.maxscore += addpoints;
                     global.maxhiked += addpoints;
                     gameMain.maxScore = global.maxscore;
-                }
-                
-                
-                
-                
+                }               
             }
         }
         

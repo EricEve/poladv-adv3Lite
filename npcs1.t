@@ -465,7 +465,7 @@ wumpus: Feedable, Chaser 'Wumpus; large hairy huge sleeping ;monster creature; h
             searchedonce = true;
         }
     }
-    summon(loc)
+    summon(loc = gRoom)
     {
         isAsleep = nil;
         // Resurrect the Wumpus for the Summon command
@@ -614,7 +614,7 @@ wumpus: Feedable, Chaser 'Wumpus; large hairy huge sleeping ;monster creature; h
     }  
 ;
 
-bees: Feedable, Fixture 'bees;;swarm;them' @flowerRoom
+bees: Feedable, Actor 'bees;;swarm;them' @flowerRoom
     desc
     {
         if(!arefed) "The bees swarm protectively around the hive. ";
@@ -622,6 +622,22 @@ bees: Feedable, Fixture 'bees;;swarm;them' @flowerRoom
     }
        
     arefed = nil
+    
+    // GIVING
+    iobjFor(GiveTo)
+    {
+        verify() {}
+        action()
+        {
+            if(gDobj == flowers)
+                doInstead(FeedWith, bees, gDobj);
+            else if(gDobj.ofKind(ContLiquid) && gDobj.myflag is in (&hasWater, hasWine))
+                doInstead(FeedWith, bees, gDobj);
+            else 
+                "The bees wouldn't be interested in {the dobj}. ";
+        }
+    }   
+   
     
     // ATTACK
     dobjFor(Attack) { verify() { illogical('That would only enrage the bees! '); }}
@@ -652,7 +668,7 @@ bees: Feedable, Fixture 'bees;;swarm;them' @flowerRoom
         {
             if (gIobj == flowers) 
             {
-                if(tryImplicitAction(Take, flowers))
+                if(flowers.isDirectlyHeldBy(gActor) || tryImplicitAction(Take, flowers))
                 {
                     "The bees swarm over the fresh flowers, leaving the hive
                     unguarded and revealing a sweet honeycomb.";
@@ -668,6 +684,7 @@ bees: Feedable, Fixture 'bees;;swarm;them' @flowerRoom
     
     // OTHER (verb defaults)
     verifyDobjRub { illogical('''Don't be ridiculous. ''');}
+    checkDobjCount = "You couldn't possibly count the bees! "
     
     checkReach(actor)
     {

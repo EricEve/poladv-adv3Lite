@@ -83,11 +83,11 @@ class LiquidContainer: Thing
     desc 
     {
         if (hasWater)
-            "\^<<contName>> is full of clear water. ";
+            "The <<contName>> is full of clear water. ";
         else if (hasOil)
-            "\^<<contName>> is full of oil. ";
+            "The <<contName>> is full of oil. ";
         else if (hasWine)
-            "\^<<contName>> is full of wine. ";
+            "The <<contName>> is full of wine. ";
         else 
             "There is nothing inside <<contName>>. ";
         
@@ -105,7 +105,7 @@ class LiquidContainer: Thing
         verify()
         {
             if(!isEmpty)
-                illogicalNow('\^<<contName>> is already full of <<myLiquid>>. ');     
+                illogicalNow('The <<contName>> is already full of <<myLiquid>>. ');     
             
         }
         
@@ -113,17 +113,17 @@ class LiquidContainer: Thing
         {
             if(gDobj == oil)
             {
-                "\^<<contName>> is  now full of oil. ";
+                "The <<contName>> is  now full of oil. ";
                 myLiquid = 'oil';
             }
             else if(gDobj == wine)
             {
-                "\^<<contName>> is now full of wine. ";
+                "The <<contName>> is now full of wine. ";
                 myLiquid = 'wine';
             }
             else if(gDobj.ofKind(StreamItem))
             {  
-                "\^<<contName>> is now full of water.";
+                "The <<contName>> is now full of water.";
                 myLiquid = 'water';                   
             }
             /* We shouldn't reach this branch. */
@@ -1159,28 +1159,28 @@ spelunkerToday: Thing 'recent issues of Spelunker Today;dwarvish; magazines issu
         if (global.newGame) 
         {
              isRead = true;
-//            "However, two pictures attract {my} attention. ";
-//             if (safeCombination.isseen) {
-//                 "One shows a dwarf sweeping the rock in the
-//                 Dusty Rock room, revealing the inscription. ";
-//             }
-//             else {
-//                 "One shows a dwarf brushing the
-//                 dust off a rock, revealing an inscription which looks like
-//                 a series of numbers - a date, perhaps? Unfortunately
-//                 you can't read them clearly. ";
-//             }
-//             if (ThroneRoom.seen) {
-//                 "Another picture shows the diminutive Mountain King
-//                 sitting on his throne, wearing his little crown and
-//                 holding a black rod with a shiny star on an end. ";
-//             }
-//             else {
-//                 "Another picture shows
-//                 a king sitting on a large, intricately-wrought throne.
-//                 He wears a heavy-looking crown, and he holds a long black
-//                 staff with a shiny metal star on one end.";
-//             }
+            "However, two pictures attract {my} attention. ";
+             if (safeCombination.seen) {
+                 "One shows a dwarf sweeping the rock in the
+                 Dusty Rock room, revealing the inscription. ";
+             }
+             else {
+                 "One shows a dwarf brushing the
+                 dust off a rock, revealing an inscription which looks like
+                 a series of numbers - a date, perhaps? Unfortunately
+                 you can't read them clearly. ";
+             }
+             if (throneRoom.seen) {
+                 "Another picture shows the diminutive Mountain King
+                 sitting on his throne, wearing his little crown and
+                 holding a black rod with a shiny star on an end. ";
+             }
+             else {
+                 "Another picture shows
+                 a king sitting on a large, intricately-wrought throne.
+                 He wears a heavy-looking crown, and he holds a long black
+                 staff with a shiny metal star on one end.";
+             }
         }
        read = true;
     }
@@ -1443,7 +1443,16 @@ setOfKeys: Key, Surface 'set of keys;key; keyring ring key-ring ' @insideBuildin
     mass = 1
     location551 = pantry
     
-    actualLockList = [grate, goldenChain]
+    actualLockList = global.oldGame ? [grate, goldenChain] : [grate, goldenChain, treasureChest]
+    plausibleLockList = [grate, goldenChain, treasureChest]
+    
+    keyDoesntFitMsg
+    {
+        if(!global.oldGame || gDobj != treasureChest)
+            return inherited;
+        return inherited + ' Still, it is obviously full of fabulously valuable treasures, so 
+            we\'ll allow you the points for just leaving it in the building. ';
+    }
     
     iobjFor(PutOn)
     {
@@ -1461,6 +1470,17 @@ setOfKeys: Key, Surface 'set of keys;key; keyring ring key-ring ' @insideBuildin
                 
         }
     }
+    actionDobjCount()
+    {
+        "There are about half a dozen keys on the ring";
+        if (contents.length > 0)
+            ", plus the keys which you have attached. ";
+        else
+            ". ";
+    }
+    iobjFor(AttachTo) { remap = [PutOn, gDobj, self] }
+    iobjFor(FastenTo) { remap = [PutOn, gDobj, self] }
+    iobjFor(DetachFrom) { remap = [TakeFrom, gDobj, self] }
 ;
 
 /*
@@ -1482,8 +1502,10 @@ largeGoldNugget: Treasure 'large gold nugget; sparkling' @inNuggetOfGoldRoom
 severalDiamonds: Treasure '() several diamonds; high quality high-quality;;them' 
     @westSideOfFissure
     "They look to be of the highest quality! "
+    mass = 2
+    basis = 2
     theName = 'the diamonds'
-//    location551 = hallOfIce
+    location551 = hallOfIce
     olddepositpoints = 10
 ;
 
@@ -1535,7 +1557,8 @@ treasureChest: OpenableContainer, Treasure 'treasure chest' @deadEnd13
         }
     }
 
-    lockability = lockableWithKey
+    lockability = lockableWithKey 
+    
     mass = 5
     basis = 5
     spotted = nil
@@ -1563,10 +1586,8 @@ trident: Treasure 'jeweled trident; jewel-encrusted encrusted fabulous' @inCaver
     mass = 3
     basis = 2
     olddepositpoints = 14
-//    targloc = treasure_chest
-
-    
-//    location551 = Blue_Grotto_East    // changed for 551-point version
+    targloc = treasureChest    
+    location551 = blueGrottoEast    // changed for 551-point version
    
 
     isLarge = true
@@ -2047,16 +2068,33 @@ class OldBatteries: Thing 'set of worn-out batteries;old worn (out) worn-out dea
     }
 ;
 
-class ContLiquid: Fixture
+class ContLiquid: VarLoc, Fixture
     mycont = nil
     myflag = nil
+    calcLocation = (mycont.(myflag) ? mycont : nil)
     dobjFor(Take) {remap = mycont ?? nil}
     dobjFor(Drop) {remap = mycont ?? nil}
-    dobjFor(PourOm) {remap = mycont ?? nil}
+    dobjFor(PourOnto) {remap = mycont ?? nil}
     dobjFor(Drink) {remap = mycont ?? nil}
     dobjFor(GiveTo) {remap = mycont ?? nil}
+    verifyDobjThrowAt() { if(mycont) mycont.verifyDobjThrowAt(); }
+    verifyDobjThrowTo() { if(mycont) mycont.verifyDobjThrowTo(); }  
+    checkDobjPutIn()
+    {
+        "{The subj iobj} would leak all over the place if you tried to put liquids in it. ";
+    }
+    /*  
+     *   In case there is any rogue code which tries to move the liquid, anywhere but nil or its
+     *   proper container the moveInto method will move the container instead.
+     */
     
-    
+    moveInto(loc)
+    {
+        if(loc is in (nil, mycont))
+            inherited(loc);
+        else
+            mycont.moveInto(loc);
+    }       
 ;
 
 /* 81 */
@@ -2071,15 +2109,12 @@ waterInTheBottle: ContLiquid 'water in the bottle; bottled'
 /* 83 */
 oilInTheBottle: ContLiquid 'oil in the bottle; bottled'
    "It looks like ordinary oil to me. "
-    myCont = bottle
+    mycont = bottle
     myflag = &hasOil
     aName = 'oil'
     theName = 'the bottled oil'    
 ;
  
-
-wine: ContLiquid 'wine'
-;
 
 greyRod:Thing 'gray rod'
 ;

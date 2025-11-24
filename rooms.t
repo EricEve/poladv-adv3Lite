@@ -15,9 +15,21 @@ class AlikeMazeRoom: DarkRoom 'Maze of Twisty Little Passages, All Alike'
  * A class for the dead ends.
  */
 class DeadEndRoom: DarkRoom 'At a Dead End'
-    "{I} {have} reached a dead end. "
-    
+    "{I} {have} reached a dead end. "    
 ;
+
+modify StairwayUp
+    checkDobjCount = "You have better things to do than count steps and stairs. "
+;
+
+modify StairwayDown
+    checkDobjCount = "You have better things to do than count steps and stairs. "
+;
+
+modify DSStairway
+    checkDobjCount = "You have better things to do than count steps and stairs. "
+;
+
 
 /* A class to allow players who hate mazes to escape the tedium of having to navigate them. */
 class MazeSkipConnector: VarDest, TravelConnector
@@ -137,7 +149,7 @@ class DarkRoom: Room
     
     travelDesc() 
     { 
-        if(!isIlluminated)
+        if(!isIlluminated && !gActor.isThereALightSourceIn(gActor.allContents))
             pitfall(); 
     }    
     
@@ -284,13 +296,16 @@ atEndOfRoad: OutsideRoom 'At End of Road'
     stream = inAValley
     forest = inForest1
     depression = outsideGrate    
+    toKnoll = knoll
+    thunder = thunderHole
+    hole = thunderHole
     
     nolampwarn = true
 ;
 
 + walls: Decoration 'walls;;wall;them'
     "The buiiding has four of them. "
-    decorationActions = inherited + ThrowAt
+    decorationActions = inherited + ThrowAt 
 ;
 
 MultiLoc, Enterable 'building; small brick well; house wellhouse'
@@ -324,6 +339,8 @@ MultiLoc, Decoration 'forest; surrounding open hardwood oak maple pine
     locationList = [atEndOfRoad, atHillInRoad, inForest1, inForest2, inForest3,inAValley]
     
     cannotClimbMsg = 'None of the trees appear to be easily climbable. '
+    
+    actionDobjCount = "There is one forest, but you can't possibly count all the treees. "
 ;
 
 MultiLoc, Decoration 'road;;street path'    
@@ -412,7 +429,7 @@ insideBuilding: IndoorRoom 'Inside the Building'
     downstream = stream
     passage asExit(in)
     
-//    click = rainbowRoom // if slippers worn 551 point game
+    click = rainbowRoom // if slippers worn 551 point game
       
     
     floorObj = concreteFloor
@@ -554,6 +571,7 @@ insideBuilding: IndoorRoom 'Inside the Building'
     game551 = true
     maxSetting = 50
     minSetting = 0
+    curSetting = '0'
     
     combo = [11, 22, 33] // initial value for testing
     currentCombo = []
@@ -734,6 +752,7 @@ inForest1: OutsideRoom 'In Forest'
         }
     }
     
+    readDesc = desc
     game551 = true
     
 ;
@@ -753,7 +772,7 @@ class Blueberries: CanPick, Fixture 'blueberries;blue delicious ;berries berry b
         verify() {}
         check()
         {
-            if(gActor.blueberriesEaten >= 2)             
+            if(gActor.blueberriesEaten >= 5)             
                 "You reach for the blueberries, but then have second
                 thoughts.  For some reason you seem to have lost your
                 appetite! ";
@@ -775,6 +794,8 @@ class Blueberries: CanPick, Fixture 'blueberries;blue delicious ;berries berry b
             count++;
         }
     }    
+    
+    checkDobjCount = "There are too many to count. "
 ;
 
 blue1: Blueberries 
@@ -788,17 +809,23 @@ blue1: Blueberries
             still a few left.  You're tempted to sample them. ";
     }
     
-    altVocab = 'blueberry bush; blue berry; blueberies berries; it them'
+    altVocab = 'blueberry bush; blue berry; blueberries berries; it them'
     useAltVocabWhen = (count >= 2)
     
     game551 = true
     
     specialDesc = "There is blueberry bush here. "
+    
+    checkDobjCount
+    {
+        if(count >= 2)
+            desc();
+        else
+            inherited();   
+    }
+    
 ;
     
-    
-
-
 /* 6 */
 inForest2: OutsideRoom 'In Forest'
     "{I} {am} in open forest near both a valley and a road. "
@@ -899,7 +926,7 @@ MultiLoc, Decoration 'cobbles; cobble; cobble cobblestones cobblestone stones
     stone; them it'
     "They're just ordinary cobbles. "
     locationList= [belowTheGrate, inCobbleCrawl, inDebrisRoom]
-    
+    checkDobjCount = "Surely you have better things to do that waste time counting cobblestones? "
 ;
 
 
@@ -969,6 +996,8 @@ inDebrisRoom: DarkRoom, NotFarIn 'In Debris Room'
     locationList = [inDebrisRoom]
     
     vocabLikelihood = 20
+    
+    checkDobjDebris = "How do you propose going about counting debris? "
 ;
 
 depressionConnector: VarDest, TravelConnector    
@@ -1063,6 +1092,7 @@ MultiLoc, Fixture 'rough stone steps; stairs staircase'
     }
     
     locationList = [atTopOfSmallPit, greenTopOfSmallPit]
+    checkDobjCount = "You have better things to do than count steps and stairs. "
 ;
 
 smallPit: MultiLoc, Fixture 'small pit'
@@ -1190,15 +1220,15 @@ inHallOfMists: DarkRoom 'In Hall of Mists'
         }
     }
     
-    y2: TravelConnector
+    y2: VarDest, TravelConnector
     {
         calcDest = global.newGame ? atY2 : jumbleOfRock
         travelDesc()
         {
             if(global.newGame)
             {
-                "{I}} locate{s/d} a hidden passage on the north side of the
-                hall, and climb{e/ed} down a wall of broken rock ...<.p>";
+                "{I} locate{s/d} a hidden passage on the north side of the
+                hall, and climb{s/ed} down a wall of broken rock ...<.p>";
                 
                 if(wumpus.isChasing) 
                     wumpus.actionMoveInto(jumbleOfRock);
@@ -1269,6 +1299,8 @@ domeSteps: MultiLoc, Fixture 'rough stone steps'
     }
     
     dobjFor(ClimbUp) asDobjFor(Climb)    
+    
+    checkDobjCount = "You really shouldn't waste time counting steps and stairs. "
     
 ;
 
@@ -1409,13 +1441,15 @@ crystalBridge: MultiLoc, Fixture, Surface 'crystal bridge; magic'
                     o.moveInto(wheretogo);
                 }
             }
-            if(wumpus.isChasing) {
+        }
+        if(wumpus.isChasing) 
+        {
             if (wumpus.prevloc.isfissureroom &&
-            (gPlayerChar.location != wumpus.prevloc) &&
-            (wumpus.locstay == 1))
+                (gPlayerChar.location != wumpus.prevloc) &&
+                (wumpus.locstay == 1))
                 wumpus.demise();
         }
-        }
+        
     }
     
         
@@ -1943,7 +1977,7 @@ westSideOfFissure: DarkRoom 'West Side of Fissure'
         travelDesc()
         {
             gActor.nextRoute = 1; // DJP
-            "%I} {have} crawled through a very low wide passage
+            "{I} {have} crawled through a very low wide passage
             parallel to and north of the hall of mists.\b";
         }
     }
@@ -2184,6 +2218,7 @@ onBrinkOfPit: DarkRoom 'On Brink of Pit'
     
     destination = inPit
     dobjFor(Climb) asDobjFor(ClimbDown)
+    checkDobjCount = nil
 ;
 
 /* 38 */
@@ -2212,6 +2247,7 @@ inPit: DarkRoom, NoNPC 'In Pit'
     getFacets = [cleanPit]
     
     vocalLikelihood = 20
+    checkDobjCount = nil
 ;
 
 + Decoration 'tiny slits; complex; rock pattern; them it'
@@ -2232,7 +2268,7 @@ inDustyRockRoom: DarkRoom 'In Dusty Rock Room'
     floor = atComplexJunction   
 ;
 
-+ Fixture 'dusty rocks;dirty;stones boulderns stone boulder rock;them'
++ dustyRocks: Fixture 'dusty rocks;dirty;stones boulderns stone boulder rock;them'
     desc()
     {
         if (global.oldGame)
@@ -2301,6 +2337,9 @@ inDustyRockRoom: DarkRoom 'In Dusty Rock Room'
     }
     
     dobjFor(SweepWith) asDobjFor(CleanWith)
+    dobjFor(DustWith) asDobjFor(CleanWith)
+    dobjFor(Dust) asDobjFor(Clean)
+    dobjFor(Sweep) asDobjFor(Clean)
     sweep()
     {        
         if (!safeDial.comboSet) 
@@ -2310,11 +2349,10 @@ inDustyRockRoom: DarkRoom 'In Dusty Rock Room'
         
         areswept = true;
         safeCombination.moveInto(location);
-        safeCombination.seen = true;
-        
-        
-        
+        safeCombination.seen = true;       
     }    
+    
+    checkDobjCount = "There are too many to waste time trying to count them. "
 ;
 
 safeCombination: Fixture 'carved inscription; writing; combination letters characters; it them'
@@ -2597,7 +2635,7 @@ atEastEndOfLongHall: DarkRoom 'At East End of Long Hall'
     }
 ;
 
-hallCracks: MultiLoc, Fixture 'cracks;;;them'
+hallCracks: MultiLoc, CollectiveGroup, Fixture 'cracks;;;them'
     desc
     {
         if(analevel == 1) 
@@ -2631,6 +2669,8 @@ hallCracks: MultiLoc, Fixture 'cracks;;;them'
     dobjFor(GoThrough) asDobjFor(Enter)
     
     locationList = [atEastEndOfLongHall]
+    
+    actionDobjCount = "There are three cracks in the south wall. "
 ;
 
 leftCrack: MultiLoc, Enterable 'left crack'
@@ -2644,6 +2684,8 @@ leftCrack: MultiLoc, Enterable 'left crack'
     connector = tightCrack
     
     dobjFor(Board) asDobjFor(Enter)
+    
+    collectiveGroups = [hallCracks]
 ;
 
 rightCrack: MultiLoc, Enterable 'right crack'
@@ -2666,6 +2708,7 @@ rightCrack: MultiLoc, Enterable 'right crack'
     dobjFor(GoThrough) asDobjFor(Enter)    
     
     connector = location.right    
+    collectiveGroups = [hallCracks]
 ;
 
 
@@ -2701,6 +2744,7 @@ middleCrack: MultiLoc, Enterable 'middle crack; centre center'
     
     dobjFor(Board) asDobjFor(Enter)
     dobjFor(GoThrough) asDobjFor(Enter)    
+    collectiveGroups = [hallCracks]
 ;
 
 
@@ -3023,17 +3067,17 @@ inLargeLowRoom: DarkRoom 'In Large Low Room'
     
     bedquilt ulExit(inBedquilt)
 
-//    ne = {
-//        if (global.newgame) return In_Sloping_Corridor;
-//        else pass ne;
-//    }
-//
-    southwest = inSlopingCorridor 
+    northeast: TravelConnector -> inSlopingCorridor
+    {
+        isConnectorApparent = (global.newGame)
+    }
     
-//    sw = {
-//        if (global.newgame) return In_Oriental_Room;
-//        else return In_Sloping_Corridor;
-//    }
+    
+    southwest: VarDest, TravelConnector
+    {
+        calcDest = (global.newGame ? inOrientalRoom : inSlopingCorridor)
+    }    
+   
     north = deadEndCrawl
     
     southeast: VarDest, TravelConnector
@@ -3044,7 +3088,7 @@ inLargeLowRoom: DarkRoom 'In Large Low Room'
     
     oriental ulExit(inOrientalRoom)
 
-    // let NPC's out of here
+    // let NPCs out of here
     NPCexit1 = inSlopingCorridor    
 ;
 
@@ -3107,6 +3151,8 @@ deadEnd8: DeadEndRoom
 + Fixture 'mass of boulders[n];;;it them'
     "They are just like ordinary boulders. <<if global.game550>> Scratched on one of the 
     boulders are the words, \"Jerry Cornelius was here.\"<<end>>"
+    
+    checkDobjCount = "Do you really have nothing better to do than count boulders? "
 ;
 
 /* 80 */
@@ -3186,6 +3232,8 @@ inNarrowCorridor: DarkRoom 'In Narrow Corridor'
 
 + Fixture 'leaves;;profusion leaf plant beanstalk stalk;them it'
     "The leaves appear to be attached to the beanstalk you climbed to get here. "
+    
+    checkDobjCount = "There are far too many leaves for you to even begin counting them. "
 ;
 
 /* 91 */
@@ -3514,6 +3562,8 @@ inSoftRoom: DarkRoom 'In Soft Room'
         of Adventure, anyway). '
     
     cannotTakeMsg = 'Now don\'t go ripping up the place! '
+    
+    actionDobjCount = "There are about a dozen curtains here in all. "
 ;
 
 + Distant 'some moss; typical everyday'
@@ -3522,6 +3572,7 @@ inSoftRoom: DarkRoom 'In Soft Room'
     
     cannotEatMsg = 'Eeeewwwww. '
     notImportantMsg = 'It\'s too high up for you to reach. '
+    
 ;
 
 
@@ -3881,6 +3932,8 @@ inArchedHallWalls: SecretDoor, DSDoor 'north wall; (n); walls'  @inArchedHall @E
             "The <<dirName>> wall sounds hollow. ";
         }
     }
+    
+    holedir = 'north'
 ;
 
 clamBarrier: TravelBarrier
@@ -3933,7 +3986,7 @@ inRaggedCorridor: DarkRoom 'In Ragged Corridor'
 ;
 
 + Decoration 'ragged sharp walls;;;them'
-    "They're ahsrp and ragged. "
+    "They're ahsrp and ragged. "    
 ;
 
 /* 105 */
@@ -4101,10 +4154,13 @@ inMirrorCanyon: DarkRoom 'In Mirror Canyon'
     "A window can be seen in both the east and the west walls
         of the canyon, about 50 feet up. "
     
+    actionDobjCount = "There are two of them. "
+    decorationActions = inherited + Count
+    
 ;
 
 /* 110 */
-atWindowOnPit2: DarkRoom 'At Window on Pit; 2'
+atWindowOnPit2: DarkRoom 'At Window on Pit'
     "{I}{'m} at a low window overlooking a huge pit,
         which extends up out of sight.  A floor is
         indistinctly visible over 50 feet below.  Traces of
@@ -5312,6 +5368,28 @@ bWalls: Backdrop 'walls; swiss cheese ragged sharp warm hot (north) (south) (eas
     
     /* exclude walls from outdoor rooms. */
     exceptions = [outdoors]   
+    deoorationActions = [Examine, Count, Read]
+    
+    actionDobjCount()
+    {
+        switch(gRoom)
+        {
+        case octagonalRoom:
+            "It's an octagonal room.  That means it has 8 walls! "; break;
+        case insideBuilding:
+        case pantry:
+            "This room has - wait for it -- four walls! "; break;
+        case cylindricalRoom:
+            "The wall of this room is one continuous surface. "; break;
+        case sphericalRoom:
+             "It's a spherical room.  That means that the wall, floor
+            and ceiling are all one continuous surface, broken only
+             by the exit passage. "; break;
+        default:
+            "Counting walls isn't easy in a cave, due to the irregular
+            shapes of most rooms. ";
+        }
+    }
 ;
 
 bCeiling: Backdrop 'ceiling'
@@ -5404,7 +5482,31 @@ bAir: Backdrop 'air'
             "The air smells pretty much like you would expect. ";
     }
     
-    notImportantMsg = 'The air is too insubstantial for that. '
+    notImportantMsg = 'The air is too insubstantial for that. '    
 ;
 
-
+bFootsteps: Backdrop '() your footsteps;;;them'  
+    desc 
+    {   
+        if (global.oldGame || !(gActor.isIn(inArchedHall) ||
+        (gActor.isIn(EWCorridorE))) || inArchedHall.jericho) {
+            "They sound pretty normal to me. ";
+        }
+        else {
+            "They reverberate hollowly around the chamber.  You have the
+            feeling that the <<inArchedHallWalls.holedir>> wall is 
+            maybe not as solid as it looks. ";
+        }
+    }
+    
+    decorationActions = [Examine, ListenTo]
+    
+    listenDesc
+    {        
+        if(isProminentNoise)
+           "Your footsteps echo hollowly throughout the chamber.  ";
+    }
+    
+    isProminentNoise = (!global.oldGame && (gActor.getOutermostRoom is in (inArchedHall,
+        EWCorridorE)) && !inArchedHall.jericho)
+;

@@ -1875,8 +1875,10 @@ inSafe: DarkRoom 'In the Safe'
         }
         inSafe.bothdoors = true;
         innerSafeDoorE.discover();
-        innerSafeDoorW.discover();        
+        innerSafeDoorW.discover();             
     }
+    
+    actionDobjCount = "As you might expect, the safe has four walls. "
 ;
 
 corridor1: DarkRoom 'Wide, North-and-South Corridor'
@@ -2764,25 +2766,26 @@ moons: MultiLoc, Distant 'moons;red blue small;moon light;them'
     through a space portal without realizing it ..."
     
     locationList = [beachShelf, beach]
-    
+     
 //    
 //    loclist = [Beach_Shelf, Blue_Beach_Shelf, Beach, Blue_Beach,
 //              Zarkalon_Tunnel_Entrance, Blue_Zarkalon_Tunnel_Entrance,
 //              Zarkalon_Cliff_Top, Blue_Zarkalon_Cliff_Top,
 //              Zarkalon_Tower_Top, Blue_Zarkalon_Tower_Top]
-//    doCount(actor) = {
-//        "What planet do you think you're on?  I've already told you that
-//        there are three moons.  On second thoughts, that was a dumb
-//        question.  ";
-//        if(global.knowsgreenname)
-//            "You know that the Green-level elves call this planet 
-//            \"Ondralstir\" and the Blue-level humans call it \"Zarkalon\".
-//            I guess we'll stay with the Blue-level name. ";
-//        else if(BlueBoard1.isread)
-//            "I guess we'll stay with the Blue-level name for this planet:
-//            Zarkalon. ";
-//        else
-//            "I don't know the answer either... ";
-//    }
+    actionDobjCount
+    {        
+        "What planet do you think you're on?  I've already told you that
+        there are three moons.  On second thoughts, that was a dumb
+        question.  ";
+        if(global.knowsgreenname)
+            "You know that the Green-level elves call this planet 
+            \"Ondralstir\" and the Blue-level humans call it \"Zarkalon\".
+            I guess we'll stay with the Blue-level name. ";
+        else if(blueBoard.isread)
+            "I guess we'll stay with the Blue-level name for this planet:
+            Zarkalon. ";
+        else
+            "I don't know the answer either... ";
+    }
 ;
 

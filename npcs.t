@@ -36,9 +36,6 @@ initNPC()
 do_exitlist(o) {}
 do_npclist(o) {}
 
-/* Make ANSWER <actor> equivalent to TALL TO <actor> */
-SpecialVerb 'answer' @Actor 'talk to';
-
 modify Actor
     locationHistoryLength = 2  
     
