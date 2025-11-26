@@ -10,6 +10,7 @@
  *   TADS3/adv3Lite or else may require a different approach. 
  */
 
+property isbonus_addmax;
 
 /*
  *   The "global" object is the dumping ground for any data items that
@@ -35,7 +36,7 @@ global: object
  */
     newGame = ([1, 11, 15].find(vNumber) != nil)
     oldGame = ([0, 2, 7].find(vNumber) != nil)
-    game350 = (vNumber == 0)//? TADS2 version uses but does not define this property.
+    game350 = (vNumber is in (0, 2, 7))//? TADS2 version uses but does not define this property.
     game550 = ([2, 7, 11, 15].find(vNumber) != nil)
     game580 = (vNumber == 7)
     game701 = ([11, 15].find(vNumber) != nil)
@@ -55,6 +56,7 @@ global: object
     closure = nil
     closurePoints = 0
     closurePointsAwarded = nil
+    closingPoints = 0
     treasurelist = []
     extraTreasuresFound = nil
     fullyClosed = true
@@ -178,7 +180,7 @@ global: object
     deathpoints = 0
     farinpoints = 0
     extenpoints = 0
-    closingpoints = 0
+    closurepoints = 0
     endkillpoints = 0
     klutzpoints = 0
     almostpoints = 0
@@ -220,7 +222,7 @@ CustomMessages
         Msg(nothing special, 'It looks like an ordinary {name dobj} to me. '),
         Msg(onset of darkness, '\nIt is now pitch black.  If you proceed you
             will likely fall into a pit. '),
-        Msg(show score rank, '{1} '),
+        Msg(show score rank, '{1} '),        
         Msg(showHintWarning, '<.notification>Warning: Some people
                  don&rsquo;t like built-in hints, since the temptation to ask
                  for help prematurely can become overwhelming when hints are so
@@ -931,6 +933,7 @@ class VerGlob: object
     coinsets = 0
     treasuresToFind = []
     scoreRankTable = nil // the score rank table to be copied to gameMain
+    closurePoints = 0
     
     
 
@@ -947,7 +950,7 @@ class VerGlob: object
         global.deathpoints   = self.deathpoints;
         global.farinpoints   = self.farinpoints;
         global.extenpoints   = self.extenpoints;
-        global.closurepoints = self.closurepoints;
+        global.closurePoints = self.closurePoints;
         global.closingpoints = self.closingpoints;
         global.endpoints     = self.endpoints;
         global.endkillpoints = self.endkillpoints;
@@ -1005,7 +1008,7 @@ glob0: VerGlob
     extenpoints = 0         // points for entering extended regions
 
     closure = nil           // Has the endgame timer started yet?
-    closurepoints = 0       // point award when it does.
+    closurePoints = 0       // point award when it does.
     closingpoints = 25      // points for surviving until cave closing time
     endpoints = 10          // points for getting to final puzzle
     endkillpoints = 10      // points for getting killed in endgame
@@ -1123,7 +1126,7 @@ glob1: VerGlob
     extenpoints = 0         // points for getting well into the cave
 
     closure = nil           // Has the endgame timer started yet?
-    closurepoints = 0       // point award when it does.
+    closurePoints = 0       // point award when it does.
     closingpoints = 20      // points for surviving until cave closing time
     endpoints = 0           // points for getting to final puzzle
     endkillpoints = 10      // points for getting killed in endgame
@@ -1177,7 +1180,7 @@ class glob_550: VerGlob
     extenpoints = 10        // points for reaching extended areas.
 
     closure = nil           // Has the endgame timer started yet?
-    closurepoints = 20      // point award when it does.
+    closurePoints = 20      // point award when it does.
     closingpoints = 20      // points for surviving until cave closing time
     endpoints = 20          // points for getting to final puzzle
     endkillpoints = 0       // points for getting killed in endgame
@@ -1682,6 +1685,19 @@ modify Player
         {
             addToScore(global.farinpoints, 'getting well into the cave');
             awardedpointsforgettingfarin = true;
+        }
+        
+        if(toproom.isbonus && !toproom.bonusawarded)
+        {
+            addToScore(global.extenpoints,
+            'for entering a room with bonus points');
+            toproom.bonusawarded = true;
+            if(toproom.isbonus_addmax)
+            {
+                global.maxscore += global.extenpoints;
+                global.extras += global.extenpoints;
+               gameMain.maxScore = global.maxscore;
+            }            
         }
         
         // DJP - Warn if the lamp is left on when wandering outside

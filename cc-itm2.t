@@ -179,7 +179,11 @@ metalPlate: Thing 'polished metal plate;;mirror' @storage
 dragonTeeth: Thing 'dragon\'s teeth;sharp pointed;;them'
     "They're just sharp, pointed teeth."
     game550 = true    
+    actionDobjThrow() { askForIobj(ThrowAt); }
+    
 ;   // Throwing them is handled in the code for the goblins.
+
+
 
 
 singingSword: Weapon 'singing sword; sharp shiny' @sandstoneChamber
@@ -644,7 +648,7 @@ mushroom: CanPick, Food 'small mushroom;;fungus' @inCubicle
         if (global.game701) gPlayerChar.weightCapacity += 20;
         else gPlayerChar.bulkCapacity = 12;
         isEaten = true;
-        new Fuse(&strengthWear, mushtime);
+        new Fuse(self, &strengthWear, mushtime);
         moveInto(nil);
     }
     is_eaten = nil  // used for the sword's doTake method.
@@ -808,7 +812,7 @@ yacht: Treasure 'ruby-covered toy yacht;ruby toy covered encrusted ruby-encruste
 ;
 
 
-beads: Wearable, Treasure 'ancient Indian turquoise beads;of[prep];string;them' @balcony
+beads: Wearable, Treasure 'ancient Indian turquoise beads;of[prep];string;them' @inBalcony
     "The turquoise beads complement each other beautifully! "
     game550 = true
     

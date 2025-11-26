@@ -74,7 +74,7 @@ modify Actor
         if(lastmoveloc == nil) 
         {
             lastmoveloc  = location;
-            lasttoploc = lastmoveloc.getOutermostRoom;
+            lasttoploc = lastmoveloc ? lastmoveloc.getOutermostRoom : nil;
         }
         oldloc = lasttoploc;
         
@@ -682,7 +682,7 @@ absentTroll: MultiLoc, Unthing
     locationList = [onNESideOfChasm, onSWSideOfChasm ]
 ;
 
-dragon: Actor 'dragon; monster beast lizard; huge green scaly fierce giant ferocious' @persianRug
+dragon: Actor 'huge green dragon; monster beast lizard; scaly fierce giant ferocious' @persianRug
     "I wouldn't mess with it if I were you. "
     beforeTravel(traveler, connector)
     {
@@ -703,6 +703,9 @@ dragon: Actor 'dragon; monster beast lizard; huge green scaly fierce giant feroc
     }
     
     initSpecialDesc = "A huge green dragon bars the way! "
+    specialDescOrder = 50
+    /* We want to mention the dragon before the rug it's lying on. */
+    specialDescBeforeContents = true
     
     blockMsg = "The dragon looks rather nasty.  You'd best not try to get by. "
     
@@ -712,11 +715,11 @@ dragon: Actor 'dragon; monster beast lizard; huge green scaly fierce giant feroc
         check() {}
         action()
         {
-            "What, with your bare hands? ";
+            "What, with your bare hands?\b>";
             if(yesOrNo())            
                 kill();             
             else
-                "Thought not! ";
+                "Chicken! ";
                
         }       
         

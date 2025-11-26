@@ -17,6 +17,16 @@ class MagicWord: IAction
     omegaps701_order = nil     // you aren't altering the version in question.
     omegaps580_order = nil     // The unlabeled omegapsical_order
                                // refers to the 550-point version.
+    
+    exec(c)
+    {
+        if(gRoom == cylindricalRoom)
+        {
+//            afterAction();
+            return;
+        }
+        inherited(c);
+    }
 ;
 
 
@@ -65,7 +75,7 @@ DefineSystemAction(EnableMazeskip)
             return;
         }
         
-        "Enabling the mazeskip command will cost you two points. Do you want to go ahead?\n
+        "Enabling the mazeskip command will cost you two points. Do you want to go ahead?\b
         >";
         if(yesOrNo())
         {
@@ -101,7 +111,7 @@ DefineSystemAction(NoviceMode)
         last for <<(brassLantern.fuelLevel)>> turns, but in novice
         mode it will last for 1000 turns.  However, this will cost you 
         <<(-1 * global.novicepoints)>> points.\n
-        Do you want a novice mode game? >";
+        Do you want a novice mode game?\b>";
         
         if (yesOrNo()) 
         {
@@ -404,6 +414,8 @@ VerbRule(RideDir)
     missinqQ = 'what do you want to ride; which way do you want to ride it'
 ;
 
+DefineTVerbS(Ride, 'ride' singleDobj, 'ride', 'riding');
+
 
 DefineMagicWord(Fee)
     omegapsical_order = 15
@@ -453,6 +465,7 @@ DefineMagicWord(Fee)
         
     said = nil
     tcount = -1
+    verb = 'fee'
     
 ;
 
@@ -461,6 +474,7 @@ DefineMagicWord(Fie)
     omegaps580_order = 16
     omegaps701_order = 17
     omegaps701p_order = 19
+    verb = 'fie'
     execAction(c)
 {        
     if (tcount == gTurns) 
@@ -482,6 +496,7 @@ DefineMagicWord(Foe)
     omegaps580_order = 15
     omegaps701_order = 16
     omegaps701p_order = 18
+    verb = 'foe'
     
     execAction(c)
     {
@@ -505,6 +520,7 @@ DefineMagicWord(Foo)
     omegaps580_order = 14
     omegaps701_order = 15
     omegaps701p_order = 17
+    verb = 'foo'
     
     execAction(c)
     {
@@ -551,7 +567,7 @@ DefineIAction(Fum)
         Fee.fail();
     }
     
-    
+    verb = 'fum'
 ;
 
 VerbRule(Fee)
@@ -773,6 +789,44 @@ VerbRule(DialOn)
     missingQ = 'what do you want to dial; what do you want to dial it on'
 ;
 
+/* 
+ *   This action exists to translate commands of the some SAY FOO into the corresponding magix word
+ *   FOO, where that exists.
+ */
+DefineLiteralAction(SaySomething)
+    execAction(c)
+    {
+        if(magicWordTable == nil)
+            buildMWTable();
+        local mAct = magicWordTable[gLiteral];
+        if(mAct)
+            doInstead(mAct);
+        else            
+            "{I} {say} <q><<gLiteral>></q>. No one replies. ";
+    }
+    
+    magicWordTable = nil
+    buildMWTable()
+    {
+        if(magicWordTable == nil)
+            magicWordTable = new LookupTable;
+        t3RunGC();
+        for(local mw = firstObj(MagicWord) ; mw; mw = nextObj(mw, MagicWord))
+        {
+            if(mw.verb)
+                magicWordTable[mw.verb] = mw;
+        }
+    }
+;
+
+VerbRule(SaySomething)
+    'say' literalDobj
+    : VerbProduction
+    action = SaySomething
+    verbPhrase = 'say/saying (what)'
+;
+    
+
 DefineTVerb(BlastWith, ('blast' | 'detonate') (|'with') singleDobj, 'blast', 'blasting');
 
 DefineIVerb(Blast, 'blast'|'detonate'|'explode', 'blast', 'blasting')
@@ -959,7 +1013,7 @@ DefVKTVerbRule(samoht);
 // requires that the words be typed separately).
 nosidesamohtVerb: MagicWord
     sdesc = "noside samoht"
-    verb = 'noside-samoht'
+    verb = 'noside samoht'
     execAction(c) 
     {
         if (!global.game550) {
@@ -1056,7 +1110,7 @@ rubliwVerb: MagicWord
 // BJS - added a one-line version of rubliw thgirw, for consistency.
 thgirwrubliwVerb: MagicWord
     sdesc = "thgirw rubliw"
-    verb = 'thgirw-rubliw'
+    verb = 'thgirw rubliw'
     execAction(c) 
     {
         if (!global.game580) 
@@ -1103,6 +1157,7 @@ phugggVerb: MagicWord
     omegaps580_order = 9
     omegaps701_order = 9
     omegaps701p_order = 9
+    verb = 'phuggg'
     
     execAction(c)
     {
@@ -1774,6 +1829,7 @@ osalVerb: MagicWord //not really
         "Nothing happens, and you have the distinct feeling that you're
         missing something here ... ";
     }
+    verb = 'osal'
 ;    
 DefVKTVerbRule(osal);
 
@@ -1788,6 +1844,7 @@ phrosalVerb: MagicWord
         /* To be added when we come to adding the 701p game. */
         "Something should happen but it's not implemented yet. ";
     }
+    verb = 'phrosal'
 ;
 
 
@@ -1795,6 +1852,7 @@ modify VerbRule(MoveWith)
     ('move' | 'pull') singleDobj 'with' singleIobj
     :
 ;
+
 
 DefineIVerb(stayVerb, 'stay', 'stay', 'staying')
     execAction(c)

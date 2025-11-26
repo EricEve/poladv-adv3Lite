@@ -70,9 +70,9 @@ goblins: Feedable, Chaser 'gooseberry goblins;silent giggling vicious little sla
         little goblins!  Each one stands about eight inches high
         on a pair of spindly black legs, has a globular, spine-covered
         body resembling a giant gooseberry, a wide mouth filled with
-        sharp teeth, and a pair of glittering little green eyes!<.p>";
+        sharp teeth, and a pair of glittering little green eyes!<.reveal goblins><.p>";
                 
-        inherited(loc);
+        actionMoveInto(loc);
         
     }
     backtrackAct = "\nYou leap over the goblins.\n"    
@@ -159,7 +159,7 @@ goblins: Feedable, Chaser 'gooseberry goblins;silent giggling vicious little sla
     cannotTakeMsg = 'Probably not a wise idea. '
     cannotEatMag = 'Yeetttch!  I think I just lost my appetite. '
     
-    checkDobjCount = "You haven't got time to hang around counting the goblins - there
+    checkDobjCount = "You haven't got time to hang around counting the goblins -- there
         are far to many. ";
 ;
 
@@ -179,7 +179,7 @@ actionThrowAt(dragonTeeth dobj, goblins iobj)
     goblins and drive them away in screaming
     panic;  they then salute you with their
     ancient and rusty swords, and fade silently
-    into nothingness.";
+    into nothingness. <.reveal goblins-banished>";
     iobj.banish();  
     dobj.moveInto(nil);
     skip;
@@ -543,7 +543,7 @@ djinn: Actor 'twelve-foot tall djinn;twelve foot;genie;him'
          PRONE TO BACKFIRE FOR NO OBVIOUS REASON;  ALSO, IT
          SHOULD NEVER BE USED NEAR WATER OR NEAR ANY SHARP
          WEAPON OR THE RESULTS MAY BE MOST UNFORTUNATE.  THE
-         WORD IS 'phuggg'</q>, whispers the djinn, <q>AND IT MUST
+         WORD IS <q>phuggg</q></q>, whispers the djinn, <q>AND IT MUST
          BE PRONOUNCED CAREFULLY IF IT IS TO HAVE THE PROPER
          EFFECT.  FAREWELL AGAIN, AND GOOD LUCK!</q> With that,
          the djinn-cloud drifts away out of sight.<.p>";       
@@ -641,7 +641,7 @@ ogre: Feedable, Actor 'nasty ogre; large nasty-looking' @glassyRoom
             {
                 "The sword halts in mid-air, twirls like a
                 dervish, and chants several bars of \"Dies
-                Ire\" in a rough tenor voice.  It then begins
+                Irae\" in a rough tenor voice.  It then begins
                 to spin like a rip-saw blade and flies
                 directly at the ogre, who attempts to catch
                 it without success;  it strikes him full
@@ -654,7 +654,7 @@ ogre: Feedable, Actor 'nasty ogre; large nasty-looking' @glassyRoom
                 Before your eyes it softens and melts, writhes
                 as if in pain, and shrinks rapidly until all
                 that is left is a small silvery ring which
-                cools rapidly.";
+                cools rapidly. <.reveal ogre-demise>";
                 singingSword.moveInto(nil);                
                 mithrilRing.moveInto(getOutermostRoom);
                 ogre.moveInto(nil);

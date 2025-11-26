@@ -63,6 +63,17 @@ modify Goal
 
 topHintMenu: TopHintMenu;
 
++ Goal 'What am I meant to be doing in this game?'
+    [
+        'Explore your surroundings, collect as many treaures as you can, and bring them back to the
+        building. ',
+        'Also, make a careful note of anything that might be a magic word. '
+    ]
+    
+    openWhen = true
+    closeWhenSeen = westSideOfFissure
+;
+
 + Goal 'How do I take the little bird?'
     [
         'Perhaps you\'re doing something to scare it. ',
@@ -93,6 +104,18 @@ topHintMenu: TopHintMenu;
     closeWhen = dragon.isIn(nil)
 ;
 
++ Goal 'Is there a way across the fissure?'
+    [
+        'Yes. ',
+        'But you\'ll have to create it yourself. ',
+        'And not by any natural means. ',
+        'Have you found anything that could perhaps be used for magical purposes? ',
+        'How might magicians typically used such an implement? '
+        
+    ]
+    openWhenSeen = onEastBankOfFissure
+    closeWhen = crystalBridge.exists
+;
 
 + Goal 'What can I do about the bear?'
     [
@@ -120,6 +143,35 @@ topHintMenu: TopHintMenu;
     closeWhenRevealed = 'bear-attack'
 ;
 
++ Goal 'How do I deal with the ogre?'
+    [
+        'Unnatural opponents may require unnatural weapons. ',
+        'Have you encountered one that behaves a bit strangely? ',
+        'But don\'t get too close to the ogre with it! '
+    ]
+    openWhenSeen = ogre
+    closeWhenRevealed = 'ogre-demise'   
+;
+
++ Goal 'How do I deal with the slime?'
+    [
+        'Whatever you do, don\'t touch it!',
+        'This requires a chemical solution. ',
+        'Have you found something that might contain something suitably toxic? '
+    ]
+    openWhenSeen = slime
+    closeWhen = (!slime.exists)
+;
+
++ Goal 'What do I do at the waterfall cavern?'
+    [
+        'Something you\'d probably dream of doing in real life. ',
+        'What\'s the most foolhardy thing you can think of? '
+    ]
+    openWhen = (global.game550 && !global.game701 && waterfall.seen)
+    closeWhenRevealed = 'waterfall-transit'
+;
+
 + Goal 'What am I meant to be doing now?'
     [
         'Finding a way out -- but you won\'t find any ready-made exits. ',
@@ -130,3 +182,61 @@ topHintMenu: TopHintMenu;
     openWhenSeen = atNEEnd
 ;
     
++ Goal 'What should I do with the giant clam?'
+    [
+        'Might there be something of value inside? ',
+        'It\'s a very big clam, though, so it may take something equally substantial to open it. '        
+    ]
+    openWhenSeen = giantBivalve
+    closeWhenRevealed = 'open-clam'
+;
+
++ Goal 'How do I deal with the goblins?'
+    [
+        'Multiple enemies require multiple simultaneous responses. ',
+        'You need to summon a lot of helpers -- fast!',
+        'A remnant of a foe you\'ve already vanquished may do the trick. '        
+    ]
+    openWhenRevealed = 'goblins'
+    closeWhenRevealed = 'goblins-banished'
+;
+
++ Goal 'How do I get out of the cylindrical room?'
+    [
+        'When natural means fail, maybe you need to resort to magic. ',
+        'Remember what the djinn told you about Witt\'s alphabetic eccentricity. ',
+        'I hope you\'ve noted all the magic words mentioned in this game. ',
+        'You need to recite them all in reverse alphabetical order. '
+    ]
+    openWhen = (gRoom == cylindricalRoom)
+    closeWhenRevealed = 'exitcylinder'    
+;
+
++ Goal 'What do I do with the earthnware flask?'
+    [
+        'Nothing remotely obvious, but don\'t be in too much of a hurry to open it. ',
+        'Find a symbol to place it in/on. ',
+        'Then open it. '        
+    ]
+    openWhenMoved = flask
+    closeWhen = flask.isOpen
+;
+
++ Goal 'How do I open the walk-in safe?'
+    [
+        'In a roundabout manner of speaking, you kinda need a skeleton key. ',
+        'A magical, insusbstantial one. ',
+        'Something a skeleton told you. '       
+    ]
+    openWhenRevealed = 'walk-in'
+    closeWhenSeen = inSafe
+;
+
++ Goal 'What happens now?'
+    [
+        'Try exploring not too far from the building. ',
+        'Has anything changed? ',
+        'Is there somewhere you could go you couldn\'t go before? '
+    ]
+    openWhenRevealed = 'exitcylinder'    
+;

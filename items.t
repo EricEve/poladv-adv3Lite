@@ -1136,7 +1136,7 @@ giantBivalve: EndgameClone, Thing 'giant clam;bivalve shell enormous massive big
                 rolls away.  Goodness, this must really be an
                 oyster.     (I never was very good at
                 identifying bivalves.)    Whatever it is, it
-                has now snapped shut again. ";
+                has now snapped shut again. <.reveal open-clam>";
 
                 opened = true;
                 name = 'giant oyster';
@@ -1740,7 +1740,8 @@ persianRug:Treasure, Platform 'Persian rug; fine finest' @inSecretCanyon
         
     }
     
-    initSpecialDesc = "The dragon is sprawled out on the Persian rug. "
+    initSpecialDesc = "\^<<mention a dragon>> bars the way!
+        \bYou see a Persian rug here (on which the dragon is sprawled out). "
     useInitSpecialDesc = dragon.isIn(self)
     
     specialDesc = "The Persian rug is floating in mid-air. "

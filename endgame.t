@@ -36,7 +36,7 @@ checkForClosing()
             global.closurePointsAwarded = true;
             if(global.closurePoints) 
             {
-                addToScore(global.closurepoints,'for collecting the last treasure');
+                addToScore(global.closurePoints,'for collecting the last treasure');
             }
             else 
             {
@@ -298,6 +298,8 @@ startEndgame()
     if (global.game550) 
     {
         gPlayerChar.travelVia(cylindricalRoom);
+        /* Construct the list of Magic Words in reverse alphabetical order. */
+        cylindricalRoom.buildWordList();
         
     }
 
@@ -892,18 +894,76 @@ cylindricalRoom: Room 'Cylindrical Room'
 #endif
             )
            && wordtest(gAction))
-            exit;    
+            return;
+        "Oops! That felt wrong! ";
+        resetwords();
+    }
+    
+    wordlist = []
+    optwordlist = []
+    
+    /* Build a list of magic words for subsquent checking against. */
+    buildWordList()
+    {
+        local numprop;
+//            ,maxcount;
+        // Decide which properties to use for the word count.
+        // In the 701+ point mode, we use the 701+ numbering only if the
+        // steel door was unlocked.
+        if (defined(transRoomDoor) && global.game701p && transRoomDoor.isunlocked)     
+        {
+            numprop = &omegaps701p_order;
+//            maxcount = &numactwords701p;
+        }
+        
+        else if (global.game701) 
+        {
+            numprop = &omegaps701_order;
+//            maxcount = &numactwords701;
+        }
+        else if (global.game580) 
+        {
+            numprop = &omegaps580_order;
+//            maxcount = &numactwords580;
+        }
+        else {
+            numprop = &omegapsical_order;
+//            maxcount = &numactwords;
+        }
+        
+        local mVec = new Vector(); // magic words
+        local oVec = new Vector(); // optional magic words
+        
+        /* Run the garbage collector to ensure no spurious instances are left in memory. */
+        t3RunGC();
+        for(local mw = firstObj(MagicWord) ; mw; mw = nextObj(mw, MagicWord))
+        {
+            local ord = mw.(numprop);
+            /* 
+             *   Here we add an additional check, the third condition, to prevent spurious
+             *   duplicates of magic words getting into the list, as was mysteriously happening with
+             *   plugh.
+             */
+            if(ord && ord > 0 && mVec.indexWhich({x:x.(numprop) == ord}) == nil)
+                mVec.append(mw);
+            else if (ord && ord < 0)
+                oVec.append(mw);
+        }
+        wordlist = mVec.sort(SortAsc, {a, b: a.(numprop) - b.(numprop)}).toList();
+        optwordlist = oVec.sort(SortAsc, {a, b: a.(numprop) - b.(numprop)}).toList();
+        
     }
 ;
 
 /* Resets words in the cylindrical room. */
 resetwords()
-{   local i;
-    for(i = firstObj(MagicWord); i != nil; i = nextObj(i, MagicWord)) 
-    {
-        i.tused = -2;
-        i.endsaid = nil;
-    }
+{   
+//    local i;
+//    for(i = firstObj(MagicWord); i != nil; i = nextObj(i, MagicWord)) 
+//    {
+//        i.tused = -2;
+//        i.endsaid = nil;
+//    }
     cylindricalRoom.wordcount = 0;
 }
 
@@ -920,29 +980,30 @@ resetwords()
  */
 wordtest(word)
 {
-    local numprop,maxcount;
+    local maxcount = cylindricalRoom.wordlist.length();    
+    local numprop, ok = nil;
     // Decide which properties to use for the word count.
     // In the 701+ point mode, we use the 701+ numbering only if the
     // steel door was unlocked.
     if (defined(transRoomDoor) && global.game701p && transRoomDoor.isunlocked)     
     {
         numprop = &omegaps701p_order;
-        maxcount = &numactwords701p;
+//        maxcount = &numactwords701p;
     }
     
     else if (global.game701) 
     {
         numprop = &omegaps701_order;
-        maxcount = &numactwords701;
+//        maxcount = &numactwords701;
     }
     else if (global.game580) 
     {
         numprop = &omegaps580_order;
-        maxcount = &numactwords580;
+//        maxcount = &numactwords580;
     }
     else {
         numprop = &omegapsical_order;
-        maxcount = &numactwords;
+//        maxcount = &numactwords;
     }
     
     if((word.(numprop) == nil) && (word != GoOut)) 
@@ -957,57 +1018,56 @@ wordtest(word)
         else
             "No more undo information is available. ";
         
-        abort;
+        return nil;
     }
     else if(word.(numprop) == 1) 
     {
         resetwords();  // Starting over.
-        word.endsaid = true;
-        word.tused = gTurns;
         cylindricalRoom.wordcount = 1;
+        ok = true;
         "Ok.\n";
     }
     // prevent optional words from being used more than once. 
-    else if(word.endsaid) 
-    {
-        "You've already used that word. You'd best start over. ";
-    }       
+//    else if(word.endsaid) 
+//    {
+//        "You've already used that word. You'd best start over. ";
+//    }       
     else if (word == GoOut)
-        cylindricalRoom.wordcount = global.(maxcount); 
+//        cylindricalRoom.wordcount = global.(maxcount); 
+          cylindricalRoom.wordcount = maxcount; 
+    /* 
+     *   The logic here is different from that of the TADS 2 port, which iterates over all the magic
+     *   words in the game each time to check that the one just used is in right omegascipal order.
+     *   In this TADS 3 port we pre-build a sorted list of magic workds and check against that
+     *   instead.
+     */
     else 
-   { 
-        local i, prwd; // Find the previous word in order and store
-                      // it in prwd.
-        for(i = firstObj(MagicWord); i != nil; i = nextObj(i, MagicWord)) 
-    {
-            if((i.(numprop) == word.(numprop)-1) && (word.(numprop) > 0)) 
-                prwd = i;
-            // cater for optional words, provided they have not been
-            // used previously
-            else if((i.(numprop) = -word.(numprop) -1) &&
-            (word.(numprop) < 0)) 
-                prwd = i;
+    { 
+        if(word.(numprop) == -(cylindricalRoom.wordcount + 1))
+            ok = true;
+        else
+        {            
+            cylindricalRoom.wordcount++;
+            if(word == cylindricalRoom.wordlist[cylindricalRoom.wordcount])
+                ok = true;
         }
-        if(prwd.endsaid && (prwd.tused == gTurns - 1)) {
-            word.endsaid = true;
-            word.tused = gTurns;
-            if(word.(numprop) > 0) cylindricalRoom.wordcount++;
-            // if word.(numprop) is negative, the word is optional and we
-            // pretend that the previous word was issued in this turn
-            else prwd.tused = gTurns;
-            "Ok.\n";
-        }
-        else resetwords(); // skipped prwd, or waited too long.
+        if(ok)
+            "Okay\n";
+        else
+            resetwords();
     }
-    if(cylindricalRoom.wordcount == global.(maxcount)) { 
+  
+    if(cylindricalRoom.wordcount == maxcount) 
+    { 
         local i;
         global.dont_rescind = true; // don't rescind deposit points.
         // suppress all the extra moveInto code for efficiency
         global.extendMoveInto = nil;
-
-        /* move every wrongly-deposited treasure into the Troll's treasure 
-         * room, and move all other items in the surface areas to the
-         * treasury (which is not a game location). */
+        
+        /* 
+         *   move every wrongly-deposited treasure into the Troll's treasure room, and move all
+         *   other items in the surface areas to the treasury (which is not a game location).
+         */
         global.wrongtreasloc = 0;
         global.trolltolls = 0;
         for(i = firstObj(Thing); i != nil; i = nextObj(i, Thing)) {
@@ -1043,7 +1103,7 @@ wordtest(word)
                 global.wrongtreasloc++; 
             }
             if (i.isFixed) continue;
-            if(i.location.ofKind(Outside) || (i.location == safe)) 
+            if((i.location && i.location.ofKind(Outside)) || (i.location == safe)) 
                 i.moveInto(nil);
         }
         // turn on the moveInto extensions in case we still need them
@@ -1053,8 +1113,9 @@ wordtest(word)
             smallKey.moveInto(pantry);
             setOfKeys.moveInto(pantry);
         }
-        P(); I(); "<i>Foof!</i>"; P();
-        gPlayerChar.travelVia(atEndOfRoad);
+        P(); I(); "<i>Foof!</i><.reveal exitcylinder>"; P();
+        gPlayerChar.moveInto(atEndOfRoad);
+        gRoom.lookAroundWithin();
         global.dont_rescind = nil; // in case pendants are dropped
 
         addToScore(global.escapepoints, 'escaping from the cylinder room');

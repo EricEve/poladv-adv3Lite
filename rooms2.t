@@ -308,7 +308,7 @@ wheatStoneBridge: DSPassage 'wheat-stone bridge' @atBreathtakingView @valleyFace
                     up from the lava in the gorge beneath your
                     feet.  The mithril ring in your hand
                     quivers and glows, and the fumes eddy away
-                    from the bridge without harming you.<p.> ";
+                    from the bridge without harming you.<.p> ";
                     if(sceptre.isIn(actor))
                     {
                         "As you reach the center of the bridge,
@@ -389,7 +389,8 @@ valleyFaces: NoNPC, Room 'South End of Valley of Faces'
 
     game550 = true
     wino_wsbridge = true // can only exit via stone bridge
-    isbonus = true    
+    isbonus = true   
+    bonusawarded = nil
     
     north = byFigure
     south = wheatStoneBridge 
@@ -723,13 +724,13 @@ byPentagram: NoNPC, DarkRoom 'Pentagram Room'
                 WHEN RALPH WITT, THE ARCHITECT AND CONSTRUCTOR OF THIS CAVE, WAS VERY
                 YOUNG, HE BECAME VERY INCENSED THAT HIS NAME WAS AT THE END OF THE
                 ALPHABET.  HE FELT (FOR SOME REASON) THAT THE LETTER W BELONGED NEAR
-                THE BEGINNING OF THE ALPHABET, AND THAT ALL OF THOSE \"UPSTART LETTERS
-                WHICH UNFAIRLY USURPED THE BEST PLACES\" SHOULD BE FORCED INTO EXILE
+                THE BEGINNING OF THE ALPHABET, AND THAT ALL OF THOSE <q>UPSTART LETTERS
+                WHICH UNFAIRLY USURPED THE BEST PLACES</q> SHOULD BE FORCED INTO EXILE
                 AT THE END OF THE ALPHABET.  HIS INSTINCT FOR MATTERS MAGICAL AND
                 MYSTICAL LED HIM TO APPLY THIS STRANGE BELIEF INTO THE CAVE'S
                 STRUCTURE WHEN HE EXCAVATED IT.  YOU HAVEN'T YET BEEN AFFECTED BY HIS
                 STRANGE HABITS, BUT YOU SHOULD REMEMBER THIS.  FAREWELL, AND GOOD
-                LUCK.<.q>  With that, the Djinn evaporates into a cloud of smoke and
+                LUCK.</q>  With that, the Djinn evaporates into a cloud of smoke and
                 drifts rapidly away.\n";
                 if(!phugggVerb.isused)
                 //Don't mention this if it's already been used.
@@ -881,11 +882,11 @@ northBasilisk: NoNPC, DarkRoom 'North of Basilisk'
     {
         // Note that a dead player should not be moved, since
           // it won't occur until after the resurrection.
-        canTravelerPass(actor, connector) { return !playerStoned; }
+        canTravelerPass(actor) { return !playerStoned; }
         noteTraversal(actor)
         {
-            if (basilisk.isIn(self)) { // Do neither if it's a statue.
-                if (metalPlate.location ==  actor) 
+            if (basilisk.isIn(lexicalParent)) { // Do neither if it's a statue.
+                if (metalPlate.location == actor) 
                 {
                     basilisk.petrified;
                     playerStoned = nil;
@@ -908,12 +909,12 @@ northBasilisk: NoNPC, DarkRoom 'North of Basilisk'
 ;
 
 basiliskFork:  NoNPC, DarkRoom 'Fork by Steps'
+    "The passage here enters from the south and divides,
+     with a wide tunnel exiting to the north and a set of
+     steps leading downward. "
     game550 = true
     wino_wsbridge = true // can only exit via stone bridge
-    sdesc = "The passage here enters from the south and divides,
-        with a wide tunnel exiting to the north and a set of
-        steps leading downward. "
-    
+        
     north = peelgrunt
     south = northBasilisk
     down = bfSteps
@@ -1012,12 +1013,12 @@ storage: NoNPC, DarkRoom 'Storage Room'
 
 
 
-fakeY2: NoNPC, DarkRoom 'At <q>Y2</q>'
+fakeY2: NoNPC, DarkRoom 'At <q>Y2</q>?'
     "You are in a large room, with a passage to the
         south, a passage to the west, and a wall of broken
         rock to the east. There is a large <q>Y2</q> on 
     <<if gActor.isIn(fakeY2Rock)>>the rock you are sitting on<<else>>
-    a rock in the room's center<<end>>>. "
+    a rock in the room's center<<end>>. "
       
     
     game550 = true
@@ -1378,7 +1379,7 @@ windingPass: NoNPC, DarkRoom 'Winding Passage'
     northwest = byFigure
 ;
 
-golden: NPC, DarkRoom 'Golden Chamber'
+golden: NoNPC, DarkRoom 'Golden Chamber'
      "You are in a chamber with golden walls and a high
         ceiling.  Passages lead south, northeast, and
         northwest. "
@@ -1603,7 +1604,7 @@ class SafeExterior: Enterable 'large metal safe; walk-in'
     
     specialDesc 
     {
-        "A massive walk-in safe takes up one entire wall.  ";
+        "A massive walk-in safe takes up one entire wall. <.reveal walk-in> ";
         if (connector.isOpen)
             "Its door has been swung open and blocks the exit passage.";
         else if(inSafe.isFused) 
@@ -1683,6 +1684,15 @@ class ExteriorSafeDoor: Door 'safe door'
         if(stat)
             otherSide.discover();
     }
+    
+    dobjFor(Close)
+    {
+        action()
+        {
+            inherited();
+            "<i>Creeeeeeeeeeeeeeeeeek\tker-CHUNK!</i>\bThe safe is now closed. ";
+        }
+    }
 ;
 
 
@@ -1700,7 +1710,7 @@ class InteriorSafeDoor: Door 'door'
         }    
     }
     
-    isHidden = true  
+    isHidden = !isOpen  
     
     dobjFor(Open)
     {
@@ -1800,7 +1810,7 @@ inSafe: DarkRoom 'In the Safe'
     
     opens()
     { 
-        "<i>ker-THUNK<\t>screeeeeeeeeech</i>\b
+        "<i>ker-THUNK\tscreeeeeeeeeech</i>\b
         The (somewhat rusty) safe is now open. ";
         if(gActor.isIn(vault))
             safeDoorOutsideW.makeOpen(true);
@@ -1841,14 +1851,16 @@ inSafe: DarkRoom 'In the Safe'
             for(i = firstObj(VaultKeyVerb); i;  i = nextObj(i, VaultKeyVerb))
             {
                 if(i.wordnum == inSafe.password) 
-                    say(i.verb);
+                {
+                    say(i.verb); break;
+                }
             }
-            ".</q2>\n";
+            ".</q>\n";
         }
     }
     
     game550 = true
-    
+    readDesc = desc
     specialDesc = "A list of words hangs on one wall. "
     // DJP - make 'x list' the same as 'read list'
     
@@ -2002,6 +2014,7 @@ sorcLair: Room 'Sorcerer\'s Lair'
     and west. "
     game550 = true
     isbonus = true
+    bonusawarded = nil
     
     west = glassyRoom
     east = brinkNorth
@@ -2345,7 +2358,7 @@ Ice_14: IceTunnel
 Ice_15: IceTunnel
     east = Ice_12
     south = Ice_15a
-    nw = Ice_16
+    northwest = Ice_16
 ;
 Ice_15a: IceTunnel
     south = Ice_14
@@ -2363,7 +2376,7 @@ Ice_18:IceTunnel
     north = Ice_17
     south = Ice_19
     west = Ice_21
-    nw = Ice_22
+    northwest = Ice_22
 ;
 Ice_19: IceTunnel
     north = Ice_18
@@ -2419,16 +2432,19 @@ Ice_29: IceTunnel
 ;
 
 // lit by the letters. BJS
+// The TADS 2 port give no clue anywhere that the magic word THURB exists, but expects the
+// plwyer to know it in the Cylindrical Room - a clear impossibility! This TADS 3 port therefore 
+// adds a mention to it in this room description
 iceCaveExit: NoNPC, Room 'Small, Icy Chamber'
      "You are in a small chamber melted out of ice.  Glowing
-        letters in midair spell out the words <q>This way out</q>. "
+        letters in midair spell out the words <q>This way out (thurb)</q>. "
     
     east = Ice_29
     thurb = iceRoom
 ;
 
 + Fixture 'glowing letters; midair; words; them'
-    "Glowing letters in midair spell out the words <q>This way out</q>. "
+    "Glowing letters in midair spell out the words <q>This way out (thurb)</q>. "
     readDesc = desc
     
     checkReach(actor)
@@ -2571,7 +2587,7 @@ Fourier: NPC, DarkRoom 'Fourier Passage'
     Zarkalonroom = true
     
     northwest = archFork
-    sworthest = beachShelf
+    southwest = beachShelf
 //    ana = Blue_Fourier
 ;
 
@@ -2683,6 +2699,7 @@ beach: NoNPC, Room 'Beach'
     wino_quicksand = true // must cross quicksand to leave
     Zarkalonroom = true // Zarkalonized pendant required for transindection
     isbonus = true
+    bonusawarded = nil
    
     desc 
     {         

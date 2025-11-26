@@ -2054,10 +2054,9 @@ atY2: DarkRoom 'At "Y2"' 'at Y2'
         rock to the east. There is a large \"Y2\" on ";
 
         if (gActor.isIn(Y2Rock))
-             "the rock you are sitting on.";
+             "the rock you are sitting on. ";
         else
-             "a rock in t
-             he room's center.";
+             "a rock in the room's center. ";
     }
     plugh = insideBuilding
     south = lowNSPassage
@@ -3266,7 +3265,7 @@ inGiantRoom: DarkRoom 'In Giant Room'
     "It says <<text>>."
     readDesc = desc
     
-    text = '<q>Fee, gie, foe, foo [sic]</q>'
+    text = '<q>Fee, fie, foe, foo [sic]</q>'
 ;
 
 /* 93 */
@@ -3425,7 +3424,7 @@ inCavernWithWaterfall: DarkRoom 'In Cavern With Waterfall'
         
         else if (global.game550) 
         {
-            "What, into the whirlpool? ";
+            "What, into the whirlpool?\b>";
             //                waterfall.rhetoricalturn = gTurns;
             if(yesOrNo())
             {
@@ -3529,7 +3528,8 @@ inCavernWithWaterfall: DarkRoom 'In Cavern With Waterfall'
                 }
             }
             
-            "<.p>The swirling waters deposit you, not ungently, on solid ground. ";
+            "<.p>The swirling waters deposit you, not ungently, on solid ground. <.reveal
+            waterfall-transit>";
             if (crownkept) "<.p>Instinctively, you reach up to
                 check that the crown is still there.  Miraculously, it is! <.p>";     
     }
