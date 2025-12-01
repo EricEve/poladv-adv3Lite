@@ -95,9 +95,9 @@ blueEastBankOfFissure: Room
 
 greenHallOfMists: Room 'Green Hall of Mists'
 ;
-
-atSwEnd: Room 'At SW End'
-;
+//
+//atSwEnd: Room 'At SW End'
+//;
 
 blueBirdChamber: Room 'Blue Bird Chamber'
 ;    

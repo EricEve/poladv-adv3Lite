@@ -103,7 +103,7 @@ northOfReservoir: NoNPC, DarkRoom 'North Edge of Reservoir'
     north = warmRoom
     passage = warmRoom
     warm = warmRoom
-    
+      
     balcony = inBalcony
     
     south { doInstead(Cross, reservoir); }
@@ -156,6 +156,10 @@ northOfReservoir: NoNPC, DarkRoom 'North Edge of Reservoir'
     "Large clawed tracks are visible in the damp ground,
              leading from the passage into the water. "
     location701 = swordPoint
+;
+
++ Distant 'dark passage'
+    "A dark passage is visible across the water to the south. "    
 ;
 
 SpecialVerb 'bang' @brassGong 'hit';
@@ -375,6 +379,7 @@ wsBearBarrier: TravelBarrier
 
 
 valleyFaces: NoNPC, Room 'South End of Valley of Faces'
+    'south end of the Valley of Faces; long southern'
     "You are standing at the southern end of a long valley
         illuminated by flickering red light from the volcanic gorge
         behind you.  Carved into the walls of the valley are an
@@ -410,6 +415,15 @@ valleyFaces: NoNPC, Room 'South End of Valley of Faces'
      game550 = true
 ;
    
++ Distant 'immense carving of a seated figure'
+    "Its exact form cannot be seen from here due to the uncertainty of the light. "
+    game550 = true
+;
+    
++ Decoration 'volcanic gorge; flickering red; light'
+    "The volcanic gorge emits a flickering red light. "
+    game550 = true
+;
 
 byFigure: NoNPC, Room 'North End of Valley of Faces'    
     "You are standing at the north end of the Valley of the
@@ -468,7 +482,7 @@ byFigure: NoNPC, Room 'North End of Valley of Faces'
     described { if(has_crumbled) "Dark tunnels lead northeast, north, and northwest."; }
 ;
 
-+ Decoration 'immense statue, bas-relief bas relief of[prep]; minotaur'
++ Decoration 'immense statue, bas-relief bas relief of[prep] incredible; minotaur'
     "The statue is gazing at you with an amused expression on its face."   
 
      game550 = true
@@ -1547,7 +1561,7 @@ class StoneClass: Fixture, Surface 'chunk of rock;large cubical;stone block'
 ;
 
 
-morion: DarkRoom 'Morion Room'   
+morion: DarkRoom 'Morion Room' 'Morion Room; small'   
     desc 
     { 
         "You are in a small room.  The walls are composed of
@@ -1566,9 +1580,8 @@ morion: DarkRoom 'Morion Room'
     {
         isConnectorApparent = global.game701
     }
-    
-    
-    
+       
+    passage = inHallOfMtKing
 
     NPCexit1 
     {
@@ -1625,16 +1638,8 @@ vault: DarkRoom 'Vaulted Room'
     
     game550 = true
     
-    north: TravelConnector -> inHallOfMtKing
-    {
-        canTravelerPass(actor) { return !safeDoorOutsideW.isOpen; }
-        explainTravelBarrier(actor, connector)
-        {
-            "The safe's door is blocking the exit
-            passage -- you'll have to close it to get out of here. ";
-        }
-    }
-    
+    north = vaultTunnel  
+    climb = vaultTunnel
     up asExit(north)
     east = safeDoorOutsideW
     in asExit(east)
@@ -1653,6 +1658,24 @@ vault: DarkRoom 'Vaulted Room'
     }
       
     
+;
+
++ vaultTunnel: Passage 'tunnel;;passage' -> inHallOfMtKing
+    "The tunnel leads upwards and to the north. "
+    
+    canTravelerPass(actor) { return !safeDoorOutsideW.isOpen; }
+    explainTravelBarrier(actor, connector)
+    {
+        "The safe's door is blocking the exit
+        passage -- you'll have to close it to get out of here. ";
+    }
+    location = vault
+    dobjFor(Climb) asDobjFor(GoThrough)    
+    dobjFor(ClimbUp) asDobjFor(GoThrough)    
+;
+
++ Distant 'high vaulted ceiling'
+    "It's high and it's vaulted. "
 ;
 
 + safeExteriorW: SafeExterior    
@@ -1973,6 +1996,7 @@ sphericalRoom: DarkRoom 'Spherical Room'
 ;
 
 glassyRoom: DarkRoom 'Large Room with Glassy Walls' 
+    'large room with glassy walls; very'
     "You're standing in a very large room (which however
       is smaller than the Giant room) which has smooth,
       glassy-looking walls.  A passage enters from the
@@ -1991,12 +2015,16 @@ glassyRoom: DarkRoom 'Large Room with Glassy Walls'
     }
     
     lair = north
-        
+    passage = "The passage enters from the south and exits to the north; you'll have 
+        to say which way you want to go. "
     
     NPCexit1  { return sorcLair; } // As usual, NPCs get by with no trouble.
 //    exithints = [ Sorc_Lair, &north ]
 ;
 
++ Decoration 'glassy walls; smooth glassy-looking looking; wall; them'
+    "I've already told you everything I know about the walls here. "
+;
 
 sorcLair: Room 'Sorcerer\'s Lair'
     "This is the Sorcerer's Lair.  The walls are covered
@@ -2453,7 +2481,7 @@ iceCaveExit: NoNPC, Room 'Small, Icy Chamber'
     }
 ;
 
-coralPassage: DarkRoom 'Coral Passage'
+coralPassage: DarkRoom 'Coral Passage' 'coral pasaage; arched'
     "You are in an arched coral passage which enters from
     the west, splits, and continues on to the east over
     a smooth and damp-looking patch of sand.  The fork
@@ -2470,6 +2498,11 @@ coralPassage: DarkRoom 'Coral Passage'
     cross = quicksand            
     west = inArchedHall
 ;      
+
++ Decoration 'fork'
+    "The fork in the passage once led to the south, but it is
+    now completely blocked by debris. "
+;
 
 + Decoration 'debris'
     "The debris completely blocks the passage to the south, and it doesn't

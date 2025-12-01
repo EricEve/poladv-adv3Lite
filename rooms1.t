@@ -34,6 +34,7 @@ than Inside_Building. */
  */
     
  swordPoint: NoNPC, DarkRoom 'At Sword Point'
+    'sword point; narrow; promontory'
     desc()
     {
         "{I} {am} on a narrow promontory at the foot of a waterfall, which
@@ -44,8 +45,8 @@ than Inside_Building. */
         
         "Through the thick white mist looms a polished marble slab, to
         which is affixed an enormous rusty iron anvil.  In golden letters
-        are written the words: \"Whoso Pulleth Out This Sword of This
-        Stone and Anvil, is Rightwise King-Born of All This Mountain.\"
+        are written the words: <q>Whoso Pulleth Out This Sword of This
+        Stone and Anvil, is Rightwise King-Born of All This Mountain.</q>
         There is a narrow chimney on the east side of the promontory";
         
         // In the 701-point game, this room combines the characteristics of
@@ -87,21 +88,45 @@ than Inside_Building. */
 ;
 
 ;
-+ anvil: Fixture 'rusty anvil'
++ anvil: Fixture 'rusty anvil; enormous iron large'
     "It's just a large, rusty iron anvil, fixed to the marble slab. "
   
     game551 = true    
     
 ;
 
-+ Fixture 'marble slab'
++ Fixture 'marble slab; polished'
     "It's simply a slab of marble, to which a large iron anvil is attached. "
     
     game551 = true    
 ;
 
++ Fixture 'golden letters;gold;;them'
+    "The golden letters read, <q>Whoso Pulleth Out This Sword of This
+        Stone and Anvil, is Rightwise King-Born of All This Mountain.</q> "
+    readDesc = desc
+;
+
++ Distant 'opposite shore; indistinct of[prep]; shape'
+   "The indistinct shape of the opposite shore can be dimly seen to the south. "
+;
+
++ Decoration 'thick white mist; misty of[prep]; spray clouds'
+    "It's thick, white, and misty. "
+;
+
++ Decoration 'waterfall; overhead rock; wall hole'
+    "The waterfall spurts from an overhead hole in the rock wall and splashes into a
+        large reservoir. "
+;
+
++ StairwayUp 'narrow chimney' ->topOfSlide
+    "Although it's narrow, you could climb up it. "    
+;
+
+
 /* 142 */
-topOfSlide: NoNPC, DarkRoom 'At Top of Slide'
+topOfSlide: NoNPC, DarkRoom 'At Top of Slide' 'top of slide; narrow; shelf'
     "{I} {am} on a narrow shelf above and east of the top of a very
     steep chimney.  A long smooth granite slide curves down out of sight
     to the east. If {i} {go} down the slide, {i} may not be able
@@ -118,10 +143,19 @@ topOfSlide: NoNPC, DarkRoom 'At Top of Slide'
     chimney = swordPoint
 ;
 
++ StairwayDown 'steep chimney; very of[prep]; top' ->swordPoint
+    "It's very steep, but you could climb down it. "
+;
+
++ StairwayDown 'granite slide; long smooth' -> inMistyCavern
+    "The long smooth granite slide curves down out of sight
+    to the east. If {i} {go} down the slide, {i} may not be able
+    to climb back up. "
+;
 
 
 /* 143 */
-throneRoom: DarkRoom 'At Entrance to Throne Room'
+throneRoom: DarkRoom 'At Entrance to Throne Room' 'throne room entrance;private;chamber'
     "{I} {am} in the private chamber of the Mountain King.  Hewn into the
     solid rock of the east wall of the chamber is an intricately-wrought
     throne of elvish design.  There is an exit to the west."
@@ -180,7 +214,7 @@ trFloor: Floor 'floor; smooth clean; ground'
 ;
 
 /* 144 */
-throneRoomEast: DarkRoom 'At East Side of Throne Room'
+throneRoomEast: DarkRoom 'At East Side of Throne Room' 'east side of the throne room'
     "{I} {am} on the east side of the throne room.  Very narrow
     passages go north and south, but are too small to enter.  "
     
@@ -353,7 +387,7 @@ vastChamber: NoNPC, DarkRoom 'In a Vast Chamber'
         if(!traveled)             
             "<.p>Maybe the \"Phuce\" spell would be useful somewhere else, but
             it's no use to you here.  I suspect that the elves can control
-            its effect, but you don't know how - and it's \(far\) too powerful 
+            its effect, but you don't know how -- and it's <i>far</i> too powerful 
             in here! ";       
     
         roomMove(vastChamber, throneRoomEast);
@@ -362,18 +396,19 @@ vastChamber: NoNPC, DarkRoom 'In a Vast Chamber'
     }
     
     traveled = nil
+    floorObj = slightlyRoughFloor
+;
+ 
+slightlyRoughFloor: Floor 'slightly rough floor;;ground'
+    "Well, it's a floor and it's slightly rough. "
 ;
 
-
-
-
 /* 146 */
-inForest3: OutsideRoom 'In Forest'
+inForest3: OutsideRoom 'In Forest' 'dense forest; (in)'
     "{I} {am} in dense forest, with a hill to one side.  The trees
         appear to thin out towards the north and east. "
     
-    game551 = true
-    
+    game551 = true    
 
     east = atHillInRoad
     up asExit(east)
@@ -398,10 +433,10 @@ inForest3: OutsideRoom 'In Forest'
     west = knoll
     north = saltMarshEdge
     building = atEndOfRoad
-    // Exit info. for 'back' command:
-    
+    // Exit info. for 'back' command:    
 ;
 
++ ProxyRoom ->atHillInRoad;
 
 /* 147 */
 knoll: OutsideRoom 'On Grassy Knoll' 'grassy knoll; wide'
@@ -454,6 +489,10 @@ knoll: OutsideRoom 'On Grassy Knoll' 'grassy knoll; wide'
     "The forest partly surrounds the knoll. "
 ;
 
++ Odor 'sea water; of[prep]; smell'
+    "The air smells of sea water. "
+;
+
 denseJungle: KeyCheck, OutsideRoom 'In a Dense Jungle'    
         "You're in a dense jungle, surrounded by large leaves which tower above
         your head.  Progress may be possible to the north, east or 
@@ -475,12 +514,6 @@ denseJungle: KeyCheck, OutsideRoom 'In a Dense Jungle'
     
 /* size of brass key as seen in this room */
     brassKey = largeKey
-//    phuce = {
-//        local actor := getActor(&travelActor);
-//        phuce_messages.larger; 
-//        actor.roomMoveTravel(&transmove, knoll);
-//        return nil;
-//    }
     
     phuce
     {
@@ -490,7 +523,7 @@ denseJungle: KeyCheck, OutsideRoom 'In a Dense Jungle'
     }
 ;
     
-+ Decoration 'tall leaves; green large'
++ Decoration 'tall leaves; green large;; them'
     "They look like giant blades of grass. "    
     game551 = true
 ;
@@ -641,7 +674,7 @@ cliffDemise1: Room 'Bottom of Cliff'
 
 /* 157 */
 
-thunderHole: OutsideRoom 'At Thunder Hole'
+thunderHole: OutsideRoom 'At Thunder Hole' 'thunder hole; funnel shaped funnel-shaped; cavern cave'
     "{I} {am} at Thunder Hole, a funnel shaped cavern opening onto the
     sea. The noise of the surf pounding against the outer rocks of the cave is
     amplified by the peculiar shape of the cave, causing a thunder-like
@@ -669,7 +702,10 @@ thunderHole: OutsideRoom 'At Thunder Hole'
 
 ;
 
-seaWater: MultiLoc, RoomLiquid 'sea water'
++ ProxyRoom 'large rocks;;;them' ->brokenRocks
+;
+
+seaWater: MultiLoc, RoomLiquid 'sea water;huge calm;breakers ocean '
     desc()
     {
         if(gRoom.ofKind(OutsideRoom))
@@ -801,11 +837,15 @@ topOfSteps: KeyCheck, IndoorRoom 'At Top of steps (behind Thunder Hole)'
     }
 ;
    
-   
-    
-    
++ Unthing 'sea'
+    'The sea is out of sight down the passage. '
 ;
 
++ Decoration 'blank wall'
+    "It has a tiny door in it. "
+;
+    
+    
 /* the shelf (when your size is normal */
 + highShelf: Distant 'high shelf'
     "I can't tell {me} much about it, because it's so high up. "
@@ -911,7 +951,7 @@ smallDoor: ElfinDoor 'tiny door' @topOfSteps @grottoWest
     getFacets = [ironDoor]
 ;
 
-ironDoor: ElfinDoor 'wrought-iron door' @ledgeByDoor @undergroundSea
+ironDoor: ElfinDoor 'wrought-iron door; wrought iron large substantial' @ledgeByDoor @undergroundSea
     "It's a large and very substantial door, about eight feet high. "
     
     keyList = [largeKey]
@@ -962,7 +1002,7 @@ crampedChamber: KeyCheck, IndoorRoom 'Cramped Chamber'
 ;
 
 /* 160 */
-ledgeByDoor: KeyCheck, IndoorRoom 'On Ledge by Wrought Iron Door'
+ledgeByDoor: KeyCheck, IndoorRoom 'On Ledge by Wrought Iron Door' 'ledge by the door; wide'
     "{I} {am} on a wide ledge, bounded on one side by a rock wall,
     and on the other by a sheer cliff.  The only way past is through
     a large wrought-iron door. "
@@ -1099,6 +1139,10 @@ grottoLake: MultiLoc, Decoration 'lake;large clear deep;water'
     }
 ;
 
+MultiLoc, Decoration 'blue glow; hazy bluish'
+     "It's just a glow. "
+     locationList = [grottoWest, blueGrottoEast, gravelBeach, bubbleChamber, darkCove]
+;
 
 /* 166 */
 grottoWest: NoNPC, Room 'At West Wall of Blue Grotto'
@@ -1161,6 +1205,10 @@ grottoWest: NoNPC, Room 'At West Wall of Blue Grotto'
         // also move the objects on the other side of the door
         roomMove(topOfSteps, ledgeByDoor);        
     }    
+;
+
++ Distant 'small holes; rock dim; light east e wall; them it'
+    "Small holes high in the rock wall to the east admit a dim light. "
 ;
 
 /* dummy object */
@@ -2392,18 +2440,30 @@ devilsChair: DarkRoom 'At Devil\'s Chair.'
             didnt_make_it.death;
     }
     
-    listenDesc
-    {
-        inherited();
-        if (global.oldGame) 
-            return;
-        global.listenAdd = true;       
-        "You hear a distant roar, like the sound of a fast-flowing
-             river, from the depths of the abyss. ";
-    }
+//    listenDesc
+//    {
+//        inherited();
+//        if (global.oldGame) 
+//            return;
+//        global.listenAdd = true;       
+//        "You hear a distant roar, like the sound of a fast-flowing
+//             river, from the depths of the abyss. ";
+//    }
 ;
 
-
+abyss: MultiLoc, Fixture 'deep abyss; yawning chasm\'s black dark of[prep]; chasm depths edge' 
+    "The chasm is so deep you can scarcely see the bottom. "
+    iswavetarget = true // magic can be worked by waving the rod at it ...
+    locationList = [devilsChair, dantesRest]
+    dobjFor(JumpOver)
+    {
+        verify() {}
+        action() { gActor.travelVia(gActor.getOutermostRoom.jump); }
+    }
+    
+    listenDesc =  "You hear a distant roar, like the sound of a
+    fast-flowing river, from the depths of the abyss. "
+;
 
 decrepitBridge: DSPassage 'bridge; natural decrepit' @devilsChair @dantesRest
     desc 
@@ -2535,7 +2595,7 @@ bridgeMess: MultiLoc, Decoration 'message; warning'
 ;
 
 /* 191 */
-deadEndCrack: DeadEndRoom 'In Dead End Crack'
+deadEndCrack: DeadEndRoom 'In Dead End Crack' 'dead end crack;dead-end (in)'
     "{I}{'m} in a dead-end crack. "
     
     game551 = true
@@ -2920,7 +2980,7 @@ to Adventurers.  */
 ;
 
 /* 202 */
-rainbowRoom: DarkRoom 'In the Rainbow Room.'
+rainbowRoom: DarkRoom 'In the Rainbow Room' 'rainbow room;very tall; chamber'
     "{I} {am} in a very tall chamber whose walls are comprised of many
     different rock strata.  Layers of red and yellow sandstone
     intertwine with bright bands of calcareous limestone in a rainbow-
@@ -2939,12 +2999,20 @@ rainbowRoom: DarkRoom 'In the Rainbow Room.'
 //    myhints = [Bridgehint]
 ;
 
++ Fixture 'trail; e-w east-west'
+    "The trail leads east and west. "
+    cannotFollowMsg = 'The train leads east and west; which way do you want to go? '
+    cannotClimbMsg = cannotFollowMsg
+;
+
 rainbowSlab: MultiLoc, Fixture 'natural bridge; gigantic; slab'   
     checkReach(actor)
     {
         if(actor.isIn(rainbowRoom))
             "It's too far away. ";
     } 
+    
+    locationList = [rainbowRoom, overRainbow]
 ;
 
 /* 203 */
@@ -3088,7 +3156,7 @@ lostCanyonS: DarkRoom 'On South Side of Lost River Canyon'
         written the following:\b<q><<readDesc>></q> "   
 ;
 
-lost: MultiLoc, StreamItem 'river; wide deep swift rapid fart flowing list fast-flowing; 
+lost: MultiLoc, StreamItem 'river; wide deep swift rapid fast flowing lost fast-flowing; 
     water stream'
     "The river is wide, deep and fast-flowing.  There's no way to cross it. "
     locationList = [lostCanyonS, lostCanyonEnd, lostCanyonE,
@@ -3107,7 +3175,8 @@ lost: MultiLoc, StreamItem 'river; wide deep swift rapid fart flowing list fast-
 ;
 
 /* 209 */
-lostCanyonEnd: DarkRoom 'At End of Lost River Canyon'
+lostCanyonEnd: DarkRoom 'At End of Lost River Canyon' 
+    'end of lost river canyon; large flat rock (at); table'
     "{I} {am} standing on a large flat rock table at the western end of
     Lost River Canyon.  Beneath {my} feet, the river disappears amidst
     foam and spray into a large sinkhole.  A gentle path leads east
@@ -3120,11 +3189,19 @@ lostCanyonEnd: DarkRoom 'At End of Lost River Canyon'
     downstrean = "Don't be ridiculous! " 
     jump = downstream    
     
-    east = lostCanyonS
-    upstream = lostCanyonS 
+    east: PathPassage 'gentle path' ->lostCanyonS
+    "The gentle path leads east. "
+        { location = static lexicalParent }
+    upstream asExit(east)
     up = nicheAboveRiver
     climb = nicheAboveRiver
 //    listendesc = "You hear the roar of the wide, fast-flowing river. "
+;
+
++ Fixture 'large sinkhole; sink (and); hole foam spray'
+    "Beneath {my} feet, the river disappears amidst
+    foam and spray into a large sinkhole "
+    cannotEnterMsg = 'You must be joking! '
 ;
 
 
@@ -3530,6 +3607,9 @@ riverStyxE: OutsideRoom 'On East Side of River Styx'
     east = topOfSteps
 ;
 
++ Unthing 'river\'s sticks'
+    'That waa just a homophonic pun! '
+;
 
 /* 230 */
 ledgeAbovePinnacles: DarkRoom 'On ledge above limestone pinnacles'
@@ -3725,6 +3805,15 @@ outerCourtyard: OutsideRoom 'In Outer Courtyard'
     up = castleSteps
     west = livingMaze1
 ;
+
++ Distant 'tower'
+;
+
++ ProxyRoom 'maze of hedges; crystalline multicolored multicoloured; splendor splendour'
+    "The hedges are almost crystalline in their multicolored splendor. "
+    destination = livingMaze1
+; 
+    
 
 class KaleidConnector: TravelConnector
     noteTraversal(actor)

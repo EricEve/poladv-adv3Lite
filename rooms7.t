@@ -4,6 +4,7 @@
 #include "advlite.h"
 
 sOfCenter: NoNPC, Room 'South End of Computer Center'
+    'south end of the computer center; southern entire long of[prep];hall centre'
     "You are standing at the southern end of a long hall in what 
     appears to be a computer center.  The entire hall is lit by four rows 
     of fluorescent lightbulbs.  There are numerous bulletin boards, all
@@ -463,7 +464,7 @@ rift: MultiLoc, Decoration 'volcanic rift; huge; chasm'
 //    }
 ;
 
-MultiLoc, Distant 'active volcano;of[prep];lava stream'
+MultiLoc, Distant 'active volcano;of[prep] flowing;lava stream'
     "A stream of lava flows from the volcano situated far to the north. "
     locationList = [ eOfRift, wOfRift ]
 ;
@@ -501,6 +502,7 @@ wOfRift: NoNPC, Room 'West Edge of Volcanic Rift'
     down = 'Don\'t be ridiculous! '
     jump = down
     climb = down
+    passage = west
         
 ;
 

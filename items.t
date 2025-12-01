@@ -1179,9 +1179,12 @@ spelunkerToday: Thing 'recent issues of Spelunker Today;dwarvish; magazines issu
                  "Another picture shows
                  a king sitting on a large, intricately-wrought throne.
                  He wears a heavy-looking crown, and he holds a long black
-                 staff with a shiny metal star on one end.";
+                 staff with a shiny metal star on one end. ";
              }
         }
+        /* At least add a vague clue that the magazines should be left at Witts End. */
+        "You're not sure how valuable they are, so you consider dumping them if you
+        run out of ideas. ";
        read = true;
     }
     

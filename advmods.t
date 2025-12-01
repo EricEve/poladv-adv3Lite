@@ -786,7 +786,7 @@ turnProcessing: InitObject
                         ccond = true;
                     // otherwise check location of the container
                     else 
-                        ccond = (c.isIn(cloc));
+                        ccond = (c.isOrIsIn(cloc));
                     // condition for second-level container
                     if(cloc2 != nil)
                     {

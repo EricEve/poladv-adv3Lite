@@ -289,8 +289,11 @@ startEndgame()
         wickerCage.setup;
         blackMarkRod.setup;
         velvetPillow.setup;
-//        if(global.newgame) 
-//            global.newbook = new rare_book;
+        if(global.newgame) 
+        {
+            local newbook = rareBook.createClone();
+            newbook.moveInto(atSWEnd);
+        }
     }
     //
     // Move the player
@@ -306,8 +309,8 @@ startEndgame()
     else
         gPlayerChar.travelVia(atNEEnd);
       
-
-    addToScore(global.endpoints, 'reaching the endgame');
+    if(global.endpoints != 0)
+        addToScore(global.endpoints, 'reaching the endgame');
 }
  
 endPuzzle()
@@ -474,7 +477,7 @@ class ObjPile: DispensingCollective
  *
  */
 /* 115 */
-atNEEnd: Room, NoNPC 'At NE End'
+atNEEnd: Room, NoNPC 'At NE End' 'the northeast end of the immense room; ne'
     desc()
     {
         "You are at the northeast end of an immense
@@ -487,8 +490,8 @@ atNEEnd: Room, NoNPC 'At NE End'
         a bundle of black rods with rusty stars on their
         ends, and a collection of brass lanterns.  Off to one
         side a great many dwarves are sleeping on the floor,
-        snoring loudly.  A sign nearby reads: \"Do not
-        disturb the dwarves!\"<.p>";
+        snoring loudly.  A sign nearby reads: <q>Do not
+        disturb the dwarves!</q><.p>";
 
         "An immense mirror is hanging against one wall,
         and stretches to the other end of the room, where
@@ -505,6 +508,19 @@ atNEEnd: Room, NoNPC 'At NE End'
     
 ;
 
++ Distant 'massive torches;smokey yellow;light;them'
+    "The torches bathe the room in a smokey yellow light. "
+;
+
++ Decoration 'sign; nearby'
+    "The sign reads <q>Do not disturb the dwarves!</q> "
+    decorationActions = [Examine, Read]
+    readDesc = desc
+;
+
++ Distant 'sundry objects; various other;; them'
+    "If you want to exmaine them more closely, you'll need to go to the other end of the room. "
+;
 
 + bottlePile: ObjPile 'pile of empty bottles; another more ;bottle'
     "It's a pile of empty bottles like the one you found in the building. "
@@ -533,7 +549,7 @@ atNEEnd: Room, NoNPC 'At NE End'
     dispensedClass = brassLantern
 ;
 
-mirror2: MultiLoc, Fixture 'enormous mirror'
+mirror2: MultiLoc, Fixture 'enormous mirror; immense vast'
     "It looks like an ordinary, albeit enormous, mirror. "
     
     locationList = [atNEEnd, atSWEnd]
@@ -541,7 +557,7 @@ mirror2: MultiLoc, Fixture 'enormous mirror'
 
 
 /* 116 */
-atSWEnd: Room, NoNPC 'At SW End'
+atSWEnd: Room, NoNPC 'At SW End' 'southwest end of the repository; sw'
    
         // the wording re the pillows was changed slightly here to
         // fit in with the implementation which expects the objects
@@ -624,8 +640,8 @@ atSWEnd: Room, NoNPC 'At SW End'
     dispensedClass = velvetPillow    
 ;
 
-+ repositoryGrate: Door 'steel grate; metal strong locked ;lock gate grille'
-    "It just looks like an ordinary steel grate. It is cloed and locked. "
++ repositoryGrate: Door 'steel grate; metal strong locked large ;lock gate grille'
+    "It just looks like an ordinary steel grate. It is closed and locked. "
     isLocked = true
     lockabilility = lockableWithKey
     otherSide = self
@@ -649,7 +665,7 @@ atSWEnd: Room, NoNPC 'At SW End'
     }
 ;
 
-snakepit: Fixture 'pit of snakes; fierce green snake'
++ snakepit: Fixture 'pit of snakes; fierce green snake'
     "They're identical to the snake you saw in the Hall of the
      Mountain King -- and just as dangerous. "
     
@@ -660,6 +676,10 @@ snakepit: Fixture 'pit of snakes; fierce green snake'
     checkDobjCount = "It would take you all day to count the snakes. ";
 ;
 
++ Decoration 'corner'
+    "In one corner is a bundle of black rods with rusty marks on
+        their ends.  In another corner is a large pile of velvet pillows. "
+;
 
 phonyBooth2: Distant 'phone booth; telephone' @atSWEnd
     "You can't examine it closely from here. "    
@@ -703,6 +723,24 @@ inPhoneBooth2: NoNPC, Room 'Inside the Phone Booth'
     out asExit(south)
     myphone = phone2
     floorObj = pb2Floor
+    
+    roomAfterAction()
+    {
+        if(gDobj.ofKind(blackMarkRod) && !depositPointsAwarded && gDobj.location == self)
+        {
+            depositPointsAwarded = true;
+            addToScore(gDobj.depositpoints, 'other tasks');
+        }
+        
+        if(gDobj.ofKind(blackMarkRod) && depositPointsAwarded && contents.countWhich({o:
+            o.ofKind(blackMarkRod)}) < 1)
+        {
+            depositPointsAwarded = nil;
+            addToScore(-gDobj.depositpoints, 'other tasks');
+        }   
+    }
+    
+    depositPointsAwarded = nil
 ;
 
 + phone2: Phone 'old payphone; ancient pay; phone telephone receiver handset'
@@ -871,12 +909,12 @@ win()
 }
 
 
-cylindricalRoom: Room 'Cylindrical Room'
+cylindricalRoom: Room 'Cylindrical Room' 'cylindrical room; small'
     "You are in a small cylindrical room with very smooth
         walls and a flat floor and ceiling.  There are no
         exits visible anywhere." 
     
-    noExits = 'absolutely none whatsoever'
+    noExits = 'absolutely none visible anywhere'
     
     wordcount = 0
     
@@ -888,12 +926,12 @@ cylindricalRoom: Room 'Cylindrical Room'
             exit;
         }
         
-        if((gAction.ofKind(MagicWord) 
-#ifdef DEBUG
-            || (gActionIs(GoOut))
-#endif
-            )
-           && wordtest(gAction))
+//        if((gAction.ofKind(MagicWord) 
+//#ifdef DEBUG
+//            || (gActionIs(GoOut))
+//#endif
+//            )
+           if(wordtest(gAction))
             return;
         "Oops! That felt wrong! ";
         resetwords();
@@ -953,6 +991,20 @@ cylindricalRoom: Room 'Cylindrical Room'
         optwordlist = oVec.sort(SortAsc, {a, b: a.(numprop) - b.(numprop)}).toList();
         
     }
+    
+    responseList: CyclicEventList
+    {
+        [
+            '\n(You don\'t need to use that word here.)\n',
+            '\n(That won\'t help -- there\'s no natural way out of here.)\n ',
+            '\n(You\'ll have to use your wits better than that!)\n',
+            '\n(You sense yourself floundering -- perhaps because this room has such a 
+            speculiar vibe.)\n'       
+        ]
+    }
+;
+
++ Decoration 'very smooth walls;;;them'
 ;
 
 /* Resets words in the cylindrical room. */
@@ -1006,19 +1058,37 @@ wordtest(word)
 //        maxcount = &numactwords;
     }
     
-    if((word.(numprop) == nil) && (word != GoOut)) 
+    if((word.(numprop) == nil)) 
     {
-        "(You don't need to use that word here - undoing one command.)\n";
+        /* 
+         *   The TADS 2 port has this undo() here, with out even checking for a SystemAction, which
+         *   seems like a very bad idea. Also, the player is given no in-game clue what they're
+         *   meant to do here - it's a classic "Read my mind" puzzle, which is surely unacceptable.
+         *   So instead actions other than magic words should be carried out but met with responses
+         *   that might give some kind of clue to the player.
+         */
+           
+//        if (undo())
+//        {
+//            gRoom.lookAroundWithin();
+//            //            scoreStatus(global.score, global.turnsofar);
+//        }
+//        else
+//            "No more undo information is available. ";
         
-        if (undo())
+        if(word.ofKind(SystemAction) || word == Look)
+            return true;
+      
+        // Allow OUT to escape the chamber in debugging mode. */        
+#ifdef __DEBUG
+        if(word == GoOut)
         {
-            gRoom.lookAroundWithin();
-            //            scoreStatus(global.score, global.turnsofar);
+            cylindricalRoom.wordcount = maxcount; 
+            return true;            
         }
-        else
-            "No more undo information is available. ";
-        
-        return nil;
+#endif 
+        else cylindricalRoom.responseList.doScript();       
+        return true;
     }
     else if(word.(numprop) == 1) 
     {

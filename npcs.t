@@ -124,7 +124,9 @@ snake: Feedable, Actor 'snake;huge fierce green venemous ferocious large big kil
     ;cobra asp' @inHallOfMtKing
     "I wouldn't mess with it if I were you. "    
     
-    specialDesc = "A huge green fierce snake bars the way! "
+    specialDesc = "A huge green fierce snake bars the way<<if
+          wickerCage.isDirectlyHeldBy(gPlayerChar) && wickerCage.hasBird>>, hissing furiously at
+        something you're carrying<<end>>! "
     
     dobjFor(Attack)
     {
