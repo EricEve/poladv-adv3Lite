@@ -30,7 +30,7 @@ sOfCenter: NoNPC, Room 'South End of Computer Center'
     
 + Distant 'elevator;;lift'
     desc = elevator580.desc
-    game580 = true
+//    game580 = true
 ;
 
 
@@ -39,7 +39,7 @@ MultiLoc, Decoration 'bulletin boards;;board'
     memos, personal messages and system messages.  None of them 
     are particularly interesting. "
     
-    game580 = true
+//    game580 = true
     locationList = [sOfCenter, nOfCenter]
     readDesc = desc 
     decorationActions = [Examine, Read]
@@ -50,7 +50,8 @@ MultiLoc, Decoration 'fluorescent lightbulbs; light of[prep]; lights bulbs rows;
     initialLocationList = [sOfCenter, nOfCenter]
 ;
 
-nOfCenter: NoNPC, Room 'North End of Computer Center'
+nOfCenter: NoNPC, Room 'North End of Computer Center' 
+    'north end of the computer center; northern; centre'
     "You are at the northern end of the computer center.  There are 
     more bulletin boards and posters covering the walls, and a large 
     sign on
@@ -68,7 +69,7 @@ nOfCenter: NoNPC, Room 'North End of Computer Center'
     hasfloor = true
 ;
 
-+ Fixture 'signs;large smaller small ;sign;them' 
++ Fixture 'signs;large considerably smaller small ;sign;them' 
     "A large sign on
     the wall reads <q>RALPH WITT MEMORIAL COMPUTER CENTER.</q>  A smaller
     sign below it reads <q>Security area -- access by authorized personel 
@@ -83,7 +84,7 @@ nOfCenter: NoNPC, Room 'North End of Computer Center'
 + box580: Fixture 'box; little north n; slot wall'
     "On the north wall there is a little box with a slot in it set 
              into the wall about four feet from the floor. "
-    game580 = true
+//    game580 = true
     hasCard = nil
     iobjFor(PutIn)
     {
@@ -137,7 +138,7 @@ nOfCenter: NoNPC, Room 'North End of Computer Center'
     doors is an <q>OUT-OF-ORDER</q> sign. " 
         
     
-    game580 = true
+//    game580 = true
     isOpen = nil
     isLocked = (blob.isChasing || global.closed)
     
@@ -173,7 +174,7 @@ nOfCenter: NoNPC, Room 'North End of Computer Center'
 ;
 
 
-computerRoom: NoNPC, Room 'Computer Room'
+computerRoom: NoNPC, Room 'Computer Room' 'computer room; (air) conditioned'
     "You are standing in an air conditioned room with a raised floor.
     Filling most of the room is a LARGE computer with LOTS of blinking
     lights.  There is a display screen mounted in one section of the
@@ -204,10 +205,10 @@ computerRoom: NoNPC, Room 'Computer Room'
     }
 ;
 
-+ Fixture 'large computer;;supercomputer mainframe' 
++ Fixture 'large computer;;supercomputer mainframe machine' 
      "Filling most of the room is a LARGE computer with LOTS of
      blinking lights. "
-    game580 = true 
+//    game580 = true 
     
     dobjFor(SwitchOff)
     {
@@ -237,11 +238,11 @@ computerRoom: NoNPC, Room 'Computer Room'
 ++ Component 'display screen;indecipherable of[prep];crt monitor numbers'
    "In the middle of the screen is the message <q>Adventure -- RUNNING</q>. 
    Everything else is just an indecipherable display of numbers. "
-   game580 = true
+//   game580 = true
    readDesc = desc
 ;
     
-+ crFloorPanel: SecretDoor 'small panels;(floor) (floor\'s));panel;them'
++ crFloorPanel: SecretDoor 'small panels;(floor) raised (floor\'s)); floor panel;them'
     desc
     {
         if(crFloorPanel.isOpen) "Several of the floor's panels have been 
@@ -367,18 +368,24 @@ airDuct: NoNPC, Room 'Air Duct'
 ;
 
 sTunnel: NoNPC, DarkRoom 'S-Shaped Tunnel'
-        "You are in an S-shaped tunnel.  The tunnel starts at the northeast,
-         where there is a rectangular opening in the wall, and continues to the
-        southwest, from which a dull rumbling can be heard. "
- 
-        game580 = true
-        east asExit(northeast)  
-        northeast = airDuct 
-        north asExit(northeast) 
+    "You are in an S-shaped tunnel.  The tunnel starts at the northeast,
+    where there is a rectangular opening in the wall, and continues to the
+    southwest, from which a dull rumbling can be heard. "
     
-        southwest = eOfRift
-        west asExit(southwest)
-        south asExit(southwest)
+    game580 = true
+    east asExit(northeast)  
+    northeast: Passage 'rectangular opening' ->airDuct 
+        { location = static lexicalParent }
+    north asExit(northeast) 
+    
+    southwest = eOfRift
+    west asExit(southwest)
+    south asExit(southwest)
+;
+
++ Noise 'dull rumbling'
+    "A dull rumbling can be heard coming from the southwest. "
+    listenDesc = desc
 ;
 
 eOfRift: NoNPC, Room 'East Edge of Volcanic Rift' 
@@ -455,7 +462,7 @@ rift: MultiLoc, Decoration 'volcanic rift; huge; chasm'
     if with a pen-knife, are the words \"THGIRW RUBLIW\". "
     iswavetarget = true // can wave rod at rift.
     
-    game580 = true
+//    game580 = true
     locationList = [ eOfRift, wOfRift ]
 //    verDoJump(actor) = {}
 //    doJump(actor) = {
@@ -506,7 +513,7 @@ wOfRift: NoNPC, Room 'West Edge of Volcanic Rift'
         
 ;
 
-panelledPassage: NoNPC, Room 'Panelled Passage'
+panelledPassage: NoNPC, Room 'Panelled Passage' 'panelled passage; long sloping'
     "You are in a long sloping passage.  The walls are covered with fine
     redwood paneling.  From the east comes a dim light and a dull rumbling
     noise. "
@@ -520,16 +527,21 @@ panelledPassage: NoNPC, Room 'Panelled Passage'
 
 + Decoration 'panelling; fine redwood; panels walls'
     "The walls are covered with fine redwood panelling. "
-    game580 = true
+//    game580 = true
     vocabLikehood = 10
 ;
 
 + Decoration 'dim light'
-    "It comes from the east. "
+    "The dim light comes from the east. "
     notImportantMsg = 'The light is too insubstantial for that. '
 ;
 
-study:  NoNPC, DarkRoom 'Study'
++ Noise 'dull rumbling noise'
+    "A dull rumbling noise comes from the east. "
+    listenDesc = desc
+;
+
+study:  NoNPC, DarkRoom 'Study' 'elaborately furnished study'
     "You are in an elaborately furnished study. "
     
     east = panelledPassage
@@ -539,7 +551,7 @@ study:  NoNPC, DarkRoom 'Study'
 
 + desk: Heavy, Surface 'desk; magnificent redwood'
     "There is a magnificent redwood desk in the center of the room. "
-    game580 = true
+//    game580 = true
     specialDesc = desc    
 ;
     
@@ -551,7 +563,7 @@ study:  NoNPC, DarkRoom 'Study'
             "There are several unlit desk lamps scattered about the room. ";
     }
     
-    game580 = true
+//    game580 = true
     sdesc = "desk lamps"
     
     isLit = true

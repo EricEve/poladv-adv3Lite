@@ -608,6 +608,7 @@ modify Thing
         if(stat)
             hasOpened = true;
    }
-    
+ 
+    ordinary = plural ? 'ordinary' : 'an ordinary' 
 ;
 

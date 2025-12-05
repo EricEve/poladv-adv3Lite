@@ -214,12 +214,14 @@ global: object
     
 ;
 
+  
 
 /* Customize various library messages to match those used in the TADS 2 implementation. */
 CustomMessages
     messages =
     [
-        Msg(nothing special, 'It looks like an ordinary {name dobj} to me. '),
+        Msg(nothing special, ['{He dobj} look{s/ed} like {1} {name dobj} to me. ', 
+            {: gDobj.ordinary}]),
         Msg(onset of darkness, '\nIt is now pitch black.  If you proceed you
             will likely fall into a pit. '),
         Msg(show score rank, '{1} '),        
@@ -1611,11 +1613,13 @@ modify Player
             lasttoploc = lastmoveloc.getOutermostRoom;
         }
         oldloc = lasttoploc;
+ #ifndef __DEBUG       
         if(loc.deleted)
         {
             "{I} {can't} go that way in this version of the game. ";
             return;
         }
+ #endif    
         
         if (global.closed && loc.isoutside && !gRoom.isoutside) 
         {   

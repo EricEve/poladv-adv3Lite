@@ -888,7 +888,7 @@ sword: Treasure, Weapon 'gleaming sword; elven elvish' @swordPoint
                 "The handle is now too slippery to grasp. ";
             else if(!moved && gVerbWord != 'yank')
                 "You grasp the sword's handle and pull, but the sword won't
-                budge.  You could try yanking it out.";
+                budge.  You could try yanking it out. <.reveal sword-stuck>";
         }
     }
     

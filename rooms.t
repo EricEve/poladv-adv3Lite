@@ -76,7 +76,8 @@ ProxyExit 'hole'
 ;
 
 ProxyExit 'passage; very narrow steep large small cavernous shallow steeper little coral another
-    low wide obvious (hands) (and) (knees) walking good' 
+    low wide obvious (hands) (and) knees walking good gently sloping dark larger other short
+    east-west main smaller only' 
     desc()
     {
         if(gRoom.propType(exitProp) == TypeDString)
@@ -772,10 +773,7 @@ inForest1: OutsideRoom 'In Forest'
 ;
 
 class Blueberries: CanPick, Fixture 'blueberries;blue delicious ;berries berry bush bushes;them'    
-    "The berries look delicious!  You're tempted to sample them."
-    noun = 'berries' 'blueberries' 'bush' 'bushes'
-    adjective = 'blue'
-       
+    "The berries look delicious!  You're tempted to sample them." 
     
     count = 0
 
@@ -890,6 +888,8 @@ atSlitInStreambed: OutsideRoom 'At Slit in Streambed'
     }
 ;
 
++ Distant 'bare rock' ordinary = 'ordinary';
+
 /* 8 */
 outsideGrate: OutsideRoom 'Outside Grate'
     "{I} {am} in a 20-foot depression floored with
@@ -931,7 +931,7 @@ grate: DSDoor 'steel grate; metal strong 3x3 ; lock grille'  @outsideGrate @belo
 
 
 /* 9 */
-belowTheGrate: NotFarIn 'Below the Grate'
+belowTheGrate: NotFarIn 'Below the Grate' 'small chamber beneath the grate'
     "{I} {am}  in a small chamber beneath a 3x3 steel
      grate to the surface. A low crawl over cobbles leads
      inward to the west."
@@ -1078,7 +1078,7 @@ inBirdChamber: DarkRoom, NotFarIn 'In Bird Chamber' 'bird chamber; (in) splendid
 ;
 
 
-orangeStone: MultiLoc, Fixture 'orange stone;; column travertine walls'    
+orangeStone: MultiLoc, Fixture 'orange stone;; column massive travertine walls'    
     "It's a column of travertine -- a beautiful mineral found in wet
     limestone. <<unless gRoom == inBirdChamber>>You could climb down it but you wouldn't be able to 
     climb up.<<end>> "
@@ -1159,7 +1159,7 @@ smallPit: MultiLoc, Fixture 'small pit'
     locationList = [atTopOfSmallPit, blueTopOfSmallPit, greenTopOfSmallPit]
 ;
 
-pitCrack: MultiLoc, Fixture 'crack; small'
+pitCrack: MultiLoc, Fixture 'crack; small leading (on)'
     "<<cannotEnterMsg>>"
     
     cannotEnterMsg = 'The crack is very small -- far too small for {me} to follow. '
@@ -1306,6 +1306,7 @@ inHallOfMists: DarkRoom 'In Hall of Mists' 'hall of mists; vast'
     
     ana2 = blueHallOfMists
 ;
++ Decoration 'chill wind; cold';
 
 class HOMStaircase: StairwayDown 'wide stone staircase;; stairs steps;it them'
     "The staircase leads down. "    
@@ -1788,7 +1789,7 @@ eastPit: MultiLoc, StairwayDown 'eastern pit; east e; corner'
 ;
 
 /* 25 */
-inWestPit: DarkRoom 'In West Pit'
+inWestPit: DarkRoom 'In West Pit' 'west pit; western (in)'
     "{I} {am} at the bottom of the western pit in the
      twopit room.  There is a large hole in the wall about
      25 feet above you. "
@@ -1825,6 +1826,8 @@ inWestPit: DarkRoom 'In West Pit'
         else return inNarrowCorridor;
     }
 ;
+
++ ProxyRoom ->atWestEndOfTwoPitRoom;
 
 + Fixture 'hole above pit; large'
     "The hole is in the wall above you."
@@ -2095,7 +2098,7 @@ inWestSideChamber: DarkRoom 'In West Side Chamber'
 
 /* 31 - 32 are messages */
 /* 33 */
-atY2: DarkRoom 'At "Y2"' 'at Y2'    
+atY2: DarkRoom 'At "Y2"' 'at Y2; large; room'    
     desc() 
     {
         
@@ -2113,6 +2116,7 @@ atY2: DarkRoom 'At "Y2"' 'at Y2'
     east = jumbleOfRock
     wall asExit(east)
     broken asExit(east)
+    passage = "There are passages to south and west. "
     
     west = atWindowOnPit1
     
@@ -2141,6 +2145,8 @@ atY2: DarkRoom 'At "Y2"' 'at Y2'
     }
 
 ;
+
++ Decoration 'wall of broken rock';
 
 + Y2Rock: Fixture, Chair 'Y2 Rock'
     "There is a large \"Y2\" painted on the rock."
@@ -2337,14 +2343,15 @@ inPit: DarkRoom, NoNPC 'In Pit'
 ;
 
 /* 39 */
-inDustyRockRoom: DarkRoom 'In Dusty Rock Room'
+inDustyRockRoom: DarkRoom 'In Dusty Rock Room' 'dusty rock room; in[prep] large'
     "You are in a large room full of dusty rocks.
      There is a big hole in the floor.  There are cracks
      everywhere, and a passage leading east. "
     
     east = inDirtyPassage
     passage asExit(east)
-    down = atComplexJunction
+    down: Passage 'big hole' ->atComplexJunction
+        {  location = lexicalParent }
     hole asExit(down)
     bedquilt =inBedquilt
     floor = atComplexJunction   
@@ -2889,13 +2896,13 @@ atWestEndOfLongHall: DarkRoom 'At West End of Long Hall'
 
 /* 62 */
 crossover: DarkRoom 'N/S and E/W Crossover'
-   "You are at a crossover of a high N/S passage
-    and a low E/W one. "
+   "You are at a crossover of a high N/S passage and a low E/W one. "
     
     west = atEastEndOfLongHall
     north = deadEnd7
     east = inWestSideChamber
     south = atWestEndOfLongHall
+    passage = desc
 ;
 
 
@@ -3116,23 +3123,46 @@ atEastEndOfTwoPitRoom: DarkRoom 'At East End of Twopit Room' 'east end of the tw
     
     hole =  "The only hole you could enter is on the wall directly over the
         west pit, and you can't get to it from here. "
+    passage = "There are passages to east and west. "
+;
+
++ PathPassage 'path; connecting' -> atEastEndOfTwoPitRoom
+    "The path bypasses the pits to connect passages from east and west. "
+    canTravelerPass(actor) { return nil; }
+    explainTravelBarrier(t,conn) { "You'll have to say whether you want to go west or east. "; }
 ;
 
 /* 68 */
-inSlabRoom: DarkRoom 'In Slab Room' 'slab room'
+inSlabRoom: DarkRoom 'In Slab Room' 'slab room; large low circular; chamber'
     "You are in a large low circular chamber whose
      floor is an immense slab fallen from the ceiling
-     (slab room).  East and west there once were large
-     passages, but they are now filled with boulders.  Low
-     small passages go north and south, and the south one
-     quickly bends west around the boulders."
+     (slab room). <<passage>> "
     
     south = atWestEndOfTwoPitRoom
     
     up = inSecretNSCanyon0
     north = inBedquilt
     climb = inSecretNSCanyon0
+    passage = "East and west there once were large
+     passages, but they are now filled with boulders.  Low
+     small passages go north and south, and the south one
+     quickly bends west around the boulders. "
+    floorObj = islFloor
 ;
+
++ Fixture 'boulders'
+    "Boulders block the passages running east and west, but the passage
+    south manages to skirt them. "
+    cannotTakeMsg = 'The boulders look too numerous and too heavy to shift. '
+    cannotMoveMsg = cannotTakeMsg
+    cannotPushMsg = cannotTakeMsg
+;
+
+islFloor: Floor 'floor; immense; slab ground'
+    "The floor is an immense slab fallen from the ceiling. "
+;
+
+
 
 /* 69 */
 inSecretNSCanyon0: DarkRoom 'In Secret N/S Canyon'
@@ -3720,7 +3750,7 @@ inOrientalRoom: DarkRoom 'In Oriental Room'
     <<if(global.newGame)>> east<<else>> west<<end>>. "
     
     southeast = inSwissCheeseRoom
-    crawl asExit(southeast)
+    crawl = inLargeLowRoom
     
     
 /* changed direction for 551-point version */
@@ -3738,8 +3768,15 @@ inOrientalRoom: DarkRoom 'In Oriental Room'
     
     north = inMistyCavern
     up asExit(north)
+    passage = "A gently sloping passage leads upward to the north, while another passage
+    leads southeast"
 
     cavern asExit(north)   
+;
+
++ iorCrawl: Passage 'hands and knees crawl' ->inLargeLowRoom
+    "The hands and knees crawl leads 
+    <<if(global.newGame)>> east<<else>> west<<end>>. "    
 ;
 
 + Decoration 'ancient oriental drawings;cave;art paintings;them'
@@ -3786,6 +3823,7 @@ inMistyCavern: DarkRoom 'In Misty Cavern' 'misty cavern; (in) (of) large outer w
         }
         explainTravelBarrier(actor, connector)
         {
+            "<.reveal slide-back>";
             if (rand(100) <= 75)
                 "{I} managed to climb about halfway up before losing
                 {my} hold and sliding back. ";
@@ -3910,7 +3948,7 @@ alcovePloverPassage: DSPassage 'tight tunnel; extremely; passage' @inAlcove @inP
 
 
 /* 100 */
-inPloverRoom: Room 'In Plover Room' 'plover room; in[prep]; small chamnber'  
+inPloverRoom: Room 'In Plover Room' 'plover room; in[prep]; small chamber'  
     "{I}{'m} in a small chamber lit by an eerie green
     light.  An extremely narrow tunnel exits to the west.
     A dark corridor leads northeast. "
@@ -3960,10 +3998,11 @@ inPloverRoom: Room 'In Plover Room' 'plover room; in[prep]; small chamnber'
 
 /* 101 */
 inDarkRoom: DarkRoom 'In Dark Room'
-    "{I}{'m} in the dark-room.  A corridor leading
-        south is the only exit. "        
+    "{I}{'m} in the dark room.  A corridor leading south is the only exit. "        
     
-    south = inPloverRoom
+    south: PathPassage 'corridor; leading (s) (south)' -> inPloverRoom
+    "The corridor leading south is the only exit. "
+    {  location = lexicalParent  }
     plover asExit(south)
     out asExit(south)
 ;
@@ -4331,7 +4370,7 @@ inMirrorCanyon: DarkRoom 'In Mirror Canyon'
     toReservoir asExit(north)
 ;
 
-+ Distant 'enormous mirror; huge big large suspended hanging vanity dwarvish'
++ Distant 'enormous mirror; huge big large suspended hanging vanity dwarvish two-sided two sided'
     "It looks like an ordinary, albeit enormous, mirror. "
     
     decorationActions = inherited + LookIn
@@ -4349,13 +4388,17 @@ inMirrorCanyon: DarkRoom 'In Mirror Canyon'
     }    
 ;
     
-+ Distant 'windows;;window; them it'
++ Distant 'windows;small;window; them it'
     "A window can be seen in both the east and the west walls
         of the canyon, about 50 feet up. "
     
     actionDobjCount = "There are two of them. "
     decorationActions = inherited + Count
     
+;
+
++ Decoration 'canyon walls;;;them'
+    "The walls extend upward for well over 100 feet. "
 ;
 
 /* 110 */
@@ -4584,7 +4627,9 @@ onSWSideOfChasm: DarkRoom 'On SW Side of Chasm'
     view of the far side.  A southwest path leads away
     from the chasm into a winding corridor. <<ricketyBridge.xdesc>>"
     
-    southwest = inSlopingCorridor
+    southwest: PathPassage 'southwest path; sw winding corridor'  ->inSlopingCorridor
+    "The southwest path leads away from the chasm into a winding corridor."
+    {  location = lexicalParent }
     
     //    across = { return self.over; }
     //    cross = { return self.over; }
@@ -4643,7 +4688,13 @@ trollChasm: RFD 'chasm; deep large'
     isWaveTarget = true
 ;
 
-ricketyBridge: DSPassage 'rickety bridge; unstable wobbly rope'     
++ MultiLoc, Decoration 'mist; heavy white misty'
+    "It looks pretty misty to me. "
+    notImportantMsg = 'The mist is too insubstantial for that. '
+    locationList = [onSWSideOfChasm, onNESideOfChasm ]
+;
+
+ricketyBridge: DSPassage 'rickety bridge; unstable wooden wobbly rope'     
     @onSWSideOfChasm @onNESideOfChasm 
     "It just looks like an ordinary, but unstable, bridge. "
     
@@ -4657,7 +4708,7 @@ ricketyBridge: DSPassage 'rickety bridge; unstable wobbly rope'
             chasm, vanishing into the mist.\b";
             
             "A sign posted on the bridge reads,
-            \"Stop! Pay troll!\"";
+            <q>Stop! Pay troll!</q>";
         }
         else if(isBurnt) 
             "The charred remains of a wooden
@@ -4842,6 +4893,10 @@ ricketyBridge: DSPassage 'rickety bridge; unstable wobbly rope'
 //    }
 ;
 
++ Component 'sign'
+    "The sign posted on the bridge reads, <q>Stop! Pay troll!</q> "
+    readDesc = desc
+;
 burntBridge: MultiLoc, Distant 'bridge wreckage; burnt wrecked destroyed wrecked charred 
     burned wooden'
     "The charred remains of the bridge lie at the bottom of the
@@ -5141,18 +5196,7 @@ atBreathtakingView: Room, NoNPC 'At Breath-Taking View'
     }  
     
     north = wheatStoneBridge
-    
-//    north: TravelConnector -> wheatStoneBridge
-//    {
-//        canTravelerPass(actor) { return isConnectorListed; }
-//        explainTravelBarrier(actor, connector)
-//        {
-//            "There is no way over the gorge. ";
-//        }
-//        isConnectorListed = (global.game550 && wheatStoneBridge.exists)
-////        travelVia(actor) { wheatStoneBridge.travelVia(actor); }
-//    }
-       
+
     cross asExit(north)
     gorge asExit(north)
 
@@ -5191,7 +5235,7 @@ atBreathtakingView: Room, NoNPC 'At Breath-Taking View'
     game550 = true
 ;
 
-MultiLoc, Distant 'active volcano; glowing blood red blood-red eerie macabre; rock'
+MultiLoc, Distant 'active volcano; glowing blood red blood-red eerie macabre; rock glare'
    "Great gouts of molten lava come surging out of the
     volcano and go cascading back down into the depths.
     The glowing rock fills the farthest reaches of the
@@ -5344,7 +5388,7 @@ inBarrenRoom: DarkRoom 'In Barren Room'
 ;
 
 /* 131 */
-differentMaze3: DifferentMazeRoom 'Maze of Twisting Little Passage, All Different'   
+differentMaze3: DifferentMazeRoom 'Maze of Twisting Little Passages, All Different'   
     west = differentMaze1
     southeast = differentMaze4
     northwest = differentMaze5
@@ -5638,7 +5682,7 @@ bWalls: Backdrop 'walls; swiss cheese ragged sharp warm hot (north) (south) (eas
     }
 ;
 
-bCeiling: Backdrop 'ceiling'
+bCeiling: Backdrop 'ceiling;;roof'
     desc()
     {
         {        

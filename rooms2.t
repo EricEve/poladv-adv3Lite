@@ -118,7 +118,7 @@ northOfReservoir: NoNPC, DarkRoom 'North Edge of Reservoir'
 
 + brassGong: Fixture 'large brass gong'
     "It's just a large brass gong fastened to the wall of the room. "
-    game550 = true
+//    game550 = true
     
     specialDesc ="There is a large brass gong fastened to the wall here. "   
     location701 = swordPoint
@@ -182,6 +182,7 @@ warmRoom: NoNPC, DarkRoom 'Small Warm Chamber'
     }
        
     toReservoir = south
+    passage = "There are passages south and northeast. "
     
     northeast = inBalcony
     balcony = inBalcony
@@ -192,7 +193,10 @@ warmRoom: NoNPC, DarkRoom 'Small Warm Chamber'
     
 ;
 
-inBalcony: NoNPC, Room 'Treasure Room Balcony'    
++ Decoration 'mist' ordinary = 'ordinary';
+
+inBalcony: NoNPC, Room 'Treasure Room Balcony'   
+    'treasure room balcony; high'
         "You are in a high balcony carved out of solid rock
         overlooking a large, bare chamber lit by dozens of
         flickering torches.  A rushing stream pours into
@@ -205,11 +209,13 @@ inBalcony: NoNPC, Room 'Treasure Room Balcony'
         in 4004 B.C., and dedicated to the proposition
         that all adventurers are created equal (although
         some are more equal than others).  NO ADMITTANCE
-        VIA THIS ENTRANCE!</q>  A small, dark tunnel leads
-        out to the west. "
+        VIA THIS ENTRANCE!</q>  <<west.desc>> "
         
     game550 = true
-    west = warmRoom
+    west: PathPassage 'small dark tunnel' -> warmRoom
+    "A small, dark tunnel leads out to the west. "
+    { location = static lexicalParent }
+    
     out asExit(west)
     toReservoir: VarDest, TravelConnector
     {
@@ -221,7 +227,7 @@ inBalcony: NoNPC, Room 'Treasure Room Balcony'
     }
     
     
-    warm = warmRoom
+    warm = west
     
     jump = brokenNeck
 //    exithints = {
@@ -229,6 +235,14 @@ inBalcony: NoNPC, Room 'Treasure Room Balcony'
 //        else return [N_Of_Reservoir, &reservoir];
 //    }
 ;
+
++ Decoration 'solid rock' "It looks pretty solid to me, at any rate. ";
++ Decoration 'large bare chamber';
++ Distant 'flickering torches;of[prep];dozens;them';
++ Distant 'rushing stream';    
++ Distant 'two-foot slit';
++ Distant 'large pool';
+
 
 + Fixture 'small plaque; riveted; sign'
     "It says, <q>ou are looking at the Witt Company's main
@@ -241,14 +255,14 @@ inBalcony: NoNPC, Room 'Treasure Room Balcony'
    
     readDesc = desc
     
-    game550 = true
+//    game550 = true
 ;
 
 wheatStoneBridge: DSPassage 'wheat-stone bridge' @atBreathtakingView @valleyFaces
     "The bridge is a fragile-looking arch of wheat-colored stone,
         leading across the volcanic gorge. "
     
-    game550 = true
+//    game550 = true
     exists = nil
 //    isConnectorApparent = exists //???
     isConnectorListed = exists
@@ -405,24 +419,24 @@ valleyFaces: NoNPC, Room 'South End of Valley of Faces'
 //    exithints = [ At_Breath_Taking_View, &south ]
 ;
 
-+ Decoration 'stone faces;;face;them'    
++ Decoration 'stone faces;incredible of[prep];series face;them'    
    "Some of them look down into the valley with expressions
         of benevolence that would credit a saint;  others glare
         with a malice that makes the heart grow faint.  All of
         them are imbued with a fantastic seeming of life by the
         shifting and flickering light of the volcano."
     
-     game550 = true
+//     game550 = true
 ;
    
 + Distant 'immense carving of a seated figure'
     "Its exact form cannot be seen from here due to the uncertainty of the light. "
-    game550 = true
+//    game550 = true
 ;
     
 + Decoration 'volcanic gorge; flickering red; light'
     "The volcanic gorge emits a flickering red light. "
-    game550 = true
+//    game550 = true
 ;
 
 byFigure: NoNPC, Room 'North End of Valley of Faces'    
@@ -475,7 +489,7 @@ byFigure: NoNPC, Room 'North End of Valley of Faces'
             "The rock wall extends across the entire north
             end of the valley. ";
     }
-    game550 = true
+//    game550 = true
     has_crumbled = nil
     
     
@@ -485,28 +499,39 @@ byFigure: NoNPC, Room 'North End of Valley of Faces'
 + Decoration 'immense statue, bas-relief bas relief of[prep] incredible; minotaur'
     "The statue is gazing at you with an amused expression on its face."   
 
-     game550 = true
+//     game550 = true
 ; 
 
 southFog: NoNPC, DarkRoom 'South End of Foggy Plain'
+    'south end of the foggy plain; large room'
     "You are standing at the southern end of what appears
         to be a large room filled with multicolored fog.
         The sides and far end of the room cannot be seen due
-        to the thickness of the fog - it's a real pea-souper
+        to the thickness of the fog -- it's a real pea-souper
         (even to the color in places!).  A passage leads
         back to the south;  a dull rumbling sound issues
         from the passage. "
     game550 = true
     wino_wsbridge = true // can only exit via stone bridge
     
-    south = byFigure
+    south: Passage 'passage' ->byFigure
+    "The passage leads back to the south. "
+        { location = static lexicalParent }
     
     north: TravelConnector -> foggyPlain
     {
         travelDesc() {  fog.dir_to_go = 1 + rand(8); }
-    }
-       
-    listenDesc = "A dull rumbling sound issues from the passage. "
+    }        
+;
+
++ Noise 'dull rumbling sound'
+    "A dull rumbling sound issues from the passage. "
+    listenDesc = desc
+;        
+
++ Decoration 'multicolored fog; multicoloured thick real pea-souper'
+    "The fog fills the room. "
+    notImportantMsg = 'There\'s not a lot you can do with fog. '
 ;
 
 foggyPlain: NoNPC, Room 'Foggy Plain'
@@ -536,8 +561,8 @@ foggyPlain: NoNPC, Room 'Foggy Plain'
 ;
 
 + fog: Fixture 'fog; thick pea soup pea-soup pale purple red dense black orange magenta pink 
-    multicolored multicoloured' 
-  game550 = true    
+    multicolored multicoloured shimmering pale bright dense coal-black black pearly day-glow' 
+//  game550 = true    
   visibleInDark = true
     
     desc
@@ -644,9 +669,9 @@ foggyPlain: NoNPC, Room 'Foggy Plain'
 
 
 plainCentre: NoNPC, Room 'Foggy Plain by Cairn of Rocks'
+    'foggy plain by the cairn of rocks; fog-filled; room'
     "You are standing in a fog-filled room next to a tall
-        cairn of glowing rocks.  An opening in the cairn leads
-        down to a dark passage. "
+        cairn of glowing rocks. <<fogCairn.desc>> "
     
     game550 = true
     wino_wsbridge = true // can only exit via stone bridge
@@ -663,7 +688,16 @@ plainCentre: NoNPC, Room 'Foggy Plain by Cairn of Rocks'
     down = nondescript
 ;
 
-nondescript: NoNPC, DarkRoom 'Nondescript Chamber'
++ Enterable 'opening; dark in[prep]; passage (cairn)'
+    "<<fogCairn.desc>>"
+    connector = location.down
+;
+
++ fogCairn: Decoration 'cairn of glowing rocks'
+    "An opening in the cairn leads down to a dark passage. "
+;
+
+nondescript: NoNPC, DarkRoom 'Nondescript Chamber' 'nondescript chamber; small'
     "You're in a small, nondescript chamber.  A dark
         passage leads up and to the south, and a wide but
         low crawl leads north. "
@@ -672,46 +706,43 @@ nondescript: NoNPC, DarkRoom 'Nondescript Chamber'
     wino_wsbridge = true // can only exit via stone bridge
         
     south = plainCentre
-    north = byPentagram
+    north:Passage 'wide but low crawl' -> byPentagram "The crawl leads north. "
+        { location = static lexicalParent }
     up asExit(south)
+    passage  = south
     pentagram = byPentagram
+    crawl = north
 ;
 
 byPentagram: NoNPC, DarkRoom 'Pentagram Room'
+    'pentagram room; small'
     "You're in a small room with a very smooth rock floor,
         onto which has been marked a pentagram.  A low crawl
         leads out to the west, and a crack in the rock leads north.  "
     
     game550 = true
     wino_wsbridge = true // can only exit via stone bridge
-    west = nondescript
-    north = chimneyRoom
+    west: Passage 'low crawl' ->nondescript
+        { location = static lexicalParent }
+    
+    crawl = west
+    
+    north: Passage 'crack' ->chimneyRoom "The crack leads north. "
+        { location = static lexicalParent }
+    
     out asExit(west)
     toNondescript = nondescript
-    crack = chimneyRoom
-    chimney = chimneyRoom
+    crack = north
+    chimney = north
+    
+    floorObj = pentaRoomFloor
 ;
 
 
 + floorPentagram: Fixture, Platform 'pentagram'
     "It's just a pentagram marked on the floor.  "
-    game550 = true
-    
-//    ldesc = { 
-//        self.heredesc;
-//        if (itemcnt( self.contents )) {
-//            P(); I(); "In "; self.thedesc; " you see ";
-//            listcont( self ); ". ";
-//        }
-//    }
-//    heredesc = {
-//        if(Djinn.location = self) {
-//            P(); I();"There is a twelve-foot
-//            djinn standing in the center of the pentagram,
-//            glowering at you.  ";
-//        }
-//    }
-    
+//    game550 = true
+
     checkReachIn(actor, target)
     {
         if(djinn.isIn(self))
@@ -814,36 +845,48 @@ byPentagram: NoNPC, DarkRoom 'Pentagram Room'
     }    
 ;
 
+pentaRoomFloor: Floor 'floor; very smooth rock; ground'
+    "The floor here is of very smooth rock and has been marked with a pentagram. "
+;
+
 chimneyRoom: NoNPC, DarkRoom 'End of Crack, at Bottom of Chimney'
+    'end of the crack in the rock; of[prep]; bottom chimney'
     "The crack in the rock ends here, but a narrow
         chimney leads up.  You should be able to climb it."
     game550 = true
     wino_wsbridge = true // can only exit via stone bridge    
     
     south = byPentagram
-    up = inTube
-    climb = inTube
-    tube = inTube
+    up: StairwayUp 'narrow chimney' ->inTube "The chimney leads up and looks climbable. "
+        { location = static lexicalParent }
+    
+    climb = up
+    tube = up
     pentagram = byPentagram
     crack = byPentagram
 ;
 
 inTube: NoNPC, DarkRoom 'Lava Tube at Top of Chimney'
+    'lava tube at the top of the chimney;;rock'
     "You're at the top of a narrow chimney in the rock.
         A cylindrical tube composed of hardened lava leads south. "
     game550 = true
-    wino_wsbridge = true // can only exit via stone bridge
-    sdesc = ""
+    wino_wsbridge = true // can only exit via stone bridge    
     
-    south = tubeSlide
-    down = chimneyRoom
+    south: Passage 'cylindrical tube; hardened; lava' ->tubeSlide
+    "The tube is composed of hardened lava leads south. "
+        { location = static lexicalParent }
+    
+    down: StairwayDown  'narrow chimney' ->chimneyRoom
+    "The narrow chimney leads down. "
+        { location = static lexicalParent }
     climb = chimneyRoom
     chimney = chimneyRoom
-    tube = tubeSlide
-    slide = tubeSlide
+    tube = south
+    slide = south
 ;
 
-tubeSlide: NoNPC, DarkRoom 'Steep Slide in Tube'
+tubeSlide: NoNPC, DarkRoom 'Steep Slide in Tube' 'steep slide in the lava tube'
        "The lava tube continues down and to the south, but
         it becomes very steep - if you go down it you
         probably won't be able to get back up. "
@@ -863,10 +906,9 @@ tubeSlide: NoNPC, DarkRoom 'Steep Slide in Tube'
     tube = chimneyRoom
 ;
 
-southBasilisk: NoNPC, DarkRoom 'Rough, Narrow Passage'
+southBasilisk: NoNPC, DarkRoom 'Rough, Narrow Passage' 'rough narrow passage'
     "You are in a narrow and rough passage running
-        north and south.  A dull rumbling sound can be
-        heard from the south." 
+        north and south.  <<dullRumble.desc>> " 
     
     game550 = true
     wino_wsbridge = true // can only exit via stone bridge
@@ -886,7 +928,13 @@ southBasilisk: NoNPC, DarkRoom 'Rough, Narrow Passage'
 //    exithints = [ North_Basilisk, &north ]
 ;
 
-northBasilisk: NoNPC, DarkRoom 'North of Basilisk'
++ dullRumble: Noise 'dull rumbling sound'
+    "A dull rumbling sound can be heard from the south. "
+    listenDesc = desc
+;
+
+northBasilisk: NoNPC, DarkRoom 'North of Basilisk' 
+    'rough passage north of the basisiisk\'s den;;basilisk'
     "You're in a rough passage to the north of the basilisk's den."
     
     game550 = true
@@ -919,7 +967,8 @@ northBasilisk: NoNPC, DarkRoom 'North of Basilisk'
     north = basiliskFork
 //    exithints = [ South_Basilisk, &south ]
     
-    playerStoned = nil
+    playerStoned = nil  
+   
 ;
 
 basiliskFork:  NoNPC, DarkRoom 'Fork by Steps'
@@ -929,8 +978,11 @@ basiliskFork:  NoNPC, DarkRoom 'Fork by Steps'
     game550 = true
     wino_wsbridge = true // can only exit via stone bridge
         
-    north = peelgrunt
+    north: StairwayDown 'wide tunnel' -> peelgrunt
+    "The wide tunnel exits to the north. "
+        { location = static lexicalParent }
     south = northBasilisk
+    passage = south
     down = bfSteps
     steps = bfSteps
     toPeelgrunt = peelgrunt
@@ -982,15 +1034,16 @@ peelgrunt: NoNPC, DarkRoom  'Peelgrunt Room'
 ;
 
 
-onSteps: NoNPC, DarkRoom 'On the Steps'
-    "You are on a long, spiral set of steps leading
-        downwards into the earth. "
+onSteps: NoNPC, DarkRoom 'On the Steps' 'on the spiral steps; set of[prep];;them'
+    "You are on a long, spiral set of steps leading downwards into the earth. "
     game550 = true
     
     up = basiliskFork
     down = stepsExit
     steps = stepsExit
 ;
+
++ Decoration 'earth' ordinary ='bog standard';
 
 stepsExit: NoNPC, DarkRoom 'Exit on Steps'
     "A small tunnel exits from the steps and leads north.
@@ -999,18 +1052,19 @@ stepsExit: NoNPC, DarkRoom 'Exit on Steps'
     game550 = true
     wino_wsbridge = true // can only exit via stone bridge
     
-    north: Passage 'small tunnel'
+    north: Passage 'small tunnel'  -> fakeY2 
     "The small tunnel leads north. "
-     -> fakeY2
-    {
-        location = lexicalParent
-    }
+      {  location = static lexicalParent }
         
     up = onSteps
-    down = storage
-    steps = storage
+    down: StairwayDown 'steps' ->storage
+    "The steps lead down into the earth. "
+        { location = static lexicalParent }
+    steps = down
     // exit = Fake_Y2   (since "exit" clashes with the keyword.)
 ;
+
++ Decoration 'earth' ordinary = 'ordinary';
 
 storage: NoNPC, DarkRoom 'Storage Room'
     "You're in what was once a storage room.  A set of
@@ -1045,6 +1099,8 @@ fakeY2: NoNPC, DarkRoom 'At <q>Y2</q>?'
     east = fakeJumbleOfRock
     wall = fakeJumbleOfRock
     
+    passage = "There are passages to south and west. "
+    
     
     broken = fakeJumbleOfRock
     west: TravelConnector -> catacombs
@@ -1065,13 +1121,18 @@ fakeY2: NoNPC, DarkRoom 'At <q>Y2</q>?'
     }
 ;
 
-+ fakeY2Rock: Fixture, Chair '<q>Y2</q> rock fake; y2'
+
++ fakeY2Rock: Fixture, Chair '<q>Y2</q> rock; fake at[prep] (room\'s); centre center y2'
     "There is a large <q>Y2</q> painted on the rock. "
-    game550 = true
+//    game550 = true
     wino_wsbridge = true // can only exit via stone bridge
     
     dismabigName = 'fake Y2 rock'   
 ;
+
++ Decoration 'wall of broken rock';
+
++ ProxyRoom -> fakeJumbleOfRock;
 
 fakeJumbleOfRock: NoNPC, DarkRoom 'Jumble of Rock'
     "You are in a jumble of rock, with cracks everywhere. "
@@ -1320,7 +1381,8 @@ catacombsMazeSkip: MazeSkipConnector
     destList = [westAudience, fakeY2]
 ;
 
-westAudience: NoNPC, Room 'West Audience Hall'
+westAudience: NoNPC, Room 'West Audience Hall' 
+       'west end of the royal audience hall; entire; chamber'
         "You are standing at the west end of the royal
         Audience Hall.  The walls here are composed
         of the finest marble, and the floor is built
@@ -1336,6 +1398,28 @@ westAudience: NoNPC, Room 'West Audience Hall'
     
     west = catacombs  // roomnumber should still be 11.
     east = eastAudience
+    
+    floorObj = wAudFloor
+;
+
++ Fixture 'ceiling; high vaulted'
+    "The ceiling is high and vaulted. "
+    checkReach(obj) { "The ceiling is too high up for that. "; }
+;
++ Fixture 'walls; finest marble;;them'
+    "The walls here are composed of the finest marble. "
+;
+
++ Decoration 'pillars; rare egyptian of[prep]; granite; them'
+    "Pillars of rare Egyptian red granite support the ceiling. "
+;
+
++ Decoration 'nacreous glow;;light'
+    "It glows and is nacreous. "
+;
+
+wAudFloor: Floor 'floor; rare; onyx bloodstone'
+    "The floor is built of slabs of rare onyx and bloodstone. "    
 ;
 
 eastAudience: NoNPC, Room 'East Audience Hall'
@@ -1350,7 +1434,11 @@ eastAudience: NoNPC, Room 'East Audience Hall'
     west = westAudience
 ;
 
-+ serpentThrone: Fixture 'throne; (serpent) strange strange-looking metal;bars rods'
++ Fixture, Platform 'large dais'
+    "On the dais is a strange-looking throne. "
+;    
+
++ serpentThrone: Fixture 'throne; (serpent) strange strange-looking metal interlocking;bars rods'
     "The throne is composed of several interlocking bars and rods,
         as though its owner had a serpentine body. "
     
@@ -1366,7 +1454,7 @@ eastAudience: NoNPC, Room 'East Audience Hall'
         python, and is wrapped carefully through the throne.  Above
         the waist, it resembles the skeleton of a giant human with
         six arms.  In one of these arms is <<mention name sceptre>>! "
-    game550 = true
+//    game550 = true
     
     cannotPutInMsg = 'I don\'t know how to put anything into {the iobj}. '
     
@@ -1415,7 +1503,7 @@ golden: NoNPC, DarkRoom 'Golden Chamber'
 + Distant 'high ceiling'
 ;
 
-translucent: NoNPC, Room 'Translucent Room'
+translucent: NoNPC, Room 'Translucent Room' 'translucent room; large'    
     "You are in a large room whose walls are composed of
         some translucent whitish material.  The room is
         illuminated by a flickering reddish glow shining
@@ -1449,11 +1537,11 @@ translucent: NoNPC, Room 'Translucent Room'
 //    exithints = [ Golden, &east ]   
 ;
     
-+ Decoration 'translucent white walls; whitish southern s south; material wall; them it'
++ Decoration 'translucent white walls; (some) whitish southern s south; material wall; them it'
     "The walls are composed of some translucent whitish material. <<redGlow.desc>>"
 ;   
 
-+ redGlow: Decoration 'flickering reddish glow; red'
++ redGlow: Decoration 'flickering reddish glow; red shining'
     "The glow is shining through the southern wall. "
     notImportantMsg = 'The glow is too insubstantial for that. '
 ;
@@ -1626,7 +1714,7 @@ class SafeExterior: Enterable 'large metal safe; walk-in'
             "It is tightly closed, and has no handle, lock, or keyhole. ";
     }   
     
-    game550 = true
+//    game550 = true
     
     dobjFor(Open) { remap = connector }
     dobjFor(Close) { remap = connector }
@@ -1752,7 +1840,7 @@ class InteriorSafeDoor: Door 'door'
             leave the safe before shutting it. ";
         }
     }
-    game550 = true
+//    game550 = true
     
     dobjFor(Push)
     {
@@ -1882,7 +1970,7 @@ inSafe: DarkRoom 'In the Safe'
         }
     }
     
-    game550 = true
+//    game550 = true
     readDesc = desc
     specialDesc = "A list of words hangs on one wall. "
     // DJP - make 'x list' the same as 'read list'
@@ -1942,7 +2030,7 @@ corridor2: DarkRoom 'Bend in Wide Corridor'
 ;
 
 
-toolRoom: DarkRoom 'Tool Room'
+toolRoom: DarkRoom 'Tool Room' 'tool room; low-ceilinged'
     "You are in a small, low-ceilinged room with the words,
         <q>Witt Company Tool Room -- Melenkurion division</q>
         carved into one of the walls.  A wide corridor runs
@@ -1950,14 +2038,16 @@ toolRoom: DarkRoom 'Tool Room'
     
     game550 = true
     
-    south = corridor2
+    south: PathPassage 'wide corridor' ->corridor2
+    "The wide corridor runs south from here. "
+        { location = static lexicalParent }
     out asExit(south)
 ;
 
 + Fixture 'carving on the wall; carved;message words writing'
     "The message carved into the wall reads, <q>Witt Company
         Tool Room -- Melenkurion division.</q> "
-    game550 = true
+//    game550 = true
     readDesc = desc
 ;
 
@@ -1984,7 +2074,7 @@ inCubicle: DarkRoom 'Dank Cubicle' 'dank cubicle; small; rock'
     passage = corrDivis
 ;
 
-sphericalRoom: DarkRoom 'Spherical Room'
+sphericalRoom: DarkRoom 'Spherical Room' 'spherical room; polished completely; walls'
     "You're in a large, completely spherical room with
     polished walls.  A narrow passage leads out to the north. "
     game550 = true
@@ -2038,21 +2128,37 @@ sorcLair: Room 'Sorcerer\'s Lair'
     sound vibrates from deep in the ground beneath your
     feet, and a whispering sound composed of the echoes
     of long-forgotten spells and cantrips seeps from the
-    walls and fills the air.  Passages exit to the east
-    and west. "
+    walls and fills the air.  <<passage>> "
     game550 = true
     isbonus = true
     bonusawarded = nil
     
     west = glassyRoom
     east = brinkNorth
+    passage = "Passages exit to the east and west. "
 ;
 
-+ Fixture 'exotic runes; indecipherable ;walls rune words; them'
++ Fixture 'exotic runes; indecipherable ;walls rune words scripts; them'
     "The walls are covered with exotic runes written in strange,
     indecipherable scripts;  the only readable phrase reads
     <q>noside samoht</q>."
-    game550 = true    
+//    game550 = true    
+;
+
++ Distant 'stalactite';
++ Decoration 'iridescent blue light; mysterious' ordinary = 'pretty mysterious';
++ Decoration 'strange shadows;;;them' 
+    "Paricularly strange, as there seems to be nothing to case them. "
+;
++ Noise 'deep chanting sound; resonant'    
+    "A deep, resonant chanting sound vibrates from deep in the ground. "
+    listenDesc = desc
+;
++ Noise 'whispering sound; long-forgotten long forgotten; spells cantrips'
+    "A whispering sound composed of the echoes
+    of long-forgotten spells and cantrips seeps from the
+    walls and fills the air. "
+    listenDesc = desc
 ;
 
 brinkNorth: DarkRoom 'Brink of Bottomless Pit'
@@ -2064,13 +2170,26 @@ brinkNorth: DarkRoom 'Brink of Bottomless Pit'
     game550 = true
     
     north = sorcLair
+    passage = north
     west = brinkSouth
     east = brinkEast
     lair = sorcLair
     jump { bottPit.plunge(gActor); }    
 ;
 
++ Fixture 'ledges;;ledge;them'
+    "Ledges run around the pit to the east and west. "
+    cannotFollowMsg = 'Which way to do want to go: east or west? '
+    cannotGoAlongMsg = cannotFollowMsg
+    cannotClimbMsg = cannotFollowMsg
+;
+
++ Decoration 'bowels of the earth;;;them it'
+    "That's just a way of saying a long way down. "    
+;
+
 brinkSouth: DarkRoom 'South Edge of Bottomless Pit'
+    'south edge of the bottomless pit;;ledge end'
     "You are standing at the south end of a ledge running
     around the west side of a bottomless pit.  The ledge
     once continued around to the east side of the pit,
@@ -2080,24 +2199,40 @@ brinkSouth: DarkRoom 'South Edge of Bottomless Pit'
     game550 = true
         
     north = brinkNorth
-    southeast = iceRoom
+    southeast: Passage 'tunnel' ->iceRoom "The tunnel leads southeast. "
+        { location = static lexicalParent }
+    
     jump { bottPit.plunge(gActor); }       
 ;
 
-brinkEast: DarkRoom 'East Side of Bottomless Pit'
++ Decoration 'rock-slide;rock;slide';
++ Decoration 'cold wind' "What do you expect a cold wind to look like?";
+
+brinkEast: DarkRoom 'East Side of Bottomless Pit' 'eastern side of a bottomless pit; (east) '
     "You are standing on the eastern side of a bottomless
     pit.  A narrow ledge runs north towards a
     dimly-visible passage;  the ledge once continued
     south of this point but has been shattered by falling
-    rock.  A narrow crack in the rock leads northeast. "
+    rock.  <<northeast.desc>> "
     game550 = true
    
-    north = brinkNorth
-    northeast = crack1
+    north: PathPassage 'narrow ledge' ->brinkNorth
+    "The narrow ledge runs north towards a dimly-visible passage"
+        { location = static lexicalParent }
+    
+    northeast: PathPassage 'narrow crack' ->crack1
+    "A narrow crack in the rock leads northeast. "
+        { location = static lexicalParent }
+    
     crack = crack1
     jump { bottPit.plunge(gActor); }    
     
 ;
+
++ Decoration 'falling rock; fallen'
+    "The rock has shattered the ledge to the south. "
+;
++ ProxyRoom 'dimly-visible passage; dimly lit' -> brinkNorth;
 
 bottPit: MultiLoc, Fixture 'bottomless pit; deep looking deep-looking'
     "It's a deep-looking pit. "
@@ -2189,7 +2324,7 @@ bottPit: MultiLoc, Fixture 'bottomless pit; deep looking deep-looking'
 
 
 
-crack1: DarkRoom 'Narrow, Twisting Crack'
+crack1: DarkRoom 'Narrow, Twisting Crack' 'narrow twisting crack;;rock'
     "You are following a narrow crack in the rock which
     enters from the southwest, turns and twists somewhat,
     and exits to the southeast. "
@@ -2205,7 +2340,9 @@ crack2: DarkRoom 'North End of Tight Passage'
     
     game550 = true
     
-    west = crack1
+    west: Passage 'narrow crack;in[prep];rock' ->crack1
+    "The narrow crack in the rock leads west. "
+        { location = static lexicalParent }
     
     south: TravelConnector -> crack3
     {
@@ -2234,7 +2371,8 @@ crack3: DarkRoom 'South End of Tight Passage'
     game550 = true
     
     north = crack2   // The slime must be dead by now.
-    south = crack4
+    south: Passage 'hands-and-knees crawl; (and); (hands} (knees)' ->crack4 "The crawl leads south. "
+        { location = static lexicalParent }
     crawl = crack4
 ;
 
@@ -2242,7 +2380,8 @@ crack4: DarkRoom 'Very Small Chamber'
     "You are in a very small chamber.  A narrow crawl leads north. "
     game550 = true
     
-    north = crack3
+    north: Passage 'narrow crawl' ->crack3 "The narrow crawl leads north. "
+        { location = static lexicalParent }
     out asExit(north)
     crawl = crack3
 ;
@@ -2255,35 +2394,52 @@ iceRoom: DarkRoom 'Ice Room'
     and a slide of polished ice leading downwards to the
     east -- if you were to slide down it you probably
     couldn't get back up. "
+    
+    floorObj = iceRoomFloor
     game550 = true
     
     northwest = brinkSouth
+    passage = northwest
     
-    down: TravelConnector -> slideBase
+    down: StairwayDown 'slide;polished ice of[prep]' -> slideBase
     {
         travelDesc = "Wheeeeee...... OOF! "
+        location = static lexicalParent
     }
     
     east asExit(down) // Note that NPCs won't use these exits. If they
     slide = down      // did, they would become trapped.
     thurb = iceCaveExit // The exit was originally one-way, but I've
 ;                               
++ Decoration 'clear blue glacial ice' ordinary = 'fairly typical';
+
+iceRoomFloor: Floor 'floor;;ground rock'
+    "The floor is made of rock and is easy to walk on. "
+;
 
 slideBase: NoNPC, DarkRoom 'Bottom of Icy Slide'
+    'bottom of the icy slide; extensive intricate solid; ice network tunnels'
     "You're at the entrance to an extensive and intricate
-    network of ice tunnels carved out of solid ice.  A
-    slippery slope leads upwards and north, but you
-    cannot possibly climb up it.  Other passages lead
-    south and northwest. "
+    network of ice tunnels carved out of solid ice.  <<north.desc>> <<passage>> "
     
     game550 = true
     
-    north = "The icy slide is far too steep and slippery to climb. "
+    north: PathPassage, StairwayUp 'slippery slope; icy; slide' ->slideBase
+    "A slippery slope leads upwards and north, but you cannot possibly climb up it. "
+    {
+        location = static lexicalParent
+        canTravelerPass(actor) { return nil; }
+        explainTravelBarrier(a, conn) { "The icy slide is far too steep and slippery to climb. "; }
+        isConnectorListed = nil
+        
+    }
+    
     up asExit(north)
     slide = north
     climb = north
     south = Ice_21
-    northwest = Ice_4             
+    northwest = Ice_4          
+    passage = "Other passages lead south and northwest. "
     
 //    exithints = [ Ice_Room, &north ]
 ;
@@ -2363,7 +2519,7 @@ Ice_14: IceTunnel
     north = Ice_15a
 ;
 + sculptNiche: Fixture 'niche; melted icy; wall' // BJS: added this object,
-    game550 = true                    // put the sculpture in it.
+//    game550 = true                    // put the sculpture in it.
     
     specialDesc = "There is a niche here, melted out of the icy wall of the tunnel. "
     initSpecialDesc = "<<mention name sculpture>> is resting in a niche melted out of the icy 
@@ -2463,7 +2619,7 @@ Ice_29: IceTunnel
 // The TADS 2 port give no clue anywhere that the magic word THURB exists, but expects the
 // plwyer to know it in the Cylindrical Room - a clear impossibility! This TADS 3 port therefore 
 // adds a mention to it in this room description
-iceCaveExit: NoNPC, Room 'Small, Icy Chamber'
+iceCaveExit: NoNPC, Room 'Small, Icy Chamber' 'small icy chamber;;ice'
      "You are in a small chamber melted out of ice.  Glowing
         letters in midair spell out the words <q>This way out (thurb)</q>. "
     
@@ -2481,7 +2637,7 @@ iceCaveExit: NoNPC, Room 'Small, Icy Chamber'
     }
 ;
 
-coralPassage: DarkRoom 'Coral Passage' 'coral pasaage; arched'
+coralPassage: DarkRoom 'Coral Passage' 'coral passage; arched'
     "You are in an arched coral passage which enters from
     the west, splits, and continues on to the east over
     a smooth and damp-looking patch of sand.  The fork
@@ -2507,13 +2663,13 @@ coralPassage: DarkRoom 'Coral Passage' 'coral pasaage; arched'
 + Decoration 'debris'
     "The debris completely blocks the passage to the south, and it doesn't
     look there's any way of clearing it. "
-    game550 = true
+//    game550 = true
 ;
 
 quicksand: DSPassage 'damp-looking sand;damp smooth wet wet-looking quick; sand quicksand' 
     @coralPassage @coralPass2
     "A smooth, damp-looking patch of sand. "
-    game550 = true
+//    game550 = true
     
     dobjFor(Cross) asDobjFor(TravelVia)
     
@@ -2545,9 +2701,10 @@ quicksand: DSPassage 'damp-looking sand;damp smooth wet wet-looking quick; sand 
 ;
 
 coralPass2: NoNPC, DarkRoom 'Bend in Arched Coral Corridor'
+    'bend in the arched coral corridor;;passage'
     "You are at a bend in an arched coral passage;  the
     passage enters from the west over a patch of damp
-    sand, turns, and continues north."
+    sand, turns, and continues north. "
     game550 = true
     wino_quicksand = true // must cross quicksand to leave
     
@@ -2559,8 +2716,7 @@ coralPass2: NoNPC, DarkRoom 'Bend in Arched Coral Corridor'
 
 archFork: NoNPC, DarkRoom 'Fork in Arched Coral Passage'
     "You are at a fork in a high, arched coral passage.
-        The main portion of the passage enters from the south;
-        two smaller passages lead east and north. <<smellDesc>> "
+        <<passage>> <<saltWaterSmell.smellDesc>> "
     game550 = true
     wino_quicksand = true // must cross quicksand to leave
     
@@ -2569,11 +2725,16 @@ archFork: NoNPC, DarkRoom 'Fork in Arched Coral Passage'
     east = Jonah
     jonah = Jonah
     fourier = Fourier
-    
-    smellDesc = "The smell of salt water is very strong here. "
+    passage = "The main portion of the passage enters from the south;
+        two smaller passages lead east and north. "  
+;
+
++ saltWaterSmell: Odor 'smell of salt water'
+    "The smell of salt water is very strong here. "
 ;
     
 Jonah: NoNPC, DarkRoom 'Entrance to Jonah Room'
+    'entrance to the Jonah Room; cavernous; hall'
     "You are standing at the entrance of the Jonah room,
      a cavernous hall with high ribbed walls.  The hall
      extends far to the south;  a coral passage leads west."
@@ -2582,9 +2743,11 @@ Jonah: NoNPC, DarkRoom 'Entrance to Jonah Room'
     
     west = archFork
     south = inJonah
+    passage = west
 ;
 
 + ProxyRoom -> inJonah;
++ Decoration 'high ribbed walls';
     
 inJonah: NoNPC, DarkRoom 'South End of Jonah Room'
     "You are at the south end of the Jonah room.  Ahead
@@ -2601,13 +2764,13 @@ inJonah: NoNPC, DarkRoom 'South End of Jonah Room'
     south = 'The stalactites and stalagmites bar any progress in that direction. '
 ;
 
-+ Decoration 'set of stalactices and stalagmites; immense stone intermneshed clenched; 
++ Decoration 'set of stalactites and stalagmites; immense stone intermneshed clenched; 
     formations teeth; it them'
     "The intermeshed stalactites and stalagmites block the way south. "
 ;
 
-
-Fourier: NPC, DarkRoom 'Fourier Passage'
+Fourier: NoNPC, DarkRoom 'Fourier Passage'
+    'fourier passage; long highly convoluted coral'
     "You are in the Fourier passage.  This is a long and
     highly convoluted passage composed of coral, which
     twists and turns like the path of an earthworm
@@ -2624,8 +2787,13 @@ Fourier: NPC, DarkRoom 'Fourier Passage'
 //    ana = Blue_Fourier
 ;
 
++ Odor 'cool salty-smelling breeze; salty'
+    "What do you think a breeze looks like? "    
+    smellDesc = "The breeze smells salty. "    
+;
 
 beachShelf: NoNPC, Room 'Shelf of Rock Above Beach'
+    'shelf of rock above the beach; large sedimentary; rock'
     game550 = true
     wino_quicksand = true // must cross quicksand to leave
     Zarkalonroom = true // Zarkalonized pendant required for transindection
@@ -2688,7 +2856,10 @@ beachShelf: NoNPC, Room 'Shelf of Rock Above Beach'
             }
         }
     }
-    west = Fourier
+    west: Passage 'twisting coral passage' -> Fourier
+        "The twisting coral passage exits to the west. "
+        { location = static lexicalParent }
+    
     down = beachSteps
     steps = beachSteps
 //    ana = Blue_Beach_Shelf
@@ -2701,6 +2872,11 @@ beachShelf: NoNPC, Room 'Shelf of Rock Above Beach'
    
 ;
 
++ Enterable -> beachSteps 'lava beach; short barren hardened' 
+    "The short, barren beach below is composed of hardened lava. "
+;
+
+
 + Fixture 'stone path'
     "The rockfalls have destroyed most of the path.  The
     lowest intact section starts about 20 feet above you. "
@@ -2712,7 +2888,7 @@ beachSteps: DSStairway 'crudely carved steps;;;them' @beachShelf @beach
     "The steps are a little crude but are nevertheless readily usable. "
 ;
 
-MultiLoc, Decoration 'cliff'    
+MultiLoc, Decoration 'cliff; incredible sheer white seemingly infinite chalk'    
     desc 
     {
         "It extends north, south and upwards as far as the eye can see. ";
@@ -2727,7 +2903,7 @@ MultiLoc, Decoration 'cliff'
     locationList = [beachShelf, beach] // Blue_Beach_Shelf, Blue_Beach]
 ;
 
-beach: NoNPC, Room 'Beach'
+beach: NoNPC, Room 'Beach' 'short beach;barren rocky'
     game550 = true
     wino_quicksand = true // must cross quicksand to leave
     Zarkalonroom = true // Zarkalonized pendant required for transindection
@@ -2757,7 +2933,7 @@ beach: NoNPC, Room 'Beach'
         }
     }
     
-    ttravelerLeaving(traveler, dest) { dinghy.seen_before = true; }
+    travelerLeaving(traveler, dest) { dinghy.seen_before = true; }
     
     west = beachSteps
     
@@ -2777,7 +2953,7 @@ beach: NoNPC, Room 'Beach'
         two crossed thighbones (perhaps this dinghy was once owned
         by a cook?) "
     
-    game550 = true
+//    game550 = true
     seen_before = nil  // The description appears only on the first visit.
     specialDesc()
     {
@@ -2805,6 +2981,10 @@ beach: NoNPC, Room 'Beach'
 
 + Distant 'volcanic hills; rugged unclimbable; view;them'
     "The volcanic hills block all view to the north and south. "
+;
++ Enterable 'shelf of rock' 
+    "The shelf of rock lies some way up the cliff. "
+    connector = beachSteps
 ;
 
 SpecialVerb 'row|launch' @dinghy 'ride';
@@ -2839,3 +3019,7 @@ moons: MultiLoc, Distant 'moons;red blue small;moon light;them'
     }
 ;
 
+MultiLoc, Distant 'aurora; entire shimmering of[prep]; sky splendor splendour glow'
+    "The shimmering glow of the aurora fills the entire sky with golden splendor. "
+    locationList = [beachShelf, beach]
+;

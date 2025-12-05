@@ -74,6 +74,29 @@ topHintMenu: TopHintMenu;
     closeWhenSeen = westSideOfFissure
 ;
 
++ Goal 'How do I get into the cave?'
+    [
+        'I don\'t know where the cave is, but hereabouts no stream can
+            run on the surface for long.  I would try the stream. '
+    ]
+    openWhen = true
+    closeWhen = atY2.seen || inDebrisRoom.seen || belowTheGrate.seen || outsideGrate.seen
+;
+
++ Goal 'How do I get into the cave?'
+    [
+        'The grate is very solid and has a hardened steel lock.
+        You cannot enter without a key, and there are no keys nearby.
+        I would recommend looking elsewhere for the keys. ',
+        
+        'You have looked inside the building, haven\'t you? ',        
+        
+        'Presumably you know to UNLOCK GRATE WITH KEYS. '
+    ]
+    openWhen = grate.seen && !setOfKeys.moved
+    closeWhen = atY2.seen || inDebrisRoom.seen || belowTheGrate.seen || setOfKeys.moved
+;
+
 + Goal 'How do I take the little bird?'
     [
         'Perhaps you\'re doing something to scare it. ',
@@ -141,6 +164,93 @@ topHintMenu: TopHintMenu;
     ]
     openWhenSeen = onNESideOfChasm 
     closeWhenRevealed = 'bear-attack'
+;
+
++ Goal 'How do I get the sword out of the anvil? '
+    [
+        'If you could convince me of your royal blood, you might get somewhere. ',
+        'What could you wear that might do that? '
+    ]
+    openWhenRevealed = 'sword-stuck'
+    closeWhen = sword.isIn(gPlayerChar)
+;
+
++ Goal 'How do I get up the slide?'
+    [
+        slideHint,        
+        'I\'d advise you to try to find another way into the area. '
+    ]
+    
+    openWhenRevealed = 'slide-back'
+    closeWhenSeen = swordPoint
+;
+
+++ slideHint: Hint
+    itemText
+    {
+        if(global.game701)
+            return 'You could spend all day trying to get up there. ';
+        else 
+            return 'The chute is particularly slippery in this version of the
+                game, and I don\'t think you\'ll get up there however hard you try. ';            
+    }
+;
+
++ Goal 'How do I get to the other side of the tiny door?'
+    [
+        'This is obviously an elfin entrance.  Unless you can squeeze
+        yourself through a six-inch door, you\'ll have to find another
+        way into the cave. ',
+        'You can\'t make the door any bigger, so the only way to fit yourself
+        through would be to...',
+        'To make yourself smaller would require magic. Know any good magic words? '
+    ]
+    
+    openWhenSeen = topOfSteps
+    closeWhenSeen = ledgeByDoor    
+;
+
++ Goal 'How do I reach the natural bridge above the rainbow room?'
+    [
+        'You can\'t get to it by climbing the walls or jumping or anything
+        like that. You could always put in a telephone call to the local
+        spelunking club for advice, if you could find a phone. ',
+        
+        'We\'re off to the see the wizard, the wonderful wizard of... ',
+        
+        '<q>The Wizard of Oz</q> features both a relevant song and a relevant
+        magical item worn by Dorothy. ',
+        
+        'Amongst other things, the wearable whatsits near the low-frequency end of the rainbow
+        could be used for teleportation. ',
+        
+        'I guess I\'ll just have to stand here clicking my heela until you
+        figure it out. '
+    ]
+    
+    openWhenSeen = rainbowRoom
+    closeWhenSeen = overRainbow
+;
+
++ Goal 'How do I get down from the ledge above limestone pinnacles with bulky items?'
+    [
+        'Maybe you\'d better look for another way into the cave. ',
+        'And another mode of transport. '
+    ]
+    
+    openWhenSeen = ledgeAbovePinnacles
+    closeWhenSeen = grottoWest
+;
+
++ Goal 'How do I get past the dog?'
+    [
+        'The only person I can remember who managed to get past the dog
+        was that singer, ummm, what\'s his name... Euridice\'s friend...',
+        
+        'If your voice sounds untrue, you may need to try something less vocal. '
+    ]
+    openWhenSeen = dog
+    closeWhen = dog.isAsleep
 ;
 
 + Goal 'How do I deal with the ogre?'
@@ -212,7 +322,7 @@ topHintMenu: TopHintMenu;
     closeWhenRevealed = 'exitcylinder'    
 ;
 
-+ Goal 'What do I do with the earthnware flask?'
++ Goal 'What do I do with the earthenware flask?'
     [
         'Nothing remotely obvious, but don\'t be in too much of a hurry to open it. ',
         'Find a symbol to place it in/on. ',

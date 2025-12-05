@@ -477,7 +477,7 @@ class ObjPile: DispensingCollective
  *
  */
 /* 115 */
-atNEEnd: Room, NoNPC 'At NE End' 'the northeast end of the immense room; ne'
+atNEEnd: Room, NoNPC 'At NE End' 'the northeast end of the repository; ne immense; room'
     desc()
     {
         "You are at the northeast end of an immense
@@ -787,6 +787,8 @@ inPhoneBooth2: NoNPC, Room 'Inside the Phone Booth'
         }
     }
 ;
+
++ ProxyRoom -> atNEEnd;
 
 pb2Floor: Floor 'floor'
     desc()
