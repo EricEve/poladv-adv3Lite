@@ -1,7 +1,7 @@
 README
 
 This an attempt to port the TADS2 port of polyadv (a multi-version implementation of Colossal Cave)
-to TADS 3/adv3Lite, based on the TADS 2 version by David M. Baggett, David J. Picton an J.
+to TADS 3/adv3Lite, based on the TADS 2 version by David M. Baggett, David J. Picton and J.
 Standeven, which was itself based on the various versions of the classic Adventure game by Don
 Woods and Willie Crowther, based on their sources. 
 
@@ -31,8 +31,12 @@ property of a Thing as a method.
 Some attempt has been made to follow the content and order of the TADS 2 source files, but the
 correspondence is currently patchy and will need further tidying up.
 
-I am giving priority to implementing just the original 350-point game first, with a view to adding
-the other versions later. This is resulting in some ugly hooks to code and objects that do not yet
-exist (or fully exist) and to some lacunae in the porting of the TADS 2 code where it is not
-applicable to the 350-point version.
+The 350, 550, 551 and 580 point games have now been implemented, which means the 701 point game
+should also be complete (since this effectively just combines the 550 and 551-point games). As yet, 
+no start has been made on the 701p version beyond a few stub definitions in the "map2.t" file for
+objects referred to but not otherwise used in the versions that have been implemented. Whether I
+come back and implememnt the 701p version at a later date will depend partly on whether anyone
+expresses any interest in them and partly on whether I feel like returning to the task. If anyone
+else would like to take this on, do let me know.
 
+The dwarves and pirates are yet to be implemented; these have been delegated to a collaborator.

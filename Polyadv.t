@@ -8,7 +8,7 @@ versionInfo: GameID
     name = 'Polyadv'
     byline = 'by Eric Eve'
     htmlByline = 'by <a href="mailto:eric.eve@outlook.com">Eric Eve</a>'
-    version = '1'
+    version = '0.1 (beta)'
     authorEmail = 'Eric Eve <eric.eve@outlook.com>'
     desc = 'A TADS3/adv3Lite port of the TADS 2 port of polyadv, itself a multi-version port based
         on the Colossal Adventure game by Crowther and Woods.'
@@ -495,7 +495,20 @@ aboutMenu: MenuItem 'About'
     in this version. In verbose mode, you'll see a full room description each time you
     visit a location. In brief mose you'll only get the full description the first time
     you see the location; thereafter you'll simply see the room's name (although you
-    can still type LOOK to view the full description. "
+    can still type LOOK to view the full description.\b
+    Sixth, this version of the game makes us of the adv3Lite library's built-in spelling 
+    corrector to attempt to correct any typos in your input, as well as the library's
+    numbered disambiguation prompt, so that, for example, the game may respond to DROP ROD
+    with <q>Which you mean: (1) the black rod or (2) the gray rod?</q> allowing you to 
+    just type 1 or 2 to specify which one you mean.\b
+    Seventh, this version uses the adv3Lite library's 'invisiclues' hint system to 
+    offer hints to the player, and adds to the number of hints provided, not least
+    where the oroginal hints seem too vague or cyptic to be helpful or where an obscure
+    puzzle had no hints at all. This version also adds a couple of in-game clues for
+    puzzles that were badly underclued in the original (the most egregious of these
+    being the need to use a magic word that was nowhere revealed to the player, but there
+    were others that were almost just as bad). "
+    
 ;
     
 + MenuLongTopicItem 'Navigating Mazes'

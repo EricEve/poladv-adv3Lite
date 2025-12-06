@@ -4479,7 +4479,7 @@ differentMaze2: DifferentMazeRoom
 ;
 
 
-atReservoir: DarkRoom 'At Reservoir; reservoir room; (at)'
+atReservoir: DarkRoom 'At Reservoir' 'reservoir room; (at)'
 //    sdesc = { if (global.game550) "South Edge of Reservoir";
 //                else "At Reservoir"; }
     desc() {

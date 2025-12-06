@@ -1195,7 +1195,7 @@ spelunkerToday: Thing 'recent issues of Spelunker Today;dwarvish; magazines issu
     depositpoints = 1
     targloc = atWittsEnd
     contloc = nil
-    oldKeep = true
+    oldkeep = true
     depositpointsawarded = nil
    
 ;
