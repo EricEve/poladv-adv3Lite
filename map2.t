@@ -78,28 +78,28 @@ swordPointNOfReservoir: DarkRoom
 InSecretNSCanyon1: DarkRoom
 ;
 
-debrisWest: Room 'Debris West'
+debrisWest: NoNPC, Room 'Debris West'
 ;
 
-greenTopOfSmallPit: Room 'Green Top of Small Pit'
+greenTopOfSmallPit: NoNPC, Room 'Green Top of Small Pit'
 ;
 
-blueTopOfSmallPit: Room 'Blue Top of Small Pit'
+blueTopOfSmallPit: NoNPC, Room 'Blue Top of Small Pit'
 ;
 
-blueHallOfMists: Room 'Blue Hall of Mists'
+blueHallOfMists: NoNPC, Room 'Blue Hall of Mists'
 ;
 
 blueEastBankOfFissure: Room
 ;
 
-greenHallOfMists: Room 'Green Hall of Mists'
+greenHallOfMists: NoNPC, Room 'Green Hall of Mists'
 ;
 //
 //atSwEnd: Room 'At SW End'
 //;
 
-blueBirdChamber: Room 'Blue Bird Chamber'
+blueBirdChamber: NoNPC, Room 'Blue Bird Chamber'
 ;    
 
 greenUpperTransRoom: Room

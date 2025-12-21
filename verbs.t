@@ -1767,7 +1767,7 @@ DefSpecialTravel(Shell, &shell, 'shell');
 DefSpecialTravel(Reservoir, &toReservoir, 'reservoir');
 DefSpecialTravel(Fork, &fork, 'fork');
 DefSpecialTravel(Crack, &crack, 'crack');
-DefSpecialTravel(Dome, &dome, 'dome');
+DefSpecialTravel(Dome, &toDome, 'dome');
 DefSpecialTravel(Steps, &steps, 'steps');
 DefSpecialTravel(Secret, &secret, 'secret');
 DefSpecialTravel(Dark, &dark, 'dark');
@@ -1864,6 +1864,36 @@ DefineIVerb(stayVerb, 'stay', 'stay', 'staying')
     }
 ;
 
+// only available for testing purposes
+#ifdef __DEBUG
+DefineTAction(Summon)
+    
+    /* The PURLOIN action requires universal scope */
+    addExtraScopeItems(whichRole?)
+    {
+        makeScopeUniversal();
+    }
+;
+
+VerbRule(Summon)
+    'summon' singleDobj
+    : VerbProduction
+    action = Summon
+    verbPhrase = 'summon (what)'
+    missingQ = 'what do you want to summon'
+;
+
+DefineTAction(Banish)
+;
+VerbRule(Banish)
+    'banish' singleDobj
+    : VerbProduction
+    action = Banish
+    verbPhrase = 'banish (what)'
+    missingQ = 'what do you want to banish'
+;
+
+#endif
 
 
     
