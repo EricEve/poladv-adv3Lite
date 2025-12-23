@@ -152,7 +152,9 @@ class LiquidContainer: Thing
                 doInstead(PutIn, oil, self);
             
             else if(wine.isIn(gActor.getOutermostRoom))
-                doInstead(PutIn, wine, self);           
+                doInstead(PutIn, wine, self);  
+            else
+                "There's nothing here to fill {the dobj} with. ";
                 
         }   
     }

@@ -1265,7 +1265,7 @@ dragon: Actor 'huge green dragon; monster beast lizard; scaly fierce giant feroc
             if(gIobj.ofKind(Weapon))
             {
                 if(gVerbWord != 'throw')
-                    "\n(throwing (the iobj})\n";
+                    "\n(throwing {the iobj})\n";
                 "{The subj iobj} bounce{s/d} harmlessly off the dragon's thick scales. ";
                 gIobj.moveInto(gActor.getOutermostRoom);                
             }

@@ -324,7 +324,7 @@ aboutMenu: MenuItem 'About'
         tack.";
 
         P(); I();"To see if any hints are available at your current
-        location, type \"hint\" and reply to any prompts.  I'll warn you
+        state of progress, type \"hint\" and reply to any prompts.  I'll warn you
         in advance how it will affect your score to accept each hint.";
 
         P(); I(); "To speed the game you can sometimes walk a long distance
@@ -360,7 +360,8 @@ aboutMenu: MenuItem 'About'
 
         P(); I(); "If you misspell a word, you can usually correct it using
         the \"oops\" command.  For example, if you typed \"put grey raincoat
-        in green nkapsack\" you can correct the error with \"oops knapsack\"";
+        in green nkapsack\" you can correct the error with \"oops knapsack\".
+            That said, I will try to correct your typos as best I can. ";
 
         P(); I(); "If you want to end your adventure early, type \"quit\".
         To suspend your adventure such that you can continue later,

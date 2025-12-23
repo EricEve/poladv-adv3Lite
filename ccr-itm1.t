@@ -59,7 +59,8 @@ flowers: CanPick, Thing 'beautiful flowers; yellow blue wild attractive;;them' @
     
     actionDobjCount = "You have roughly 20 flowers. "
     
-    canFeedWithMe = true
+    canFeedWithMe = true    
+    
 ;
 
 

@@ -209,7 +209,7 @@ class RoomLiquid: Fixture
     {
         local actor = gActor;
         local i, o, l, cur;
-        i = 1; o = nil; l = length(contlist);
+        i = 1; o = nil; l = contlist.length;
         while (i <= l && o == nil) 
         {
             cur = contlist[i];
@@ -423,7 +423,7 @@ insideBuilding: IndoorRoom 'Inside the Building' 'inside the building;well; hous
     west asExit(out)
     nolampwarn = true
     
-    xyzzy ulMsgExit(inDebrisRoom, "{I am} translated in the twinkling of an eye. ")
+    xyzzy ulMsgExit(inDebrisRoom, "{I} {am} translated in the twinkling of an eye. ")
     plugh = atY2    
     
     /* We musn't use a room name as a property */
@@ -1220,7 +1220,7 @@ inHallOfMists: DarkRoom 'In Hall of Mists' 'hall of mists; vast'
     {
         destination = atTopOfSmallPit
         canTravelerPass(actor) { return !largeGoldNugget.isIn(actor); }
-        explainTravelBarrier(actor) { "The dome is unclimbable."; }
+        explainTravelBarrier(actor, conn) { "The dome is unclimbable."; }
     }
     
     south = inNuggetOfGoldRoom
@@ -1374,7 +1374,7 @@ onEastBankOfFissure: DarkRoom 'On East Bank of Fissure'
     
     east = inHallOfMists
     hall = inHallOfMists
-    
+       
     jump()
     {
         if(crystalBridge.exists)
@@ -1385,7 +1385,14 @@ onEastBankOfFissure: DarkRoom 'On East Bank of Fissure'
         exit;        
     }
     
-    fore { jump(); }
+
+    fore: TravelConnector ->westSideOfFissure
+    {
+        canTravelerPass(traveler, connector) { return crystalBridge.exists; }
+        explainTravelBarrier(traveler, connector)  { didnt_make_it.death(); }
+        isConnectorApparent = nil
+    }
+    
     across { doInstead(Cross, crystalBridge); }
     over { across; }
     cross { across; }
@@ -1684,7 +1691,7 @@ class Staircase2: StairwayUp 'wide stone staircase;; stair stairs steps;it them'
         return !(largeGoldNugget.isIn(actor) && global.newGame);
     }
     
-    explainTravelBarrier(actor)
+    explainTravelBarrier(actor, conn)
     {
         "The staircase is now unclimable. ";
     }
@@ -3504,12 +3511,12 @@ class RustyDoor: DSDoor
     {
         verify() 
         {
-            if(gActor.contents.indexWhich({x: x.hasOil}) == nil)
+            if(gActor.allContents.indexWhich({x: x.hasOil && gActor.canReach(x)}) == nil)
                illogicalNow('{I} {have} nothing to oil {the dobj} with. ');
         }
         action()
         {
-            local obj = gActor.contents.valWhich({x: x.hasOil});            
+            local obj = gActor.allContents.valWhich({x: x.hasOil && gActor.canReach(x)});            
             if(obj)
                 doInstead(PourOnto, obj, self);
         }

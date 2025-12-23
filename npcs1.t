@@ -626,6 +626,7 @@ bees: Feedable, Actor 'bees;;swarm;them' @flowerRoom
     // GIVING
     iobjFor(GiveTo)
     {
+        preCond = [objVisible]
         verify() {}
         action()
         {
