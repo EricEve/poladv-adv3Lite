@@ -114,6 +114,7 @@ gameMain: GameMainDef
     
     showIntro()
     {
+        dwarfPirateStart();
         if(global.specialstart)
             return;
         

@@ -3607,7 +3607,7 @@ inCavernWithWaterfall: DarkRoom 'In Cavern With Waterfall'
             adventurers would try going down it. ";
     }
     
-    rhetoricalturn = -999  // see yesVerb in CCR-VERB.T
+    rhetoricalTurn = -999  // see yesVerb in CCR-VERB.T
     
     dobjFor(Enter)
     {
@@ -4606,12 +4606,11 @@ deadEnd13: DeadEndRoom 'At a Dead End' 'dead end; (at) pirate\'s'
         {
            "<.p>You've found the pirate's treasure chest!<.p>";
             
+            treasureChest.seen = true;
             pirates.moveInto(nil);
-//            unnotify(Pirates, &move);
-//            treasure_chest.spotted := true;
-//            PirateMessage.moveInto(nil);
+            eventManager.removeMatchingEvents(pirates, &move);
+            pirateMessage.moveInto(nil);
         }
-
         inherited(actor, origin);
     }
     
@@ -5597,18 +5596,30 @@ pirateMessage: Fixture 'message in the dust;scrawled flowery;scrawl writing scri
     readDesc = desc
     
     location = nil  // moved to deadEnd14 when pirate spotted
+    
+    dobjFor(CleanWith) {
+        verify() { }
+        
+        action() {
+            if(gIobj == whiskbroom) {
+                "You sweep away the message. ";
+                self.moveInto(nil);
+            }
+            else
+                inherited();
+        }
+    }
+    
+    dobjFor(SweepWith) asDobjFor(CleanWith)
 ;
 
 
 
  
 
-brokenNeck: Room 'Bottom of Pit'
+brokenNeck: NoNPC, Room 'Bottom of Pit'
     "{I} {am} at the bottom of the pit with a broken neck.\b
     <<finishGameMsg(ftDeath, [finishOptionUndo])>> "    
-;
-
-westSideChamber: Room 'West Side Chamber'
 ;
 
 didnt_make_it: object

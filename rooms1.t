@@ -696,7 +696,7 @@ oceanVista: OutsideRoom 'At Ocean Vista' 'ocean vista; (at) high; cliff'
 ;
 
 /* 156 */
-cliffDemise1: Room 'Bottom of Cliff'
+cliffDemise1: NoNPC, Room 'Bottom of Cliff'
     "{I}{'m} at the bottom of the cliff, smashed to smithereens
     by the pounding surf.<.p><<die()>>"   
 ;
@@ -1100,7 +1100,7 @@ eat_messages: object // issued when size-changing foods are eaten
 ;
     
 /* 165 */
-cliffDemise2: Room 'Bottom of Cliff'
+cliffDemise2: NoNPC, Room 'Bottom of Cliff'
     "{I}{'m} at the bottom of the cliff with a broken neck.<.p><<die()>> "
 ;    
 
@@ -3668,7 +3668,7 @@ gothicChapel: DarkRoom 'In Gothic Chapel' 'gothic chapel; (in) small; chamber'
 + Unthing 'gothic cathedral' 'It\'s not visible from here. ';
 
 /* 226 */
-rainbow_demise: Room 'Floor of the Rainbow Room'
+rainbow_demise: NoNPC, Room 'Floor of the Rainbow Room'
     ldesc = "{I} {am} on the floor of the Rainbow Room.  In fact,
         {i} {am} spread <i>ALL OVER</i> the floor of the Rainbow Room. <<die()>>"    
 ;
@@ -3875,7 +3875,7 @@ ledgeAbovePinnacles: DarkRoom 'On ledge above limestone pinnacles'
 ;
 
 /* 231 */
-pinnacle_demise: Room 'Skewered on Pinnacle'
+pinnacle_demise: NoNPC, Room 'Skewered on Pinnacle'
     desc() { bulkdeath(bulkyObject);}
     jump = "That wasn't exactly your most brilliant move!
     You are very neatly skewered on the point of a sharp

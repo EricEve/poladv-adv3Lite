@@ -1162,7 +1162,7 @@ fakeJumbleOfRock: NoNPC, DarkRoom 'Jumble of Rock'
 // enterroom: This method is called by the standard enterRoom method.
 // It updates oldnumber and reinstates the correct room contents.
 
-catacombs: Room 'Catacombs'
+catacombs: NoNPC, DarkRoom 'Catacombs'
     desc()
     {
         "You are in the catacombs.  Enchanted tunnels lead in all directions. ";

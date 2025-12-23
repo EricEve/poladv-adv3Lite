@@ -10,7 +10,7 @@
  *   TADS3/adv3Lite or else may require a different approach. 
  */
 
-property isbonus_addmax;
+property isbonus_addmax, version_NoNPCs;
 
 /*
  *   The "global" object is the dumping ground for any data items that
@@ -48,9 +48,57 @@ global: object
     nondeterministic = true
     randomized = nil
     specialstart = nil
-    NPCstarted = nil
-    NPCrooms = []
-  
+
+    NPCstarted = nil    // have we initialized the pirates and dwarves?
+    NPCrooms = []       // list of rooms NPCs can travel to (otherwise cannot)
+    pirateCount = 1         // how many pirates do we put in.  original had 1
+    dwarveCount = 5         // how many dwarves do we put in.  original had 5
+	//
+	// Where to start dwarves and pirate(s) out.  Dwarves are placed
+	// in the locations given by drawfloc; if no locations remain when
+	// we're placing a dwarf, we just put him in a random room selected
+	// from NPCrooms.
+	//
+	// Note that the player gets the axe from the dwarf, so it's
+	// fairly important to put at least dwarf early on (but only
+	// in a room that's not off limits to NPC's!)
+	//
+	// Ditto for pirate(s).
+	//
+	dwarfloc = [ inHallOfMists ]
+	pirateloc = []
+    
+
+    dspotfromadj = 10    // percentage chance that a dwarf will
+                         // spot the player from an adjacent location
+                         // and enter the player's room, instead of
+                         // taking a random exit.
+
+    dtenacity = 96       // percentage chance that a dwarf will
+                         // follow the player once he's entered the
+                         // player's room.  (Was 100 in original.  It might
+                         // be desirable to change it to 100 in the
+                         // 430-point game.)
+    
+	pspotfromadj = 50		// percentage chance that a pirate will
+				// follow the player if in an adjacent
+				// location.  Don't set this too high or
+				// the game will get really bogus!
+
+	dwarfattack = 75	// percentage chance that a dwarf will
+				// throw a knife at the player if he's
+				// in the same location.  (Was 100 in
+				// the original.)
+	dwarfhit = 66		// percentage chance the player will
+				// hit a dwarf with his axe
+				// (Was 1 in 3 chance in the original.)
+	dwarfaccuracy = 7	// percentage chance that a dwarf will
+				// hit the player with a thrown knife
+				// (Was 9.5 in the original.)
+    luckyhit = 90       // percentage chance the player will hit
+                        // a dwarf when he carries a lucky 4-leafed
+                        // clover.
+
     treasures = 0
     origTreasures = 0
     closure = nil
@@ -70,7 +118,7 @@ global: object
     travelActor = nil
     
     extendMoveInto = true
-    nodwarves = nil
+    nodwarves = nil     // when true, disables dwarves and pirates
     
     /* Maximum version number */
     vmax = 15
@@ -126,6 +174,11 @@ global: object
         via the alternate entrance to claim your
         treasure.\"";
         else "Please leave via main office.\"";
+    }
+    
+    saidThrow
+    {
+        return (gVerbWord == 'throw');
     }
     
     knowsgreenname = nil
@@ -211,7 +264,196 @@ global: object
     numactwords701p = 0
     
     mazeskip = nil // have we enable the mazeskip comamand?
-    
+
+#if 0
+    gendaemon() {
+        local i,t,l,cl,c,tloc,cloc,cloc2,ccond;
+        local addlist = [];
+        local Medisqual;
+        atY2.hollowVoice;    // plugh message
+        if(global.game550)     fakeY2.hollowVoice;  // ditto
+        if(global.newGame)     knoll.elfcurse;       // phuce message
+
+        // do the expensive score checking only when the global.checklist
+        // has at least one item.   This happens automatically whenever
+        // a non-empty container or scoring object is moved, or
+        // a container for liquids is moved, filled or emptied.
+
+        if (self.checklist.length() == 0) goto set_score;
+
+        // 'Takepoints' are applied when an object is first taken into
+        // the player's possession, and 'depositpoints' are applied when
+        // an object has been deposited in location 'targloc'.  Note
+        // that 'takepoints' is never rescinded but 'depositpoints' is
+        // deducted if an object is no longer correctly deposited.  (If an
+        // object has dynamically-created copies, only one set of 
+        // 'depositpoints' is awarded.  The points will be deducted only if
+        // all objects are removed from their correct position)
+        // If 'targloc' is a container rather than a room, 'contloc'
+        // can define the location of the container.   If 'contloc'
+        // is also a container, the 'outercontloc' property may be set
+        // to define the location of this outer container.  Note that
+        // these properties are normally ignored in a 350- or 550-point game,
+        // unless the 'oldkeep' property is defined for the object.
+        // Remember to set 'oldkeep' for non-treasure objects like the
+        // magazines.
+        //
+        // 'undiscovered' is a special property for an object (the book
+        // in the safe) which is in the right place to start with, but must
+        // be discovered before points are awarded.  When the discovery takes
+        // place, undiscovered should be set to nil and the item added to
+        // global.checklist.
+        //
+        // 'objclass', if defined, is the class of a dynamically
+        // created object.  The deposit score will be awarded if at least
+        // one of the objects in class 'objclass' (or the parent object)
+        // is in the desired location.
+        //
+        // This method requires the isInside function in ccr-thx.t (same
+        // as isIn but without regard to visibility.)
+        //
+        // First loop: check for objects which are no longer in their
+        // target locations (omitted at the end of the cylindrical room puzzle)
+
+        self.checkpointlist = checklist.intersect(allpointlist);
+        l = self.checkpointlist.length();
+        if(!global.dont_rescind) {
+            for (i = 0; ++i <= l; ) {
+                t = self.checkpointlist[i];
+                // for cloned objects, set cl to the class; otherwise set
+                // cl to the object itself.
+                if(t.objclass) {
+                    cl = t.objclass; 
+                    // add any equivalent objects to be checked in the
+                    // second loop
+                    addlist += cl.list + cl - t;
+                }
+                else {
+                    // add any equivalent objects to be checked in the
+                    // second loop
+                    cl = t;
+                    addlist += t.list;
+                } 
+                if(global.newGame || t.oldkeep) {
+                    tloc = t.targloc; // required location
+                    c = tloc;     // required container
+                    cloc = t.contloc; // required location of container
+                    cloc2 = t.outercontloc; // reqd. loc. of outer container
+                }
+                else {
+                    tloc = insideBuilding;
+                    c = tloc;
+                    cloc = nil;
+                    cloc2 = nil;
+                }
+                // Medisqual indicates that the object is disqualified
+                // from the deposit score because the player has it.  We have
+                // to make an exception if the target location actually is
+                // the player!
+                if (tloc == gPlayerChar || cloc == gPlayerChar || cloc2 == gPlayerChar)
+                    Medisqual = nil;
+                else
+                    Medisqual = t.isIn(gPlayerChar);
+
+                if (cl.awardedpointsfordepositing) {
+                    if(cloc == nil) ccond = true;
+                    else ccond = (c.isIn(cloc));
+                    if(cloc2 != nil)
+                        if (!cloc.isIn(cloc2)) ccond = nil;
+                    if (Medisqual || !t.isIn(tloc) || !ccond) {
+                        self.scoreinc = self.scoreinc - t.depositpoints;
+                        cl.awardedpointsfordepositing = nil;
+                    }
+                }
+            }
+        }
+        // Second loop: check for objects which have been taken, or
+        // correctly deposited.
+        self.checkpointlist += addlist;
+        l = self.checkpointlist.length();
+        for (i = 0; ++i <= l;) {
+            t = self.checkpointlist[i];
+            // for cloned objects, set cl to the class; otherwise set
+            // cl to the object itself.
+            if(t.objclass) cl = t.objclass; else cl = t;
+            if(global.newGame || t.oldkeep) {
+                tloc = t.targloc; // required location
+                c = tloc;     // required container
+                cloc = t.contloc; // required location of container
+                cloc2 = t.outercontloc; // reqd. loc. of outer container
+            }
+            else {
+                tloc = insideBuilding;
+                c = tloc;
+                cloc = nil;
+                cloc2 = nil;
+            }
+            // Medisqual indicates that the object is disqualified
+            // from the deposit score because the player has it.  We have
+            // to make an exception if the target location actually is
+            // the player!
+            if (tloc == gPlayerChar || cloc == gPlayerChar || cloc2 == gPlayerChar)
+                Medisqual = nil;
+            else
+                Medisqual = t.isIn(gPlayerChar);
+
+            if (!cl.awardedpointsfordepositing && !t.undiscovered) {
+                // Check for 'taking' points if object is being
+                // carried.
+                if (t.isIn(gPlayerChar) && !cl.awardedpointsfortaking) {
+                    self.scoreinc = self.scoreinc + t.takepoints;
+                    cl.awardedpointsfortaking = true;
+                    // self.treasures now counts the items remaining
+                    // to be taken (truer to the original Fortran
+                    // versions).
+                    if(t.ofKind(Treasure)) {
+                        self.treasures = self.treasures - 1;
+                        global.treasuresToFind -= t;
+                    }
+                }
+                // Check for deposited object.
+                if (t.isIn(tloc) && !Medisqual && !cl.awardedpointsfordepositing) {
+                    // if contloc is nil, ignore location of container ...
+                    if(cloc == nil) ccond = true;
+                    // otherwise check location of the container
+                    else ccond = (c.isIn(cloc));
+                    // condition for second-level container
+                    if(cloc2 != nil)
+                        if (!cloc.isIn(cloc2)) ccond = nil;
+                    if(ccond) {
+                        // check that 'taking' points have been
+                        // awarded (needed for book)
+                        if (!cl.awardedpointsfortaking) {
+                            self.scoreinc = self.scoreinc + t.takepoints;
+                            cl.awardedpointsfortaking = true;
+                            if(t.ofKind(Treasure)) {
+                                self.treasures = self.treasures - 1;
+                                global.treasuresToFind -= t;
+                            }
+                        }
+                        // award points for depositing ...
+                        self.scoreinc = self.scoreinc + t.depositpoints;
+                        cl.awardedpointsfordepositing = true;
+                    }
+                }
+            }
+        }
+        // adjust the score
+        set_score: if(self.scoreinc != 0) silentIncscore(self.scoreinc);
+        self.scoreinc = 0;
+        self.checklist = [];
+        // check for discovery of a bonus treasure
+        if (global.maxhiked) {
+             "\n Hmmm... You seem to have found an extra item I 
+             didn't know about, so I've increased the maximum score
+             to <<global.maxscore>> points!\n";
+             global.maxhiked = nil;
+        }
+        // check for closing (now done after object scores have been
+        // checked.)
+        checkForClosing();
+    }
+#endif
 ;
 
   
@@ -442,7 +684,8 @@ gamePreinit: PreinitObject
         /* Reset global.vnumber to its default value */
         global.vnumber = vnumsav;
         
-        
+        // initialize the NPC rooms
+        initNPC();
        
     }
 ;
@@ -1289,9 +1532,50 @@ glob11: glob_701
     finishGameMsg(ftDeath, [finishOptionUndo, finishOptionResurrect, finishOptionFullScore]);
 }
 
+// In some cases, both sides of a door (e.g. the grate or rusty door) are
+// represented as a single floatingdecoration object, and the doordest
+// depends on the location of an actor.  The actor won't always be Me, and
+// in Polyadv the convention is to check the location of a 'current
+// actor' (global.currentActor), either directly or through the door's location
+// method.
+//
+// An optional argument (loc) to the NPCdest method specifies the location
+// of an actor who wishes to pass through the door.  If the doordest
+// property is a method, NPCdest will place a dummy actor in this location
+// and temporarily make it the current actor.
+
 modify Door
     wasopen = nil
     waslocked = nil
+;
+
+modify DSDoor
+    NPCdest(...) {
+        local loc = nil, actorsave, value;
+        local ptype = self.propType(&otherSide);
+        if (argcount > 0) loc = getArg(1);
+//        if ((isOpen || !isLocked || autoUnlock) && ptype == 2) {
+        if (isOpen || !isLocked || autoUnlock) {
+            // If a location is given and the doordest property is a method,
+            // we place a dummy actor object in the room and make it the
+            // current actor.
+            if(loc && (ptype == TypeCode || ptype == TypeFuncPtr)) {
+                actorsave = global.currentActor;
+//                dummysave = DummyActor.location;
+//                DummyActor.location = loc; 
+                global.currentActor = gPlayerChar;
+            }
+            value = otherSide;
+            // reset the global actor and dummy actor location
+            if(loc && (ptype == TypeCode || ptype == TypeFuncPtr)) {
+                global.currentActor = actorsave;
+//                DummyActor.location = dummysave;
+            }
+        }
+        else
+            value = nil;
+        return value;
+    }
 ;
 
 /* Modify lookLister to get same prefix as in the TADS 2 port */
@@ -1354,9 +1638,7 @@ modify Room
     smashdrop = nil
     nothingHappens = "Nothing happens. "
     
-    
-    
-    
+    NPCvalid = (!(noNPCs || deleted || version_NoNPCs))
 ;
     
 modify Actor

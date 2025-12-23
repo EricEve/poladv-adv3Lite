@@ -1569,6 +1569,16 @@ treasureChest: OpenableContainer, Treasure 'treasure chest' @deadEnd13
     contloc = nil
     bulkCapacity = global.newGame ? 500 : 0
     isHuge = true
+    // DJP - method to tell sack_of_holding and pirate code whether this
+    // container is suitable for a particular object.
+    accepts_item(dobj) {
+        if(global.oldGame) return nil;
+        if(dobj.islong || dobj.isHuge) return nil;
+        if((dobj == wickerCage || dobj.ofKind(wickerCage)) && dobj.contents.length() > 0)
+            return nil;
+        return true;
+    }
+
 ;
 
 
@@ -1684,7 +1694,7 @@ shards: Thing 'worthless shards of pottery;;;them'
             ".";
 
         " They look to be the remains of what was once a
-        beautiful vase. I guess some oaf must have dropped it.";
+        beautiful vase. I guess some oaf must have dropped it. ";
     }
     mass = 2
     bulk = 3 // shards are hard to carry, except in a container
@@ -2087,6 +2097,12 @@ class ContLiquid: VarLoc, Fixture
     {
         "{The subj iobj} would leak all over the place if you tried to put liquids in it. ";
     }
+    
+    iobjFor(FeedWith) {
+        preCond = [objVisible]
+        verify() { }
+    }
+    
     /*  
      *   In case there is any rogue code which tries to move the liquid, anywhere but nil or its
      *   proper container the moveInto method will move the container instead.

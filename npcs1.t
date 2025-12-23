@@ -631,7 +631,7 @@ bees: Feedable, Actor 'bees;;swarm;them' @flowerRoom
         {
             if(gDobj == flowers)
                 doInstead(FeedWith, bees, gDobj);
-            else if(gDobj.ofKind(ContLiquid) && gDobj.myflag is in (&hasWater, hasWine))
+            else if(gDobj.ofKind(ContLiquid) && gDobj.myflag is in (&hasWater, &hasWine))
                 doInstead(FeedWith, bees, gDobj);
             else 
                 "The bees wouldn't be interested in {the dobj}. ";

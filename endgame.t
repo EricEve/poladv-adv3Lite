@@ -911,7 +911,7 @@ win()
 }
 
 
-cylindricalRoom: Room 'Cylindrical Room' 'cylindrical room; small'
+cylindricalRoom: NoNPC, Room 'Cylindrical Room' 'cylindrical room; small'
     "You are in a small cylindrical room with very smooth
         walls and a flat floor and ceiling.  There are no
         exits visible anywhere." 
@@ -1200,7 +1200,7 @@ wordtest(word)
                  // or do something even more inappropriate.
 }
 
-edgeOfPool: Room 'Edge of Pool'
+edgeOfPool: NoNPC, Room 'Edge of Pool'
     desc()
     {
         "You find yourself sitting on the edge of a pool of water in
