@@ -19,10 +19,10 @@
 -source advmods
 -source verbs
 -source thingext
--source adv3Lite/extensions/fueled
--source adv3Lite/extensions/collective
--source adv3Lite/extensions/weight
--source adv3lite-tads3-checkroomdescr-main/checkdescr
+-source fueled
+-source collective
+-source weight
+-source checkdescr
 -source Polyadv
 -source rooms
 -source rooms1

@@ -48,7 +48,6 @@ global: object
     nondeterministic = true
     randomized = nil
     specialstart = nil
-    saidThrow = nil     // throw gets remapped to attack, but this helps take care of it
 
     NPCstarted = nil    // have we initialized the pirates and dwarves?
     NPCrooms = []       // list of rooms NPCs can travel to (otherwise cannot)
@@ -177,6 +176,11 @@ global: object
         else "Please leave via main office.\"";
     }
     
+    saidThrow
+    {
+        return (gVerbWord == 'throw');
+    }
+    
     knowsgreenname = nil
     // game version selection
     removelist = []     // list of objects to be removed
@@ -261,6 +265,7 @@ global: object
     
     mazeskip = nil // have we enable the mazeskip comamand?
 
+#if 0
     gendaemon() {
         local i,t,l,cl,c,tloc,cloc,cloc2,ccond;
         local addlist = [];
@@ -448,7 +453,7 @@ global: object
         // checked.)
         checkForClosing();
     }
-
+#endif
 ;
 
   
@@ -1542,7 +1547,9 @@ glob11: glob_701
 modify Door
     wasopen = nil
     waslocked = nil
-    
+;
+
+modify DSDoor
     NPCdest(...) {
         local loc = nil, actorsave, value;
         local ptype = self.propType(&otherSide);

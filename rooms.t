@@ -5622,9 +5622,6 @@ brokenNeck: NoNPC, Room 'Bottom of Pit'
     <<finishGameMsg(ftDeath, [finishOptionUndo])>> "    
 ;
 
-westSideChamber: NoNPC, Room 'West Side Chamber'
-;
-
 didnt_make_it: object
     death = "You didn't make it.\b <<finishGameMsg(ftDeath, [finishOptionUndo])>>"         
 ; 

@@ -33,10 +33,9 @@ class MagicWord: IAction
 DefineSystemAction(NoDwarves)
     execAction(c)
     {
-        "The dwarves haven't been implemented yet.\b
-        Once they have been, switching them off will cost you five points. ";
-        
+        "Switching off the dwarves will cost you five points. ";        
         global.nodwarves = true;
+        addToScore(-5,'switching off the dwarves');
     }
 ;
 

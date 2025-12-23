@@ -385,7 +385,7 @@ class NPC: Actor
                 dest = cur.(cur.NPCexits[j]);
                 
                 // TODO: NPCdest is not defined???
-                if(dest && dest.ofKind(Door))
+                if(dest && dest.ofKind(DSDoor))
                     dest = dest.NPCdest;
 
 				//
@@ -837,14 +837,12 @@ bear: Feedable, Actor 'large bear; (cave) tame ferocious gentle; animal' @inBarr
         
         action()
         {
-            global.saidThrow = true;
             if(gDobj.ofKind(Weapon))
                 doInstead(AttackWith, self, gDobj);
             else if(gDobj.isEdible)
                 doInstead(GiveTo, gDobj, self);
             else
                 doInstead(AttackWith, self, gDobj);
-            global.saidThrow = nil;
         }
     }
     
@@ -1500,7 +1498,6 @@ Dwarves: NPC 'threatening little dwarf;nasty mean;dwarves dwarfs guy;them him'
                         local locn = gPlayerChar.getOutermostRoom;
                         if(locn == onLadder) locn = cloakPits;
                         gIobj.moveInto(locn);
-                        global.saidThrow = nil;
                     }
                     break;
                 }
@@ -1585,7 +1582,6 @@ Dwarves: NPC 'threatening little dwarf;nasty mean;dwarves dwarfs guy;them him'
                     if (!global.saidThrow) {
                         "\n(throwing the axe)\n";
                     }
-                    global.saidThrow = nil;
                     if (clover.isIn(gPlayerChar) && rand(100) <= global.luckyhit) {
                         self.kill;
                     }
@@ -1609,7 +1605,6 @@ Dwarves: NPC 'threatening little dwarf;nasty mean;dwarves dwarfs guy;them him'
                     break;
 
                 case sword: // (It's more fragile than it looks)
-                    global.saidThrow = nil;
                     sword.throwsmash;
                     break;
 
@@ -1625,7 +1620,6 @@ Dwarves: NPC 'threatening little dwarf;nasty mean;dwarves dwarfs guy;them him'
 
             default: "Error! Unrecognized version number <<global.vNumber>>!"; break;
             }
-            global.saidThrow = nil; // safety measure
         }
     }
 
@@ -1702,7 +1696,6 @@ Dwarves: NPC 'threatening little dwarf;nasty mean;dwarves dwarfs guy;them him'
     iobjFor(ThrowAt) {
         verify() { }
         action() {
-            global.saidThrow = true;
             if (gDobj == axe)
                 doInstead(AttackWith,self,axe);
             else
@@ -1850,7 +1843,7 @@ Dwarves: NPC 'threatening little dwarf;nasty mean;dwarves dwarfs guy;them him'
                     dir = loc.NPCexits[j];
                     dest = loc.(dir);
                     
-                    if(dest && dest.ofKind(Door))
+                    if(dest && dest.ofKind(DSDoor))
                         dest = dest.NPCdest;
                     if(dest && dest.NPCvalid)
                         ++vlen;
@@ -1916,7 +1909,7 @@ Dwarves: NPC 'threatening little dwarf;nasty mean;dwarves dwarfs guy;them him'
 				dir = loc.NPCexits[rand(len)+1];
 				dest = loc.(dir);
 
-                if(dest && dest.ofKind(Door))
+                if(dest && dest.ofKind(DSDoor))
                     dest = dest.NPCdest;
 
 				if (dest) {
@@ -2370,7 +2363,7 @@ pirates: NPC 'pirate;;;him'
                     dir = loclist[i].NPCexits[j];
                     dest = loclist[i].(dir);
                     
-                    if(dest && dest.ofKind(Door))
+                    if(dest && dest.ofKind(DSDoor))
                         dest = dest.NPCdest;
                     if (dest) {
                         if (dest.NPCvalid) vlen++;
@@ -2429,7 +2422,7 @@ pirates: NPC 'pirate;;;him'
                 }
 				dir = loclist[i].NPCexits[rand(len)+1];
 				dest = loclist[i].(dir);
-                if(dest && dest.ofKind(Door))
+                if(dest && dest.ofKind(DSDoor))
                     dest = dest.NPCdest;
                 if (dest) {
                     if (dest.NPCvalid) {
@@ -2645,7 +2638,8 @@ pirates: NPC 'pirate;;;him'
 				me chest deep in the maze!</q>  He 
 				snatches your treasure and vanishes 
 				into the gloom. ";
-                global.gendaemon;
+//                global.gendaemon;
+                updateScore();
 			}
 			else {
 				//
