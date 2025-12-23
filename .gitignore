@@ -1,0 +1,8 @@
+debug/
+obj/
+web/
+Scripts/
+GameInfo.txt
+Polyadv.tdbconfig
+*.t3m
+

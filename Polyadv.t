@@ -114,7 +114,7 @@ gameMain: GameMainDef
     
     showIntro()
     {
-        dwarfPirateStart();
+        new Fuse(self, &startDwarves, 3);
         if(global.specialstart)
             return;
         
@@ -135,6 +135,11 @@ gameMain: GameMainDef
         "<.p>Come back and visit the newly remodelled and extended Colossal Cave soon! ";
     }
 
+    startDwarves() 
+    { 
+        if(!global.nodwarves)
+            dwarfPirateStart(); 
+    }
     
     /* This list will be updated from the appropriate VerGlob object. */
     scoreRanks = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
