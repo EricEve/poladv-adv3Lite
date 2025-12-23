@@ -33,29 +33,32 @@ class MagicWord: IAction
 DefineSystemAction(NoDwarves)
     execAction(c)
     {
+        if(global.nodwarves)
+        {
+            "The dwarves and pirate are already turned off. ";
+            return;
+        }        
+        
         if(global.NPCstarted)
         {
             "I'm afraid it's too late for that. You need to use this command
             on the first few turns. If you're not too far in you could try
             restarting and entering the NODWARVES command on the first turn. ";
             return;
-        }
+        }       
         
-        if(!global.nodwarves)        {
-            
-            "Switching off the dwarves will cost you five points. Do you want to go ahead
-            and switch them off? ";        
-            if(yesOrNo())
-            {
-                global.nodwarves = true;
-                addToScore(-5,'switching off the dwarves');
-                "Done. ";
-            }
-            else
-                "Very well. Dwarves are still active. ";
+        "Switching off the dwarves will cost you five points. Do you want to go ahead
+        and switch them off? ";        
+        if(yesOrNo())
+        {
+            global.nodwarves = true;
+            addToScore(-5,'switching off the dwarves');
+            "Done. ";
         }
         else
-            "The dwarves and pirate are already disabled. ";
+            "Very well. Dwarves are still active. ";
+        
+        
     }
 ;
 

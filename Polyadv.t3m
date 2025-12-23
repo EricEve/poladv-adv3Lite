@@ -22,7 +22,6 @@
 -source fueled
 -source collective
 -source weight
--source checkdescr
 -source Polyadv
 -source rooms
 -source rooms1

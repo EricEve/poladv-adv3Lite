@@ -114,7 +114,7 @@ gameMain: GameMainDef
     
     showIntro()
     {
-        new Fuse(self, &startDwarves, 3);
+//        new Fuse(self, &startDwarves, 3);
         if(global.specialstart)
             return;
         
@@ -155,6 +155,17 @@ gameMain: GameMainDef
         [scoreRanks[8], 'Your score puts you in Master Adventurer Class A.' ],
         [scoreRanks[9], 'All of Adventuredom gives tribute to you, Adventurer Grandmaster.' ]
     ]
+;
+
+/* 
+ *   For some reason creating this Fuse in an InitObject rather than showIntro() avoids a weird bug
+ *   that occurs only when running a script.
+ */
+InitObject
+    execute()
+    {
+        new Fuse(self, &startDwarves, 3);
+    }
 ;
 
 
